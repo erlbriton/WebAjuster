@@ -8,7 +8,7 @@ class AndroidPlatform : Platform {
 
 actual fun getPlatform(): Platform = AndroidPlatform()
 
-// Добавьте вот это:
+// Исправленное имя и тип (теперь совпадает с expect в SerialManager.kt)
 actual fun findSerialPort() {
-    println("Serial port search is not implemented on Android")
+    println("Serial port search is not implemented on Android yet")
 }

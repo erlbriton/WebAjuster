@@ -6,18 +6,38 @@
 </head>
 <body>
 <script>
-    // Реализуем функцию прямо в глобальной области видимости окна
-    window.askForSerialPort = function() {
-        if ('serial' in navigator) {
-            navigator.serial.requestPort()
-                .then(port => {
-                    console.log('Порт выбран успешно:', port);
-                })
-                .catch(err => {
-                    console.error('Пользователь не выбрал порт или ошибка:', err);
-                });
-        } else {
-            alert('Web Serial API не поддерживается вашим браузером');
+    // Реализуем функцию в глобальной области видимости
+    window.askForSerialPort = async function() {
+        if (!('serial' in navigator)) {
+            alert('Web Serial API не поддерживается вашим браузером. Используйте Chrome, Edge или Opera.');
+            return;
+        }
+
+        try {
+            // 1. Запрос выбора порта у пользователя
+            const port = await navigator.serial.requestPort();
+
+            // 2. Открытие порта с настройками (для CP2103 обычно 115200)
+            // Вы можете изменить baudRate под ваши задачи
+            await port.open({
+                baudRate: 115200,
+                dataBits: 8,
+                stopBits: 1,
+                parity: 'none',
+                flowControl: 'none'
+            });
+
+            console.log('Порт успешно открыт на скорости 115200!');
+
+            // Сохраняем объект порта глобально для последующего чтения/записи
+            window.selectedPort = port;
+
+        } catch (err) {
+            if (err.name === 'NotFoundError') {
+                console.log('Пользователь отменил выбор порта.');
+            } else {
+                console.error('Ошибка при работе с Serial Port:', err);
+            }
         }
     };
 </script>
