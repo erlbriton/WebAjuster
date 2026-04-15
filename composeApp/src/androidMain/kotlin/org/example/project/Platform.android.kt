@@ -7,3 +7,8 @@ class AndroidPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
+
+// Добавьте вот это:
+actual fun findSerialPort() {
+    println("Serial port search is not implemented on Android")
+}

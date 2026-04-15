@@ -2,19 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ajuster</title>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "@js-joda/core": "https://cdn.jsdelivr.net/npm/@js-joda/core@3.2.0/dist/js-joda.esm.js"
-            }
-        }
-    </script>
-
-    <script type="module" src="composeApp.js"></script>
+    <title>Compose App</title>
 </head>
-<body style="margin: 0; background-color: #2b2b2b;">
-<canvas id="ComposeTarget" style="width: 100vw; height: 100vh;"></canvas>
+<body>
+<script>
+    // Реализуем функцию прямо в глобальной области видимости окна
+    window.askForSerialPort = function() {
+        if ('serial' in navigator) {
+            navigator.serial.requestPort()
+                .then(port => {
+                    console.log('Порт выбран успешно:', port);
+                })
+                .catch(err => {
+                    console.error('Пользователь не выбрал порт или ошибка:', err);
+                });
+        } else {
+            alert('Web Serial API не поддерживается вашим браузером');
+        }
+    };
+</script>
+
+<script src="composeApp.js"></script>
 </body>
 </html>

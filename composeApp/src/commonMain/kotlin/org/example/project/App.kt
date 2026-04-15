@@ -40,7 +40,8 @@ fun App() {
             Button(onClick = {
                 scope.launch {
                     uartStatus = "Ожидание выбора порта..."
-                    uartStatus = requestUartDevice()
+                    // Вызываем функцию как действие, без присваивания в переменную
+                    findSerialPort()
                 }
             }) {
                 Text("Найти CP2103")
@@ -55,8 +56,6 @@ fun App() {
                 Text("Click me!")
             }
 
-
-
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(
@@ -70,4 +69,3 @@ fun App() {
         }
     }
 }
-expect fun findSerialPort()

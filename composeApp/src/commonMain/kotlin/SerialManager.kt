@@ -5,4 +5,4 @@ package org.example.project
  * Возвращает имя выбранного порта или описание ошибки.
  */
 
-expect suspend fun requestUartDevice(): String
+expect fun findSerialPort()

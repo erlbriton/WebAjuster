@@ -1,6 +1,9 @@
 package org.example.project
 
+// Объявляем внешнюю функцию, которая будет реализована на стороне JS
+external fun askForSerialPort()
 
 actual fun findSerialPort() {
-    // пока оставим пустым, чтобы просто проверить сборку
+    // Просто вызываем внешнюю функцию
+    askForSerialPort()
 }
