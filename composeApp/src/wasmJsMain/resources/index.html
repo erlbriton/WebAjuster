@@ -2,45 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Compose App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32 Modbus Monitor</title>
+
+    <script src="serial_logic.js"></script>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #2b2b2b;
+        }
+        #compose-target {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-<script>
-    // Реализуем функцию в глобальной области видимости
-    window.askForSerialPort = async function() {
-        if (!('serial' in navigator)) {
-            alert('Web Serial API не поддерживается вашим браузером. Используйте Chrome, Edge или Opera.');
-            return;
-        }
-
-        try {
-            // 1. Запрос выбора порта у пользователя
-            const port = await navigator.serial.requestPort();
-
-            // 2. Открытие порта с настройками (для CP2103 обычно 115200)
-            // Вы можете изменить baudRate под ваши задачи
-            await port.open({
-                baudRate: 115200,
-                dataBits: 8,
-                stopBits: 1,
-                parity: 'none',
-                flowControl: 'none'
-            });
-
-            console.log('Порт успешно открыт на скорости 115200!');
-
-            // Сохраняем объект порта глобально для последующего чтения/записи
-            window.selectedPort = port;
-
-        } catch (err) {
-            if (err.name === 'NotFoundError') {
-                console.log('Пользователь отменил выбор порта.');
-            } else {
-                console.error('Ошибка при работе с Serial Port:', err);
-            }
-        }
-    };
-</script>
+<canvas id="compose-target"></canvas>
 
 <script src="composeApp.js"></script>
 </body>
