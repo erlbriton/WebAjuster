@@ -47,7 +47,7 @@ kotlin {
                 implementation(npm("@js-joda/core", "3.2.0"))
                 // Добавим часовые пояса на всякий случай
                 implementation(npm("@js-joda/timezone", "2.3.0"))
-
+                implementation("org.jetbrains.compose.material:material:1.10.3")
                 implementation(libs.kotlinx.browser)
             }
         }
