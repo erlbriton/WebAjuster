@@ -99,14 +99,13 @@ fun ParameterTable(parameters: List<ParameterRow>) {
     @Composable
     fun VerticalDivider() = Box(modifier = Modifier.fillMaxHeight().width(2.dp).background(dividerColor))
 
-    Column(modifier = Modifier.fillMaxSize().background(bgColor)) {
+    // ОТСТУП СЛЕВА 100.dp (примерно 15 символов) добавлен здесь:
+    Column(modifier = Modifier.fillMaxSize().background(bgColor).padding(start = 100.dp)) {
         // --- ПАНЕЛЬ УПРАВЛЕНИЯ ---
         Column(modifier = Modifier.fillMaxWidth().background(headerBgColor)) {
 
-            // Заголовок настроек связи
             Text("Настройки связи", color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
 
-            // Первая строка
             Row(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -128,7 +127,6 @@ fun ParameterTable(parameters: List<ParameterRow>) {
                 Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
             }
 
-            // --- СТРОКА: ID ---
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -142,7 +140,6 @@ fun ParameterTable(parameters: List<ParameterRow>) {
                 )
             }
 
-            // --- СТРОКА: Механизм + Сейчас + Клон ---
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -158,7 +155,6 @@ fun ParameterTable(parameters: List<ParameterRow>) {
                 Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
             }
 
-            // --- СТРОКА: Место установки + Шкалы + Сохранить ---
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -177,9 +173,7 @@ fun ParameterTable(parameters: List<ParameterRow>) {
         }
         Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
 
-        // --- ТАБЛИЦА ---
         Column(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            // ... (далее код таблицы остается без изменений)
             Row(modifier = Modifier.fillMaxWidth().height(30.dp).background(groupHeaderBgColor)) {
                 Box(Modifier.weight(paramWeight).fillMaxHeight().pointerInput(Unit) {
                     detectDragGestures { change, drag ->
