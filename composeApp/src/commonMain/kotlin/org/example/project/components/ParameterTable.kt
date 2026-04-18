@@ -20,8 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
 
 data class ParameterRow(
     val pn: String, val name: String, val description: String,
@@ -85,6 +84,10 @@ fun ParameterTable(parameters: List<ParameterRow>) {
     val textColor = Color(0xFFE0E0E0)
     val headerTextColor = Color.White
 
+    // --- СОСТОЯНИЕ ДЛЯ ШИРИНЫ ЛЕВОГО СТОЛБЦА ---
+    var leftColumnWidth by remember { mutableStateOf(100.dp) }
+    val density = LocalDensity.current
+
     val displayParameters = remember(parameters) {
         parameters + List(60) { i ->
             ParameterRow("p${20000 + i}", "Param_$i", "Описание $i", "U", "0x00", "0.0", "0x00", "0.0")
@@ -101,158 +104,170 @@ fun ParameterTable(parameters: List<ParameterRow>) {
     @Composable
     fun VerticalDivider() = Box(modifier = Modifier.fillMaxHeight().width(2.dp).background(dividerColor))
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(bgColor)
-            .drawBehind {
-                // Линия на 100.dp. Увеличена ширина линии (strokeWidth)
-                val xPosition = 100.dp.toPx()
-                drawLine(
-                    color = dividerColor,
-                    start = Offset(xPosition, 0f),
-                    end = Offset(xPosition, size.height),
-                    strokeWidth = 9.dp.toPx() // Увеличенная толщина линии
-                )
-            }
-            .padding(start = 100.dp)
-    ) {
-        // --- ПАНЕЛЬ УПРАВЛЕНИЯ ---
-        Column(modifier = Modifier.fillMaxWidth().background(headerBgColor)) {
+    // Используем Row, чтобы отделить левую область от таблицы
+    Row(modifier = Modifier.fillMaxSize().background(bgColor)) {
 
-            Text("Настройки связи", color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
+        // 1. ЛЕВАЯ ПУСТАЯ ОБЛАСТЬ
+        Box(modifier = Modifier.width(leftColumnWidth).fillMaxHeight())
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("BUS", color = textColor, fontSize = 12.sp)
-                SimpleDropdown(listOf("MODBUS", "CAN"), "MODBUS", {}, 100)
-                Text("COM", color = textColor, fontSize = 12.sp)
-                SimpleDropdown(listOf("COM1", "COM2"), "COM1", {}, 80)
-                Text("BPS", color = textColor, fontSize = 12.sp)
-                SimpleDropdown(listOf("9600", "115200"), "115200", {}, 90)
-                Text("Frame", color = textColor, fontSize = 12.sp)
-                TextField(value = "20", onValueChange = {}, modifier = Modifier.width(50.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Color.White), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
-                Text("Address", color = textColor, fontSize = 12.sp)
-                TextField(value = "01", onValueChange = {}, modifier = Modifier.width(50.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Color.White), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
-
-                Spacer(Modifier.weight(1f))
-                Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("Подключить", fontSize = 11.sp) }
-                Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("ID", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
-                TextField(
-                    value = "xxxxx771 DExS.SMFCB v1.10.5.0 21.05.2022 www.intmash.ru",
-                    onValueChange = {},
-                    modifier = Modifier.weight(1f).height(30.dp).border(1.dp, dividerColor),
-                    colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor)
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Тип механизм", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
-                TextField(value = "", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
-                Spacer(Modifier.width(8.dp))
-                TextField(value = "21.05.2022", onValueChange = {}, modifier = Modifier.width(100.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
-                Spacer(Modifier.width(8.dp))
-
-                Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555))) { Text("Сейчас", fontSize = 12.sp) }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Место установки", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
-                TextField(value = "БКО", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
-
-                Spacer(Modifier.width(116.dp))
-
-                Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Шкалы", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-
-                Spacer(Modifier.weight(1f))
-
-                Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Сохранить изменения", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
-            }
-        }
-        Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
-
-        Column(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            Row(modifier = Modifier.fillMaxWidth().height(30.dp).background(groupHeaderBgColor)) {
-                Box(Modifier.weight(paramWeight).fillMaxHeight().pointerInput(Unit) {
-                    detectDragGestures { change, drag ->
+        // 2. РЕГУЛИРУЕМАЯ ТОЛСТАЯ ЛИНИЯ (Разделитель)
+        Box(
+            modifier = Modifier
+                .width(9.dp) // Ваша ширина линии + 50%
+                .fillMaxHeight()
+                .background(dividerColor)
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
                         change.consume()
-                        val factor = drag.x / 200f
-                        colWeights[3] = (colWeights[3] + factor).coerceAtLeast(0.1f)
-                        colWeights[4] = (colWeights[4] - factor).coerceAtLeast(0.1f)
+                        // Изменяем ширину левой области при перетаскивании линии
+                        val deltaDp = with(density) { dragAmount.x.toDp() }
+                        leftColumnWidth = (leftColumnWidth + deltaDp).coerceAtLeast(10.dp)
                     }
-                }, Alignment.Center) { Text("Параметр", color = headerTextColor, fontWeight = FontWeight.Bold) }
-                VerticalDivider()
-                Box(Modifier.weight(baseWeight).fillMaxHeight().pointerInput(Unit) {
-                    detectDragGestures { change, drag ->
-                        change.consume()
-                        val factor = drag.x / 200f
-                        colWeights[5] = (colWeights[5] + factor).coerceAtLeast(0.1f)
-                        colWeights[6] = (colWeights[6] - factor).coerceAtLeast(0.1f)
-                    }
-                }, Alignment.Center) { Text("База", color = headerTextColor, fontWeight = FontWeight.Bold) }
-                VerticalDivider()
-                Box(Modifier.weight(deviceWeight).fillMaxHeight(), Alignment.Center) { Text("Контроллер", color = headerTextColor, fontWeight = FontWeight.Bold) }
-            }
-            Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
-            Row(modifier = Modifier.fillMaxWidth().height(25.dp).background(headerBgColor)) {
-                val headers = listOf("PN", "Имя", "Описание", "Ед. изм.", "hex", "Физич.", "hex", "Физич.")
-                headers.forEachIndexed { i, text ->
-                    Box(
-                        Modifier.weight(colWeights[i]).fillMaxHeight().pointerInput(Unit) {
-                            detectDragGestures { change, dragAmount ->
-                                change.consume()
-                                val delta = dragAmount.x / 200f
-                                if (i < colWeights.size - 1) {
-                                    colWeights[i] = (colWeights[i] + delta).coerceAtLeast(0.05f)
-                                    colWeights[i + 1] = (colWeights[i + 1] - delta).coerceAtLeast(0.05f)
-                                }
-                            }
-                        },
-                        Alignment.Center
-                    ) {
-                        Text(text, color = headerTextColor, fontSize = 11.sp, textAlign = TextAlign.Center)
-                    }
-                    if (i < 7) VerticalDivider()
+                }
+        )
+
+        // 3. ОСНОВНАЯ ТАБЛИЦА
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            // --- ПАНЕЛЬ УПРАВЛЕНИЯ ---
+            Column(modifier = Modifier.fillMaxWidth().background(headerBgColor)) {
+
+                Text("Настройки связи", color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("BUS", color = textColor, fontSize = 12.sp)
+                    SimpleDropdown(listOf("MODBUS", "CAN"), "MODBUS", {}, 100)
+                    Text("COM", color = textColor, fontSize = 12.sp)
+                    SimpleDropdown(listOf("COM1", "COM2"), "COM1", {}, 80)
+                    Text("BPS", color = textColor, fontSize = 12.sp)
+                    SimpleDropdown(listOf("9600", "115200"), "115200", {}, 90)
+                    Text("Frame", color = textColor, fontSize = 12.sp)
+                    TextField(value = "20", onValueChange = {}, modifier = Modifier.width(50.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Color.White), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
+                    Text("Address", color = textColor, fontSize = 12.sp)
+                    TextField(value = "01", onValueChange = {}, modifier = Modifier.width(50.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Color.White), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
+
+                    Spacer(Modifier.weight(1f))
+                    Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("Подключить", fontSize = 11.sp) }
+                    Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("ID", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
+                    TextField(
+                        value = "xxxxx771 DExS.SMFCB v1.10.5.0 21.05.2022 www.intmash.ru",
+                        onValueChange = {},
+                        modifier = Modifier.weight(1f).height(30.dp).border(1.dp, dividerColor),
+                        colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Тип механизм", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
+                    TextField(value = "", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
+                    Spacer(Modifier.width(8.dp))
+                    TextField(value = "21.05.2022", onValueChange = {}, modifier = Modifier.width(100.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
+                    Spacer(Modifier.width(8.dp))
+
+                    Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555))) { Text("Сейчас", fontSize = 12.sp) }
+                    Spacer(Modifier.width(8.dp))
+                    Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Место установки", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
+                    TextField(value = "БКО", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
+
+                    Spacer(Modifier.width(116.dp))
+
+                    Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Шкалы", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+
+                    Spacer(Modifier.weight(1f))
+
+                    Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Сохранить изменения", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                 }
             }
-        }
-        Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
-                items(displayParameters) { p ->
-                    Row(modifier = Modifier.fillMaxWidth().height(25.dp).background(rowBgColor), verticalAlignment = Alignment.CenterVertically) {
-                        val cells = listOf(p.pn, p.name, p.description, p.unit, p.baseHex, p.basePhys, p.devHex, p.devPhys)
-                        cells.forEachIndexed { i, text ->
-                            Box(Modifier.weight(colWeights[i]).fillMaxHeight(), Alignment.Center) {
-                                Text(text, color = textColor, fontSize = 12.sp, textAlign = TextAlign.Center)
+            Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
+
+            // --- ЗАГОЛОВКИ ТАБЛИЦЫ ---
+            Column(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                Row(modifier = Modifier.fillMaxWidth().height(30.dp).background(groupHeaderBgColor)) {
+                    Box(Modifier.weight(paramWeight).fillMaxHeight().pointerInput(Unit) {
+                        detectDragGestures { change, drag ->
+                            change.consume()
+                            val factor = drag.x / 200f
+                            colWeights[3] = (colWeights[3] + factor).coerceAtLeast(0.1f)
+                            colWeights[4] = (colWeights[4] - factor).coerceAtLeast(0.1f)
+                        }
+                    }, Alignment.Center) { Text("Параметр", color = headerTextColor, fontWeight = FontWeight.Bold) }
+                    VerticalDivider()
+                    Box(Modifier.weight(baseWeight).fillMaxHeight().pointerInput(Unit) {
+                        detectDragGestures { change, drag ->
+                            change.consume()
+                            val factor = drag.x / 200f
+                            colWeights[5] = (colWeights[5] + factor).coerceAtLeast(0.1f)
+                            colWeights[6] = (colWeights[6] - factor).coerceAtLeast(0.1f)
+                        }
+                    }, Alignment.Center) { Text("База", color = headerTextColor, fontWeight = FontWeight.Bold) }
+                    VerticalDivider()
+                    Box(Modifier.weight(deviceWeight).fillMaxHeight(), Alignment.Center) { Text("Контроллер", color = headerTextColor, fontWeight = FontWeight.Bold) }
+                }
+                Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
+                Row(modifier = Modifier.fillMaxWidth().height(25.dp).background(headerBgColor)) {
+                    val headers = listOf("PN", "Имя", "Описание", "Ед. изм.", "hex", "Физич.", "hex", "Физич.")
+                    headers.forEachIndexed { i, text ->
+                        Box(
+                            Modifier.weight(colWeights[i]).fillMaxHeight().pointerInput(Unit) {
+                                detectDragGestures { change, dragAmount ->
+                                    change.consume()
+                                    val delta = dragAmount.x / 200f
+                                    if (i < colWeights.size - 1) {
+                                        colWeights[i] = (colWeights[i] + delta).coerceAtLeast(0.05f)
+                                        colWeights[i + 1] = (colWeights[i + 1] - delta).coerceAtLeast(0.05f)
+                                    }
+                                }
+                            },
+                            Alignment.Center
+                        ) {
+                            Text(text, color = headerTextColor, fontSize = 11.sp, textAlign = TextAlign.Center)
+                        }
+                        if (i < 7) VerticalDivider()
+                    }
+                }
+            }
+            Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
+
+            // --- СПИСОК ПАРАМЕТРОВ ---
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
+                    items(displayParameters) { p ->
+                        Row(modifier = Modifier.fillMaxWidth().height(25.dp).background(rowBgColor), verticalAlignment = Alignment.CenterVertically) {
+                            val cells = listOf(p.pn, p.name, p.description, p.unit, p.baseHex, p.basePhys, p.devHex, p.devPhys)
+                            cells.forEachIndexed { i, text ->
+                                Box(Modifier.weight(colWeights[i]).fillMaxHeight(), Alignment.Center) {
+                                    Text(text, color = textColor, fontSize = 12.sp, textAlign = TextAlign.Center)
+                                }
+                                if (i < 7) VerticalDivider()
                             }
-                            if (i < 7) VerticalDivider()
                         }
                     }
                 }
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(scrollState = listState)
+                )
             }
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState = listState)
-            )
         }
     }
 }
