@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 
 data class ParameterRow(
     val pn: String, val name: String, val description: String,
@@ -99,8 +101,22 @@ fun ParameterTable(parameters: List<ParameterRow>) {
     @Composable
     fun VerticalDivider() = Box(modifier = Modifier.fillMaxHeight().width(2.dp).background(dividerColor))
 
-    // ОТСТУП СЛЕВА 100.dp (примерно 15 символов) добавлен здесь:
-    Column(modifier = Modifier.fillMaxSize().background(bgColor).padding(start = 100.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(bgColor)
+            .drawBehind {
+                // Линия на 100.dp. Увеличена ширина линии (strokeWidth)
+                val xPosition = 100.dp.toPx()
+                drawLine(
+                    color = dividerColor,
+                    start = Offset(xPosition, 0f),
+                    end = Offset(xPosition, size.height),
+                    strokeWidth = 9.dp.toPx() // Увеличенная толщина линии
+                )
+            }
+            .padding(start = 100.dp)
+    ) {
         // --- ПАНЕЛЬ УПРАВЛЕНИЯ ---
         Column(modifier = Modifier.fillMaxWidth().background(headerBgColor)) {
 
