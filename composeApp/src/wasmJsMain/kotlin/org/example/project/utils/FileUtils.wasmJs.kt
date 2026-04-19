@@ -3,6 +3,16 @@ package org.example.project.utils
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@JsFun("""
+    (file) => {
+        return new Promise((resolve) => {
+            var reader = new FileReader();
+            reader.onload = function(e) { resolve(e.target.result); };
+            reader.readAsText(file, 'windows-1251');
+        });
+    }
+""")
+private external fun readFileAsText(file: JsAny): JsAny
 // --- 1. Мостики для вызова методов и свойств ---
 
 @JsFun("(obj) => obj.name")
@@ -111,8 +121,9 @@ private suspend fun findIniInDirectory(dirHandle: JsAny): DeviceInfo? {
 
 private suspend fun parseIniFile(fileHandle: JsAny): DeviceInfo {
     val file = awaitPromise(callGetFile(fileHandle))
-    // Исправляем получение текста: используем toString(), чтобы Kotlin гарантированно получил строку
-    val text = awaitPromise(callText(file)).toString()
+
+    // Используем наш новый JS-мостик
+    val text = awaitPromise(readFileAsText(file)).toString()
 
     var location = ""
     var id = ""
