@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.launch
+import org.example.project.utils.pickDirectory
 
 data class ParameterRow(
     val pn: String, val name: String, val description: String,
@@ -122,6 +124,7 @@ fun SplitMenuButton(
 
 @Composable
 fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier) {
+    val scope = rememberCoroutineScope()
     val bgColor = Color(0xFF1A1A1A)
     val headerBgColor = Color(0xFF2D2D2D)
     val groupHeaderBgColor = Color(0xFF3D3D3D)
@@ -160,7 +163,23 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 SplitMenuButton("Обновить", { println("Обновление") }, listOf("Обновить", "Серийные номера", "Место установки", "Тип механизма", "Дата последнего обслуживания", "Настройки"), { println("Выбрано: $it") })
-                Button(onClick = {}, modifier = Modifier.size(80.dp, 30.dp), contentPadding = PaddingValues(0.dp), shape = RectangleShape) { Text("Поиск", fontSize = 11.sp) }
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            val deviceInfo = pickDirectory()
+                            if (deviceInfo != null) {
+                                println("DEBUG: Результат поиска -> ID: ${deviceInfo.id}, Loc: ${deviceInfo.location}")
+                            }
+                        }
+                    },
+                    modifier = Modifier.size(80.dp, 30.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RectangleShape
+                ) {
+                    Text("Поиск", fontSize = 11.sp)
+                }
+
                 Button(onClick = {}, modifier = Modifier.size(80.dp, 30.dp), contentPadding = PaddingValues(0.dp), shape = RectangleShape) { Text("Отчет", fontSize = 11.sp) }
                 SplitMenuButton("Осц", { println("Открыть осциллограф подключенного устройства") }, listOf("Открыть осциллограф подключенного устройства", "Открыть осциллограф", "Просмотр осциллограммы", "Новый осциллограф"), { println("Выбрано: $it") })
                 Button(onClick = {}, modifier = Modifier.size(80.dp, 30.dp), contentPadding = PaddingValues(0.dp), shape = RectangleShape) { Text("КС", fontSize = 11.sp) }
