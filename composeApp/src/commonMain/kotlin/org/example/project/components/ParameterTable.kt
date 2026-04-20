@@ -166,10 +166,17 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
 
                 Button(
                     onClick = {
+                        // ДОБАВИЛИ ПЕРВУЮ ТОЧКУ ПРОВЕРКИ
+                        println("DEBUG: Кнопка нажата!")
+
                         scope.launch {
+                            println("DEBUG: Внутри корутины")
                             val deviceInfo = pickDirectory()
+
                             if (deviceInfo != null) {
-                                println("DEBUG: Результат поиска -> ID: ${deviceInfo.id}, Loc: ${deviceInfo.location}")
+                                println("DEBUG: Нашли! ID: ${deviceInfo.id}")
+                            } else {
+                                println("DEBUG: pickDirectory вернула null")
                             }
                         }
                     },
@@ -177,7 +184,7 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                     contentPadding = PaddingValues(0.dp),
                     shape = RectangleShape
                 ) {
-                    Text("Поиск", fontSize = 11.sp)
+                    Text("Поиск", fontSize = 10.sp)
                 }
 
                 Button(onClick = {}, modifier = Modifier.size(80.dp, 30.dp), contentPadding = PaddingValues(0.dp), shape = RectangleShape) { Text("Отчет", fontSize = 11.sp) }

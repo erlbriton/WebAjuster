@@ -65,11 +65,30 @@ suspend fun awaitPromise(promise: JsAny): JsAny = suspendCoroutine { cont ->
 // --- 4. Основная логика ---
 
 actual suspend fun pickDirectory(): DeviceInfo? {
-    val handle = suspendCoroutine<JsAny?> { cont ->
-        showPickerNative { res -> cont.resume(res) }
-    } ?: return null
+    println("DEBUG: Запуск showPickerNative...")
 
-    return scanForFirstIni(handle)
+    val handle = suspendCoroutine<JsAny?> { cont ->
+        showPickerNative { res ->
+            println("DEBUG: JS вернул результат: $res")
+            cont.resume(res)
+        }
+    }
+
+    if (handle == null) {
+        println("DEBUG: handle равен null (пользователь отменил или ошибка JS)")
+        return null
+    }
+
+    println("DEBUG: handle получен, запускаем scanForFirstIni...")
+    val result = scanForFirstIni(handle)
+
+    if (result == null) {
+        println("DEBUG: scanForFirstIni не нашел .ini файл!")
+    } else {
+        println("DEBUG: Успех! Нашли: ${result.id}")
+    }
+
+    return result
 }
 
 private suspend fun scanForFirstIni(dirHandle: JsAny): DeviceInfo? {
@@ -93,10 +112,12 @@ private suspend fun scanForFirstIni(dirHandle: JsAny): DeviceInfo? {
         }
     }
 
+    // Проверка того, что мы нашли подпапки
+    println("DEBUG: В корне .ini не найден. Проверяю подпапки: ${subFolders.size}")
     for (folder in subFolders) {
-        val found = findIniInDirectory(folder)
-        if (found != null) return found
+        println("DEBUG: Захожу в папку: ${getJsName(folder)}")
     }
+
     return null
 }
 
