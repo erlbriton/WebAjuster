@@ -62,7 +62,7 @@ fun App() {
                         uartStatus = "Формирование пакета..."
 
                         // Пакет для STM32 (Read Holding Registers)
-                        val baseData = listOf(0x01, 0x03, 0x00, 0x00, 0x00, 0x4D)
+                        val baseData = listOf(0x01, 0x03, 0x00, 0x00, 0x00, 0x7D)
 
                         // Расчет CRC
                         val crc = calculateModbusCrc(baseData)

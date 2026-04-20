@@ -14,5 +14,5 @@ actual suspend fun findSerialPort(data: ByteArray) {
         i8Array.set(i, data[i])
     }
 
-    jsModbusFpsTest(i8Array, 159)
+    jsModbusFpsTest(i8Array, 159)// С 259 не работает
 }
