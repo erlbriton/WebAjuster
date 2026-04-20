@@ -116,6 +116,12 @@ private suspend fun scanForFirstIni(dirHandle: JsAny): DeviceInfo? {
     println("DEBUG: В корне .ini не найден. Проверяю подпапки: ${subFolders.size}")
     for (folder in subFolders) {
         println("DEBUG: Захожу в папку: ${getJsName(folder)}")
+
+        val foundInSub = scanForFirstIni(folder)
+        if (foundInSub != null) {
+            println("DEBUG: Успешно нашли файл внутри: ${getJsName(folder)}")
+            return foundInSub
+        }
     }
 
     return null
