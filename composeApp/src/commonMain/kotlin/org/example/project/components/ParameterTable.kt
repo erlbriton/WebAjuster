@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.graphics.RectangleShape
@@ -29,103 +28,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.TextRange
 import kotlinx.coroutines.launch
 import org.example.project.utils.pickDirectory
-
-data class ParameterRow(
-    val pn: String, val name: String, val description: String,
-    val unit: String, val baseHex: String, val basePhys: String,
-    val devHex: String, val devPhys: String
-)
-
-@Composable
-fun SimpleDropdown(options: List<String>, selectedOption: String, onOptionSelected: (String) -> Unit, width: Int) {
-    var expanded by remember { mutableStateOf(false) }
-    val darkBg = Color(0xFF1A1A1A)
-    val lightActionArea = Color(0xFF555555)
-
-    Box(
-        modifier = Modifier
-            .width(width.dp)
-            .height(30.dp)
-            .background(darkBg)
-            .border(1.dp, Color(0xFF777777))
-            .pointerInput(Unit) { detectTapGestures { expanded = true } }
-    ) {
-        Text(
-            text = selectedOption,
-            color = Color.White,
-            fontSize = 12.sp,
-            modifier = Modifier.align(Alignment.CenterStart).padding(start = 8.dp)
-        )
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .fillMaxHeight()
-                .width(30.dp)
-                .background(lightActionArea),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("▼", fontSize = 10.sp, color = Color.White)
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option, fontSize = 12.sp) },
-                    onClick = { onOptionSelected(option); expanded = false },
-                    modifier = Modifier.height(28.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun SplitMenuButton(
-    text: String,
-    onMainClick: () -> Unit,
-    menuItems: List<String>,
-    onMenuItemClick: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val buttonColor = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555))
-
-    Row(
-        modifier = Modifier.height(30.dp).border(1.dp, Color.Gray, RectangleShape)
-    ) {
-        Button(
-            onClick = onMainClick,
-            modifier = Modifier.fillMaxHeight(),
-            shape = RectangleShape,
-            colors = buttonColor,
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            Text(text, fontSize = 11.sp)
-        }
-        Box(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Gray))
-        Button(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxHeight().width(30.dp),
-            shape = RectangleShape,
-            colors = buttonColor,
-            contentPadding = PaddingValues(0.dp)
-        ) {
-            Text("▼", fontSize = 10.sp)
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            menuItems.forEach { item ->
-                DropdownMenuItem(
-                    text = { Text(item, fontSize = 12.sp) },
-                    onClick = {
-                        onMenuItemClick(item)
-                        expanded = false
-                    },
-                    modifier = Modifier.height(28.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
-        }
-    }
-}
+import org.example.project.models.ParameterRow
+// Импортируем компоненты из созданного файла
+import org.example.project.components.SimpleDropdown
+import org.example.project.components.SplitMenuButton
 
 @Composable
 fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier) {
@@ -234,7 +140,6 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
                     }
 
-                    // Поле ID: readOnly = true
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("ID", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
                         BasicTextField(
@@ -259,13 +164,12 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     }
 
-                    // Место установки: редактируемое
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Место установки", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
                         BasicTextField(
                             value = locationState,
                             onValueChange = { locationState = it },
-                            readOnly = false, // Редактируемое
+                            readOnly = false,
                             modifier = Modifier.width(225.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
                             textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
                             singleLine = true,
@@ -321,7 +225,7 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                 Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(dividerColor))
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
-                        items(displayParameters) { p ->
+                        items(displayParameters) { p: ParameterRow ->
                             Row(modifier = Modifier.fillMaxWidth().height(25.dp).background(rowBgColor), verticalAlignment = Alignment.CenterVertically) {
                                 val cells = listOf(p.pn, p.name, p.description, p.unit, p.baseHex, p.basePhys, p.devHex, p.devPhys)
                                 cells.forEachIndexed { i, text ->

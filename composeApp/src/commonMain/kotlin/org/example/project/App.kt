@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import org.example.project.components.ParameterRow
 import org.example.project.components.ParameterTable
+import org.example.project.models.ParameterRow
 
 // Функция расчета CRC остается без изменений
 fun calculateModbusCrc(data: List<Int>): Int {
