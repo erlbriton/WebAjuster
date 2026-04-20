@@ -129,7 +129,6 @@ fun SplitMenuButton(
 
 @Composable
 fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier) {
-    // Теперь инициализируем пустыми значениями
     var idState by remember { mutableStateOf(TextFieldValue("")) }
     var locationState by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -235,11 +234,13 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
                     }
 
+                    // Поле ID: readOnly = true
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("ID", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
                         BasicTextField(
                             value = idState,
-                            onValueChange = { idState = it },
+                            onValueChange = {},
+                            readOnly = true,
                             modifier = Modifier.weight(1f).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
                             textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
                             singleLine = true,
@@ -258,11 +259,13 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     }
 
+                    // Место установки: редактируемое
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Место установки", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
                         BasicTextField(
                             value = locationState,
                             onValueChange = { locationState = it },
+                            readOnly = false, // Редактируемое
                             modifier = Modifier.width(225.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
                             textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
                             singleLine = true,
