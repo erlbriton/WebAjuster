@@ -95,6 +95,33 @@ private suspend fun scanForFirstIni(dirHandle: JsAny): DeviceInfo? {
     val iterator = getEntries(dirHandle)
     val subFolders = mutableListOf<JsAny>()
 
+    // 1. Собираем только подпапки
+    while (true) {
+        val nextPromise = callNext(iterator)
+        val result = awaitPromise(nextPromise)
+        if (getJsDone(result)) break
+
+        val value = getJsValue(result)
+        val entry = getJsElement(value, 1)
+        val kind = getJsKind(entry)
+
+        if (kind == "directory") {
+            subFolders.add(entry)
+        }
+    }
+
+    // 2. Ищем файлы ТОЛЬКО внутри найденных подпапок (рекурсивно)
+    for (folder in subFolders) {
+        // Заходим в папку и ищем там файлы
+        val found = scanInsideFolder(folder)
+        if (found != null) return found
+    }
+
+    return null
+}
+
+private suspend fun scanInsideFolder(folderHandle: JsAny): DeviceInfo? {
+    val iterator = getEntries(folderHandle)
     while (true) {
         val nextPromise = callNext(iterator)
         val result = awaitPromise(nextPromise)
@@ -107,23 +134,8 @@ private suspend fun scanForFirstIni(dirHandle: JsAny): DeviceInfo? {
 
         if (kind == "file" && name.endsWith(".ini")) {
             return parseIniFile(entry)
-        } else if (kind == "directory") {
-            subFolders.add(entry)
         }
     }
-
-    // Проверка того, что мы нашли подпапки
-    println("DEBUG: В корне .ini не найден. Проверяю подпапки: ${subFolders.size}")
-    for (folder in subFolders) {
-        println("DEBUG: Захожу в папку: ${getJsName(folder)}")
-
-        val foundInSub = scanForFirstIni(folder)
-        if (foundInSub != null) {
-            println("DEBUG: Успешно нашли файл внутри: ${getJsName(folder)}")
-            return foundInSub
-        }
-    }
-
     return null
 }
 

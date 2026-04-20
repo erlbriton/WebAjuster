@@ -10,18 +10,23 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.TextRange
 import kotlinx.coroutines.launch
 import org.example.project.utils.pickDirectory
 
@@ -124,6 +129,10 @@ fun SplitMenuButton(
 
 @Composable
 fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier) {
+    // Теперь инициализируем пустыми значениями
+    var idState by remember { mutableStateOf(TextFieldValue("")) }
+    var locationState by remember { mutableStateOf(TextFieldValue("")) }
+
     val scope = rememberCoroutineScope()
     val bgColor = Color(0xFF1A1A1A)
     val headerBgColor = Color(0xFF2D2D2D)
@@ -166,17 +175,13 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
 
                 Button(
                     onClick = {
-                        // ДОБАВИЛИ ПЕРВУЮ ТОЧКУ ПРОВЕРКИ
-                        println("DEBUG: Кнопка нажата!")
-
                         scope.launch {
-                            println("DEBUG: Внутри корутины")
                             val deviceInfo = pickDirectory()
-
                             if (deviceInfo != null) {
-                                println("DEBUG: Нашли! ID: ${deviceInfo.id}")
-                            } else {
-                                println("DEBUG: pickDirectory вернула null")
+                                val newId = deviceInfo.id.trim()
+                                val newLoc = deviceInfo.location.trim()
+                                idState = TextFieldValue(text = newId, selection = TextRange(newId.length))
+                                locationState = TextFieldValue(text = newLoc, selection = TextRange(newLoc.length))
                             }
                         }
                     },
@@ -229,10 +234,19 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("Подключить", fontSize = 11.sp) }
                         Button(onClick = {}, modifier = Modifier.height(30.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text("ID", fontSize = 11.sp) }
                     }
+
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("ID", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
-                        TextField(value = "xxxxx771 DExS.SMFCB v1.10.5.0 21.05.2022 www.intmash.ru", onValueChange = {}, modifier = Modifier.weight(1f).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
+                        BasicTextField(
+                            value = idState,
+                            onValueChange = { idState = it },
+                            modifier = Modifier.weight(1f).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
+                            textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
+                            singleLine = true,
+                            cursorBrush = SolidColor(Color.White)
+                        )
                     }
+
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Тип механизм", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
                         TextField(value = "", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
@@ -243,9 +257,17 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Spacer(Modifier.width(8.dp))
                         Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp).width(155.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Клон", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                     }
+
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("Место установки", color = textColor, fontSize = 12.sp, modifier = Modifier.width(110.dp))
-                        TextField(value = "БКО", onValueChange = {}, modifier = Modifier.width(225.dp).height(30.dp).border(1.dp, dividerColor), colors = TextFieldDefaults.colors(focusedContainerColor = bgColor, unfocusedContainerColor = bgColor))
+                        BasicTextField(
+                            value = locationState,
+                            onValueChange = { locationState = it },
+                            modifier = Modifier.width(225.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
+                            textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
+                            singleLine = true,
+                            cursorBrush = SolidColor(Color.White)
+                        )
                         Spacer(Modifier.width(116.dp))
                         Button(onClick = {}, shape = RectangleShape, modifier = Modifier.height(30.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555), contentColor = Color.White)) { Text("Шкалы", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                         Spacer(Modifier.weight(1f))
