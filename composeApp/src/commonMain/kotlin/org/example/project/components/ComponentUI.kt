@@ -15,35 +15,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SimpleDropdown(options: List<String>, selectedOption: String, onOptionSelected: (String) -> Unit, width: Int) {
+fun SimpleDropdown(
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    width: Int
+) {
     var expanded by remember { mutableStateOf(false) }
-    val darkBg = Color(0xFF1A1A1A)
-    val lightActionArea = Color(0xFF555555)
 
     Box(
         modifier = Modifier
             .width(width.dp)
             .height(30.dp)
-            .background(darkBg)
-            .border(1.dp, Color(0xFF777777))
+            .background(`TableColors.kt`.bgColor)
+            .border(1.dp, `TableColors.kt`.dividerColor)
             .pointerInput(Unit) { detectTapGestures { expanded = true } }
     ) {
         Text(
             text = selectedOption,
-            color = Color.White,
+            color = `TableColors.kt`.headerTextColor,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterStart).padding(start = 8.dp)
         )
+        // Стрелочка
         Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .width(30.dp)
-                .background(lightActionArea),
+                .background(`TableColors.kt`.dividerColor),
             contentAlignment = Alignment.Center
         ) {
-            Text("▼", fontSize = 10.sp, color = Color.White)
+            Text("▼", fontSize = 10.sp, color = `TableColors.kt`.headerTextColor)
         }
+
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -65,7 +70,8 @@ fun SplitMenuButton(
     onMenuItemClick: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val buttonColor = ButtonDefaults.buttonColors(containerColor = Color(0xFF555555))
+    // Используем dividerColor вместо хардкода 0xFF555555
+    val buttonColor = ButtonDefaults.buttonColors(containerColor = `TableColors.kt`.dividerColor)
 
     Row(
         modifier = Modifier.height(30.dp).border(1.dp, Color.Gray, RectangleShape)
@@ -77,9 +83,11 @@ fun SplitMenuButton(
             colors = buttonColor,
             contentPadding = PaddingValues(horizontal = 12.dp)
         ) {
-            Text(text, fontSize = 11.sp)
+            Text(text, fontSize = 11.sp, color = `TableColors.kt`.headerTextColor)
         }
+
         Box(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Gray))
+
         Button(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxHeight().width(30.dp),
@@ -87,8 +95,9 @@ fun SplitMenuButton(
             colors = buttonColor,
             contentPadding = PaddingValues(0.dp)
         ) {
-            Text("▼", fontSize = 10.sp)
+            Text("▼", fontSize = 10.sp, color = `TableColors.kt`.headerTextColor)
         }
+
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             menuItems.forEach { item ->
                 DropdownMenuItem(
