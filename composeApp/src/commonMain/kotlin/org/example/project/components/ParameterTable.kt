@@ -25,18 +25,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.TextRange
 import kotlinx.coroutines.launch
 import org.example.project.utils.pickDirectory
 import org.example.project.models.ParameterRow
-// Импортируем компоненты из созданного файла
 import org.example.project.components.SimpleDropdown
 import org.example.project.components.SplitMenuButton
+import org.example.project.triggerPortSelection
+import org.example.project.getActivePortName
 
 @Composable
 fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier) {
     var idState by remember { mutableStateOf(TextFieldValue("")) }
     var locationState by remember { mutableStateOf(TextFieldValue("")) }
+
+    var selectedPortName by remember { mutableStateOf("Not Connected") }
 
     val scope = rememberCoroutineScope()
     val bgColor = Color(0xFF1A1A1A)
@@ -81,13 +83,8 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                 Button(
                     onClick = {
                         scope.launch {
-                            val deviceInfo = pickDirectory()
-                            if (deviceInfo != null) {
-                                val newId = deviceInfo.id.trim()
-                                val newLoc = deviceInfo.location.trim()
-                                idState = TextFieldValue(text = newId, selection = TextRange(newId.length))
-                                locationState = TextFieldValue(text = newLoc, selection = TextRange(newLoc.length))
-                            }
+                            triggerPortSelection()
+                            selectedPortName = getActivePortName()
                         }
                     },
                     modifier = Modifier.size(80.dp, 30.dp),
@@ -132,7 +129,16 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         Text("BUS", color = textColor, fontSize = 12.sp)
                         SimpleDropdown(listOf("MODBUS RTU", "MODBUS TCP"), selectedBus, { selectedBus = it }, 100)
                         Text("COM", color = textColor, fontSize = 12.sp)
-                        SimpleDropdown(comOptions, selectedCom, { selectedCom = it }, 80)
+
+                        BasicTextField(
+                            value = selectedPortName,
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier.width(150.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
+                            textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
+                            singleLine = true
+                        )
+
                         Text("BPS", color = textColor, fontSize = 12.sp)
                         SimpleDropdown(listOf("115200", "57600", "38400", "28800", "19200", "14400", "9600"), selectedBps, { selectedBps = it }, 90)
                         Spacer(Modifier.weight(1f))

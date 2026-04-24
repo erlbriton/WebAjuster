@@ -1,3 +1,5 @@
+//Platform.wasmJs.kt
+
 package org.example.project
 
 class WasmPlatform: Platform {
