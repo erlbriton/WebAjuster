@@ -38,7 +38,8 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
     var idState by remember { mutableStateOf(TextFieldValue("")) }
     var locationState by remember { mutableStateOf(TextFieldValue("")) }
 
-    var selectedPortName by remember { mutableStateOf("Not Connected") }
+    var comOptions by remember { mutableStateOf(emptyList<String>()) }
+    var selectedCom by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     val bgColor = Color(0xFF1A1A1A)
@@ -83,8 +84,11 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                 Button(
                     onClick = {
                         scope.launch {
-                            triggerPortSelection()
-                            selectedPortName = getActivePortName()
+                            val portName = triggerPortSelection()
+                            if (portName != "No Port" && !comOptions.contains(portName)) {
+                                comOptions = comOptions + portName
+                                selectedCom = portName
+                            }
                         }
                     },
                     modifier = Modifier.size(80.dp, 30.dp),
@@ -120,8 +124,6 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
                 Column(modifier = Modifier.fillMaxWidth().background(headerBgColor)) {
                     var selectedBus by remember { mutableStateOf("MODBUS") }
-                    var selectedCom by remember { mutableStateOf("") }
-                    var comOptions by remember { mutableStateOf(emptyList<String>()) }
                     var selectedBps by remember { mutableStateOf("115200") }
 
                     Text("Настройки связи", color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
@@ -130,14 +132,15 @@ fun ParameterTable(parameters: List<ParameterRow>, modifier: Modifier = Modifier
                         SimpleDropdown(listOf("MODBUS RTU", "MODBUS TCP"), selectedBus, { selectedBus = it }, 100)
                         Text("COM", color = textColor, fontSize = 12.sp)
 
-                        BasicTextField(
-                            value = selectedPortName,
-                            onValueChange = {},
-                            readOnly = true,
-                            modifier = Modifier.width(150.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor).padding(start = 8.dp, top = 6.dp),
-                            textStyle = TextStyle(color = Color.White, fontSize = 12.sp),
-                            singleLine = true
-                        )
+                        // Используем позиционные аргументы, чтобы избежать ошибки имен параметров
+                        Box(modifier = Modifier.width(75.dp).height(30.dp).background(bgColor).border(1.dp, dividerColor)) {
+                            SimpleDropdown(
+                                if (comOptions.isEmpty()) listOf("None") else comOptions,
+                                if (selectedCom.isEmpty()) "None" else selectedCom,
+                                { newValue -> selectedCom = newValue },
+                                75
+                            )
+                        }
 
                         Text("BPS", color = textColor, fontSize = 12.sp)
                         SimpleDropdown(listOf("115200", "57600", "38400", "28800", "19200", "14400", "9600"), selectedBps, { selectedBps = it }, 90)

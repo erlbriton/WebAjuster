@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import org.example.project.components.ParameterTable
 import org.example.project.models.ParameterRow
 
-// Функция расчета CRC остается без изменений
+// Функция расчета CRC
 fun calculateModbusCrc(data: List<Int>): Int {
     var crc: Int = 0xFFFF
     for (byte in data) {
