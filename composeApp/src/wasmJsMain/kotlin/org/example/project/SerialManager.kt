@@ -1,4 +1,7 @@
+@file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
+
 package org.example.project
+
 
 import org.khronos.webgl.Int8Array
 import org.khronos.webgl.set // Импорт обязателен для работы оператора [] =
