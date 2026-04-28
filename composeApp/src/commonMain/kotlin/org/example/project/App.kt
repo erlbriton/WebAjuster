@@ -17,6 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.compose_multiplatform
+import org.example.project.components.HeaderTable
 
 /**
  * Расчет Modbus CRC16 (V6)
@@ -43,7 +44,7 @@ fun calculateModbusCrc(data: List<Int>): Int {
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
+      /*  var showContent by remember { mutableStateOf(false) }
         var uartStatus by remember { mutableStateOf("Устройство не подключено") }
         val scope = rememberCoroutineScope()
 
@@ -109,7 +110,8 @@ fun App() {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose Multiplatform: $greeting")
                 }
-            }
+    */        }
+    Column(modifier = Modifier.fillMaxSize()) {
+        HeaderTable()
         }
     }
-}
