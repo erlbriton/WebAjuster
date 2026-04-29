@@ -18,6 +18,7 @@ import org.jetbrains.compose.resources.painterResource
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import org.example.project.components.HeaderTable
+import org.example.project.components.LineTwoTable
 
 /**
  * Расчет Modbus CRC16 (V6)
@@ -113,5 +114,6 @@ fun App() {
     */        }
     Column(modifier = Modifier.fillMaxSize()) {
         HeaderTable()
+        LineTwoTable()
         }
     }
