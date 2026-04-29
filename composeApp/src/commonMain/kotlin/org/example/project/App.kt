@@ -187,7 +187,7 @@ fun DiagnosticTableContainer() {
                         .border(width = 3.dp, color = Color.Black)
                 ) {
                     HeaderTable()
-                    LineTwoTable()
+                   // LineTwoTable()
 
                     // --- Секция двух столбцов ---
                     // weight(1f) заставит этот блок занять все оставшееся место по вертикали
@@ -202,7 +202,6 @@ fun DiagnosticTableContainer() {
                                 .weight(leftColumnWeight)
                                 .fillMaxHeight()
                         )
-
                         // Разделитель
                         Box(
                             modifier = Modifier
@@ -217,13 +216,14 @@ fun DiagnosticTableContainer() {
                                     }
                                 }
                         )
-
                         // Правый столбец
                         Box(
                             modifier = Modifier
                                 .weight(1f - leftColumnWeight)
                                 .fillMaxHeight()
-                        )
+                        ) {
+                            LineTwoTable()//Вторая строка
+                        }
                     }
                 }
             }
