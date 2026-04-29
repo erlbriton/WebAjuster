@@ -7,30 +7,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun HeaderTable() {
-    Box(
+    HorizontalDivider(
+        modifier = Modifier.fillMaxWidth(), // Линия тоже 33%
+        thickness = 3.dp,
+        color = Color.Black
+    )
+    // Column расставляет элементы вертикально (сверху вниз)
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.CenterEnd // Прижимаем содержимое вправо
+        horizontalAlignment = Alignment.End // Прижимаем всё к правому краю
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.33f)
+                .fillMaxWidth() // Занимает 33% ширины
                 .height(30.dp)
                 .background(Color(0xFF2D2D2D))
                 .padding(horizontal = 50.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Здесь будут кнопки
+            // Кнопки
         }
-    }
-}
 
-@Preview
-@Composable
-fun HeaderPreview() {
-    HeaderTable()
+        // Линия теперь пойдет СРАЗУ ПОД строкой, так как это Column
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(), // Линия тоже 33%
+            thickness = 3.dp,
+            color = Color.Black
+        )
+    }
 }

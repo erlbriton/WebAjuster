@@ -19,7 +19,10 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import org.example.project.components.HeaderTable
 import org.example.project.components.LineTwoTable
-
+import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.graphics.Color
 /**
  * Расчет Modbus CRC16 (V6)
  * Исправляет специфичную для Wasm ошибку инициализации регистра 0xFFFF.
@@ -42,10 +45,9 @@ fun calculateModbusCrc(data: List<Int>): Int {
 }
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
-      /*  var showContent by remember { mutableStateOf(false) }
+        /*  var showContent by remember { mutableStateOf(false) }
         var uartStatus by remember { mutableStateOf("Устройство не подключено") }
         val scope = rememberCoroutineScope()
 
@@ -110,10 +112,73 @@ fun App() {
                 ) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose Multiplatform: $greeting")
+              }  */
+      //  DiagnosticTableContainer()
+    }
+
+   /* @Composable
+    fun DiagnosticTableContainer() {
+        // 1. Создаем состояние скролла для всей таблицы
+        val scrollState = rememberScrollState()
+
+        // 2. Общий контейнер, который прижат вправо (Alignment.End)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.33f) // Ограничиваем ширину всей таблицы 33%
+                .fillMaxHeight()     // Тянем по высоте
+                .verticalScroll(scrollState) // Добавляем скроллинг
+                // 3. Добавляем рамку только слева!
+                .border(
+                    width = 1.dp,
+                    color = Color.Black // Твоя вертикальная линия
+                )
+                .padding(start = 1.dp) // Небольшой отступ, чтобы контент не слипался с линией
+        ) {
+            DiagnosticTableContainer()
+            Column(modifier = Modifier.fillMaxSize()) {
+                HeaderTable()
+                LineTwoTable()
+            }
+        }
+    }*/
+    DiagnosticTableContainer()
+}
+
+@Composable
+fun DiagnosticTableContainer() {
+    val scrollState = rememberScrollState()
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        // Контейнер, который содержит только строки
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.33f) // Ширина таблицы 1/3
+                .fillMaxHeight()
+                .verticalScroll(scrollState)
+        ) {
+            // Теперь мы имитируем "вертикальную рамку слева"
+            // при помощи Row, внутри которой:
+            // 1. Тонкий черный столбик (линия)
+            // 2. Сами строки таблицы
+
+            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                // Это та самая вертикальная линия слева
+                Box(
+                    modifier = Modifier
+                        .width(3.dp)
+                        .fillMaxHeight()
+                        .background(Color.Black)
+                )
+
+                // Сами строки (Header + LineTwo)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    HeaderTable()
+                    LineTwoTable()
                 }
-    */        }
-    Column(modifier = Modifier.fillMaxSize()) {
-        HeaderTable()
-        LineTwoTable()
+            }
         }
     }
+}
