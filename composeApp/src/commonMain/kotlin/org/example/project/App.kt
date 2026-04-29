@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import org.example.project.components.ComContainer
 
 /**
  * Расчет Modbus CRC16 (V6)
@@ -144,11 +145,11 @@ fun App() {
             }
         }
     }*/
-    DiagnosticTableContainer()
+    ComContainer()
 }
 
-@Composable
-fun DiagnosticTableContainer() {
+/*@Composable
+fun ComContainer() {
     var tableWidth by remember { mutableStateOf(300.dp) }
     var leftColumnWeight by remember { mutableStateOf(0.5f) }
     val scrollState = rememberScrollState()
@@ -229,4 +230,4 @@ fun DiagnosticTableContainer() {
             }
         }
     }
-}
+} */

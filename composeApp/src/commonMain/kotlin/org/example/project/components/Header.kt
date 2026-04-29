@@ -25,7 +25,7 @@ fun HeaderTable() {
             modifier = Modifier
                 .fillMaxWidth() // Занимает 33% ширины
                 .height(30.dp)
-                .background(Color(0xFF2D2D2D))
+                .background(Color(0xFFC4BEBE))
                 .padding(horizontal = 50.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
