@@ -150,13 +150,12 @@ fun App() {
 @Composable
 fun DiagnosticTableContainer() {
     var tableWidth by remember { mutableStateOf(300.dp) }
+    var leftColumnWeight by remember { mutableStateOf(0.5f) }
     val scrollState = rememberScrollState()
 
-    // 1. Оборачиваем ВСЁ в BoxWithConstraints, чтобы знать ширину окна
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val maxAllowedWidth = maxWidth // Получаем текущую ширину окна браузера
+        val maxAllowedWidth = maxWidth
 
-        // 2. Внешний Box для выравнивания всей конструкции по правому краю
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopEnd
@@ -172,24 +171,60 @@ fun DiagnosticTableContainer() {
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 change.consume()
-                                // Расширяем влево
                                 tableWidth -= dragAmount.x.toDp()
-                                // Ограничиваем: минимум 150dp, максимум — ширина окна
                                 tableWidth = tableWidth.coerceIn(150.dp, maxAllowedWidth)
                             }
                         }
                 )
 
                 // --- Сама Таблица ---
+                // Убираем verticalScroll отсюда, если хотим, чтобы нижняя часть растягивалась
+                // Либо оставляем его, но тогда высота будет зависеть от контента.
                 Column(
                     modifier = Modifier
                         .width(tableWidth)
-                        .fillMaxHeight()
-                        .verticalScroll(scrollState)
-                        .border(width = 1.dp, color = Color.Black)
+                        .fillMaxHeight() // Тянем на всю высоту
+                        .border(width = 3.dp, color = Color.Black)
                 ) {
                     HeaderTable()
                     LineTwoTable()
+
+                    // --- Секция двух столбцов ---
+                    // weight(1f) заставит этот блок занять все оставшееся место по вертикали
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        // Левый столбец
+                        Box(
+                            modifier = Modifier
+                                .weight(leftColumnWeight)
+                                .fillMaxHeight()
+                        )
+
+                        // Разделитель
+                        Box(
+                            modifier = Modifier
+                                .width(3.dp)
+                                .fillMaxHeight()
+                                .background(Color.Black)
+                                .pointerInput(Unit) {
+                                    detectDragGestures { change, dragAmount ->
+                                        change.consume()
+                                        val delta = dragAmount.x / tableWidth.value
+                                        leftColumnWeight = (leftColumnWeight + delta).coerceIn(0.1f, 0.9f)
+                                    }
+                                }
+                        )
+
+                        // Правый столбец
+                        Box(
+                            modifier = Modifier
+                                .weight(1f - leftColumnWeight)
+                                .fillMaxHeight()
+                        )
+                    }
                 }
             }
         }
