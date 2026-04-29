@@ -20,9 +20,12 @@ import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import org.example.project.components.HeaderTable
 import org.example.project.components.LineTwoTable
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+
 /**
  * Расчет Modbus CRC16 (V6)
  * Исправляет специфичную для Wasm ошибку инициализации регистра 0xFFFF.
@@ -146,35 +149,45 @@ fun App() {
 
 @Composable
 fun DiagnosticTableContainer() {
+    var tableWidth by remember { mutableStateOf(300.dp) }
     val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopEnd
-    ) {
-        // Контейнер, который содержит только строки
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.33f) // Ширина таблицы 1/3
-                .fillMaxHeight()
-                .verticalScroll(scrollState)
-        ) {
-            // Теперь мы имитируем "вертикальную рамку слева"
-            // при помощи Row, внутри которой:
-            // 1. Тонкий черный столбик (линия)
-            // 2. Сами строки таблицы
+    // 1. Оборачиваем ВСЁ в BoxWithConstraints, чтобы знать ширину окна
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val maxAllowedWidth = maxWidth // Получаем текущую ширину окна браузера
 
-            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
-                // Это та самая вертикальная линия слева
+        // 2. Внешний Box для выравнивания всей конструкции по правому краю
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Row(modifier = Modifier.wrapContentWidth().fillMaxHeight()) {
+
+                // --- Ручка изменения размера ---
                 Box(
                     modifier = Modifier
-                        .width(3.dp)
+                        .width(6.dp)
                         .fillMaxHeight()
-                        .background(Color.Black)
+                        .background(Color.Gray.copy(alpha = 0.3f))
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                // Расширяем влево
+                                tableWidth -= dragAmount.x.toDp()
+                                // Ограничиваем: минимум 150dp, максимум — ширина окна
+                                tableWidth = tableWidth.coerceIn(150.dp, maxAllowedWidth)
+                            }
+                        }
                 )
 
-                // Сами строки (Header + LineTwo)
-                Column(modifier = Modifier.fillMaxWidth()) {
+                // --- Сама Таблица ---
+                Column(
+                    modifier = Modifier
+                        .width(tableWidth)
+                        .fillMaxHeight()
+                        .verticalScroll(scrollState)
+                        .border(width = 1.dp, color = Color.Black)
+                ) {
                     HeaderTable()
                     LineTwoTable()
                 }
