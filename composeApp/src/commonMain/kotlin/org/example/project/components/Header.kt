@@ -13,7 +13,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -292,7 +294,6 @@ fun HeaderTable(
                     }
                 }
             }
-
             // ---Шестая Кнопка - Help---
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
@@ -346,6 +347,37 @@ fun HeaderTable(
                                 }
                             )
                         }
+                    }
+                }
+            }
+
+            // Шестая кнопка "Файловые операции"
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    positioning = TooltipAnchorPosition.Above
+                ),
+                tooltip = {
+                    PlainTooltip {
+                        Text("Файловые операции")
+                    }
+                },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 20.dp)) { // Небольшой отступ между кнопками
+                    Row(
+                        modifier = Modifier
+                            .clickable { /* Ваше действие поиска */ }
+                            .border(1.dp, Color.Blue) // Тот же стиль, что и у первой кнопки
+                            . background(Color.White)//Цвет кнопки
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Save, // Иконка лупы
+                            contentDescription = "File",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Black
+                        )
                     }
                 }
             }
