@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.ListAlt
@@ -12,11 +13,14 @@ import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SettingsInputComponent
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -62,6 +67,11 @@ fun HeaderTable(
         "Ajuster Help",
         "About"
     )
+
+    // Состояния для нового селектора (Flash, CD, RAM)
+    var selectorExpanded by remember { mutableStateOf(false) }
+    var selectedMemory by remember { mutableStateOf("Flash") }
+    val memoryOptions = listOf("Flash", "CD", "RAM")
 
     Column(modifier = Modifier.fillMaxWidth()) {
         // Верхняя граница
@@ -247,7 +257,7 @@ fun HeaderTable(
                                         fontSize = 8.sp,
                                         style = androidx.compose.ui.text.TextStyle(
                                             fontWeight = FontWeight.Bold
-                                    )
+                                        )
                                     )
                                 },
                                 // Уменьшаем высоту самого пункта меню
@@ -351,7 +361,7 @@ fun HeaderTable(
                 }
             }
 
-            // Шестая кнопка "Файловые операции"
+            // Седьмая кнопка "Файловые операции"
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
                     positioning = TooltipAnchorPosition.Above
@@ -377,6 +387,103 @@ fun HeaderTable(
                             contentDescription = "File",
                             modifier = Modifier.size(16.dp),
                             tint = Color.Black
+                        )
+                    }
+                }
+            }
+
+            // Восьмая кнопка "Черный ящик"
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    positioning = TooltipAnchorPosition.Above
+                ),
+                tooltip = {
+                    PlainTooltip {
+                        Text("Черный ящик")
+                    }
+                },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) { // Небольшой отступ между кнопками
+                    Row(
+                        modifier = Modifier
+                            .clickable { /* Ваше действие поиска */ }
+                            .border(1.dp, Color.Blue) // Тот же стиль, что и у первой кнопки
+                            . background(Color.White)//Цвет кнопки
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ViewInAr,
+                            contentDescription = "BlackBox",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+            }
+
+            // --- ДЕВЯТАЯ КНОПКА (Окно выбора FLASH/CD/RAM) ---
+            Box(modifier = Modifier.padding(start = 8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .border(1.dp, Color.Gray)
+                        .background(Color.White)
+                        .height(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .background(Color(0xFF0066CC))
+                            .padding(horizontal = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = selectedMemory.uppercase(),
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .background(Color.Gray)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(22.dp)
+                            .background(Color(0xFFE0E0E0))
+                            .clickable { selectorExpanded = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+                DropdownMenu(
+                    expanded = selectorExpanded,
+                    onDismissRequest = { selectorExpanded = false },
+                    modifier = Modifier.background(Color.White).border(1.dp, Color.Black)
+                ) {
+                    memoryOptions.forEach { option ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(option, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            },
+                            modifier = Modifier.height(24.dp),
+                            onClick = {
+                                selectedMemory = option
+                                selectorExpanded = false
+                            }
                         )
                     }
                 }
