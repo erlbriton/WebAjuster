@@ -7,23 +7,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderTable() {
+fun HeaderTable(
+    thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
+    color: Color = TableConfig.lineColor       // Используем значение по умолчанию из конфига
+) {
+    // Верхняя граница
     HorizontalDivider(
-        modifier = Modifier.fillMaxWidth(), // Линия тоже 33%
-        thickness = 3.dp,
-        color = Color.Black
+        modifier = Modifier.fillMaxWidth(),
+        thickness = thickness, //берется из параметра
+        color = color          //берется из параметра
     )
-    // Column расставляет элементы вертикально (сверху вниз)
+
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End // Прижимаем всё к правому краю
+        horizontalAlignment = Alignment.End
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth() // Занимает 33% ширины
+                .fillMaxWidth()
                 .height(30.dp)
                 .background(Color(0xFFC4BEBE))
                 .padding(horizontal = 50.dp),
@@ -32,11 +37,11 @@ fun HeaderTable() {
             // Кнопки
         }
 
-        // Линия теперь пойдет СРАЗУ ПОД строкой, так как это Column
+        // Нижняя граница заголовка
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(), // Линия тоже 33%
-            thickness = 3.dp,
-            color = Color.Black
+            modifier = Modifier.fillMaxWidth(),
+            thickness = thickness, // ЗАМЕНЕНО: теперь берется из параметра
+            color = color          // ЗАМЕНЕНО: теперь берется из параметра
         )
     }
 }

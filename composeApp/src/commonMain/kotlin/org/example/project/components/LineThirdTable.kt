@@ -7,10 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.example.project.components.TableConfig
 
 @Composable
-fun LineThirdTable() {
+fun LineThirdTable(thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
+                   color: Color = TableConfig.lineColor) {
     // Column служит контейнером, который выстраивает элементы вертикально.
     Column(
         modifier = Modifier.fillMaxWidth(), // Растягиваем контейнер на всю ширину экрана.
@@ -30,8 +33,8 @@ fun LineThirdTable() {
         // Разделитель (Divider) под второй строкой.
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(), // Ширина строго 33% для соответствия первой строке.
-            thickness = 3.dp, // Толщина линии
-            color = Color.Black
+            thickness = thickness, //берется из параметра
+            color = color          //берется из параметра
         )
     }
 }

@@ -29,6 +29,8 @@ fun ComContainer() {
     var tableWidth by remember { mutableStateOf(800.dp) }//Начальный размер всей таблицы
     var leftColumnWeight by remember { mutableStateOf(0.25f) }//Начальный размер левого столбца
     val scrollState = rememberScrollState()
+    val lineThickness = 2.dp // Толщина всех линий
+    val lineColor = Color.Gray // Цвет всех линий
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val maxAllowedWidth = maxWidth
@@ -60,7 +62,7 @@ fun ComContainer() {
                     modifier = Modifier
                         .width(tableWidth)
                         .fillMaxHeight() // Тянем на всю высоту
-                        .border(width = 3.dp, color = Color.Black)
+                        .border(width = TableConfig.lineThickness, color = TableConfig.lineColor)
                 ) {
                     HeaderTable()
                     // LineTwoTable()
@@ -80,9 +82,9 @@ fun ComContainer() {
                         // Разделитель
                         Box(
                             modifier = Modifier
-                                .width(3.dp)
+                                .width(TableConfig.lineThickness)
                                 .fillMaxHeight()
-                                .background(Color.Black)
+                                .background(TableConfig.lineColor)
                                 .pointerInput(Unit) {
                                     detectDragGestures { change, dragAmount ->
                                         change.consume()
