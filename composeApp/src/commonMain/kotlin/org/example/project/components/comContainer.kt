@@ -46,7 +46,6 @@ fun ComContainer() {
                 Box(
                     modifier = Modifier
                         .width(6.dp)
-                       // .fillMaxHeight(0.3f)
                         .height(34.dp)
                         .background(Color.Red.copy(alpha = 0.5f))
                         .pointerInput(Unit) {
@@ -81,10 +80,6 @@ fun ComContainer() {
                                 .weight(leftColumnWeight)
                                 .fillMaxHeight()
                         )
-
-
-
-
                         // Разделитель
                         Box(
                             modifier = Modifier
