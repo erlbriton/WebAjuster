@@ -9,6 +9,8 @@ plugins {
 }
 
 kotlin {
+    jvm("desktop") // Поддержка Desktop (JVM)
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser {
@@ -33,9 +35,17 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.coroutines.core)
 
-            // ПРАВИЛЬНЫЙ СПОСОБ ПОДКЛЮЧЕНИЯ ИКОНОК В MULTIPLATFORM:
-            // Эти переменные берутся из плагина composeMultiplatform
+            // Подключение расширенных иконок
             implementation(compose.materialIconsExtended)
+        }
+
+        // ЗАВИСИМОСТИ ДЛЯ DESKTOP (Kubuntu)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                // Явно добавляем runtime для Linux x64, чтобы избежать ошибки загрузки библиотеки Skiko
+                implementation("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.8.9")
+            }
         }
 
         // ЗАВИСИМОСТИ ТОЛЬКО ДЛЯ WEB (WasmJs)
@@ -49,6 +59,17 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt" // Ссылается на ваш файл Main.kt
+        nativeDistributions {
+            targetFormats(TargetFormat.Deb)
+            packageName = "Adjuster"
+            packageVersion = "1.0.0"
         }
     }
 }

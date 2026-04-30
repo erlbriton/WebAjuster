@@ -4,31 +4,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.automirrored.filled.ShowChart
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Build // или Settings
-import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShowChart
-import androidx.compose.material.icons.filled.TableChart
-import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +55,12 @@ fun HeaderTable(
         "Просмотреть осциллогамму",
         "Новый осциллограф"
     )
+    var clueHelp by remember { mutableStateOf(false) }
+    val helpItems = listOf(
+        "Ajuster Help",
+        "About"
+    )
+
     Column(modifier = Modifier.fillMaxWidth()) {
         // Верхняя граница
         HorizontalDivider(
@@ -284,6 +289,63 @@ fun HeaderTable(
                             modifier = Modifier.size(16.dp),
                             tint = Color.Black
                         )
+                    }
+                }
+            }
+
+            // ---Шестая Кнопка - Help---
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+                tooltip = { PlainTooltip { Text("Help", fontSize = 12.sp) } },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .clickable { clueHelp = true } // Открываем меню Help
+                            .border(1.dp, Color.Blue)
+                            .background(Color.White)
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Иконка книги (Help)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+
+                        // Добавляем стрелочку выпадающего меню
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp) // Стрелочку обычно делают чуть крупнее иконок
+                        )
+                    }
+
+                    // Выпадающий список для Help
+                    DropdownMenu(
+                        expanded = clueHelp,
+                        onDismissRequest = { clueHelp = false }
+                    ) {
+                        helpItems.forEach { label ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = label,
+                                        fontSize = 8.sp,
+                                        style = androidx.compose.ui.text.TextStyle(
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                },
+                                modifier = Modifier.height(16.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                                onClick = {
+                                    clueHelp = false
+                                }
+                            )
+                        }
                     }
                 }
             }
