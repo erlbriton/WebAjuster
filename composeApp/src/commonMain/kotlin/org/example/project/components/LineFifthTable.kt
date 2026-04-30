@@ -23,7 +23,7 @@ fun LineFifthTable(thickness: Dp = TableConfig.lineThickness, // Использ�
             modifier = Modifier
                 .fillMaxWidth() // Занимает ровно 33% ширины родителя (как и первая строка).
                 .height(30.dp)       // Фиксированная высота для единообразия.
-                .background(Color(0xFF5A5757)), // Цвет фона.
+                .background(TableConfig.FifthBackground), // Цвет фона.
             verticalAlignment = Alignment.CenterVertically // Выравнивание кнопок внутри строки по вертикали.
         ) {
             // Сюда ты добавишь контент второй строки.

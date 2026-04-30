@@ -11,29 +11,52 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LineTwoTable(thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
-                 color: Color = TableConfig.lineColor) {
-    // Column служит контейнером, который выстраивает элементы вертикально.
+fun LineTwoTable(
+    thickness: Dp = TableConfig.lineThickness,
+    color: Color = TableConfig.lineColor
+) {
     Column(
-        modifier = Modifier.fillMaxWidth(), // Растягиваем контейнер на всю ширину экрана.
-        horizontalAlignment = Alignment.End // ПРИЖИМАЕМ ВСЕ элементы (Row и Divider) вправо.
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End
     ) {
-        // Row - это сама строка с данными/кнопками второй строки.
+        // Контейнер строки
         Row(
             modifier = Modifier
-                .fillMaxWidth() // Занимает ровно 33% ширины родителя (как и первая строка).
-                .height(40.dp)       // Фиксированная высота для единообразия.
-                .background(Color(0xFF485F87)), // Цвет фона.
-            verticalAlignment = Alignment.CenterVertically // Выравнивание кнопок внутри строки по вертикали.
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(TableConfig.TwoBackground),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Сюда ты добавишь контент второй строки.
+            // Используем Box, чтобы позиционировать текст независимо от других элементов
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp), // Отступ текста от краев
+                contentAlignment = Alignment.TopStart // Прижимаем текст к левому краю и центру по вертикали
+            ) {
+                // Неизменяемый текст
+                Text(
+                    text = "Настройки связи",
+                    color = Color.White, // Цвет текста (белый хорошо читается на синем фоне)
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                // Если здесь будут кнопки, их можно обернуть в другой Row с выравниванием по правому краю
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Место для ваших кнопок
+                }
+            }
         }
 
-        // Разделитель (Divider) под второй строкой.
+        // Разделитель (Divider) под второй строкой
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(), // Ширина строго 33% для соответствия первой строке.
-            thickness = thickness, //берется из параметра
-            color = color          //берется из параметра
+            modifier = Modifier.fillMaxWidth(),
+            thickness = thickness,
+            color = color
         )
     }
 }
