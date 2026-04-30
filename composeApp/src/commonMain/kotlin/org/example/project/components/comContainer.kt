@@ -81,6 +81,10 @@ fun ComContainer() {
                                 .weight(leftColumnWeight)
                                 .fillMaxHeight()
                         )
+
+
+
+
                         // Разделитель
                         Box(
                             modifier = Modifier

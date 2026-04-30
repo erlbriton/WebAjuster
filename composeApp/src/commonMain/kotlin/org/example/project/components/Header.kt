@@ -13,9 +13,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build // или Settings
+import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,8 +88,8 @@ fun HeaderTable(
                         Icon(
                             imageVector = Icons.Default.Build, // Можно заменить на свою иконку
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = Color(0xFF006600)
+                            modifier = Modifier.size(20.dp),
+                            tint = Color(0xFF04C104)
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -112,7 +115,66 @@ fun HeaderTable(
                     }
                 }
             }
-
+            // 2. Вторая кнопка (Лупа)
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    positioning = TooltipAnchorPosition.Above
+                ),
+                tooltip = {
+                    PlainTooltip {
+                        Text("Поиск устройств в сети Modbus")
+                    }
+                },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) { // Небольшой отступ между кнопками
+                    Row(
+                        modifier = Modifier
+                            .clickable { /* Ваше действие поиска */ }
+                            .border(1.dp, Color.Blue) // Тот же стиль, что и у первой кнопки
+                            . background(Color.White)//Цвет кнопки
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search, // Иконка лупы
+                            contentDescription = "Search",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+            }
+            // 3. Третья кнопка
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    positioning = TooltipAnchorPosition.Above
+                ),
+                tooltip = {
+                    PlainTooltip {
+                        Text("Генератор отчетов в Exel")
+                    }
+                },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) { // Небольшой отступ между кнопками
+                    Row(
+                        modifier = Modifier
+                            .clickable { /* Ваше действие поиска */ }
+                            .border(1.dp, Color.Blue) // Тот же стиль, что и у первой кнопки
+                            . background(Color.White)//Цвет кнопки
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ListAlt, //
+                            contentDescription = "Search",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+            }
 
             // Этот Spacer "отталкивает" всё, что идет дальше, в правую сторону
             Spacer(modifier = Modifier.weight(1f))
