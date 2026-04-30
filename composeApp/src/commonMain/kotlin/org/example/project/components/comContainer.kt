@@ -100,6 +100,8 @@ fun ComContainer() {
                             Column(modifier = Modifier.fillMaxSize()) {
                                 LineTwoTable()//Вторая строка
                                 LineThirdTable()//Третья строка
+                                LineForthTable()//Четвертая строка
+                                LineFifthTable()//Пятая строка
                             }
                         }
                     }

@@ -10,18 +10,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LineTwoTable() {
+fun LineFifthTable() {
     // Column служит контейнером, который выстраивает элементы вертикально.
     Column(
         modifier = Modifier.fillMaxWidth(), // Растягиваем контейнер на всю ширину экрана.
         horizontalAlignment = Alignment.End // ПРИЖИМАЕМ ВСЕ элементы (Row и Divider) вправо.
     ) {
-        // Row - это сама строка с данными/кнопками второй строки.
+        // Row - это сама строка с данными/кнопками третьей строки.
         Row(
             modifier = Modifier
                 .fillMaxWidth() // Занимает ровно 33% ширины родителя (как и первая строка).
-                .height(40.dp)       // Фиксированная высота для единообразия.
-                .background(Color(0xFF485F87)), // Цвет фона.
+                .height(30.dp)       // Фиксированная высота для единообразия.
+                .background(Color(0xFF5A5757)), // Цвет фона.
             verticalAlignment = Alignment.CenterVertically // Выравнивание кнопок внутри строки по вертикали.
         ) {
             // Сюда ты добавишь контент второй строки.
