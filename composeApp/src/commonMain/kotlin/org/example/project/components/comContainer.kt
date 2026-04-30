@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ComContainer() {
-    var tableWidth by remember { mutableStateOf(300.dp) }
-    var leftColumnWeight by remember { mutableStateOf(0.5f) }
+    var tableWidth by remember { mutableStateOf(800.dp) }//Начальный размер всей таблицы
+    var leftColumnWeight by remember { mutableStateOf(0.25f) }//Начальный размер левого столбца
     val scrollState = rememberScrollState()
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -53,7 +53,6 @@ fun ComContainer() {
                             }
                         }
                 )
-
                 // --- Сама Таблица ---
                 // Убираем verticalScroll отсюда, если хотим, чтобы нижняя часть растягивалась
                 // Либо оставляем его, но тогда высота будет зависеть от контента.
@@ -65,7 +64,6 @@ fun ComContainer() {
                 ) {
                     HeaderTable()
                     // LineTwoTable()
-
                     // --- Секция двух столбцов ---
                     // weight(1f) заставит этот блок занять все оставшееся место по вертикали
                     Row(
@@ -99,7 +97,10 @@ fun ComContainer() {
                                 .weight(1f - leftColumnWeight)
                                 .fillMaxHeight()
                         ) {
-                            LineTwoTable()//Вторая строка
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                LineTwoTable()//Вторая строка
+                                LineThirdTable()//Третья строка
+                            }
                         }
                     }
                 }
