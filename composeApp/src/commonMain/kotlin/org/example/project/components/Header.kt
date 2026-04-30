@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -252,6 +253,37 @@ fun HeaderTable(
                                 }
                             )
                         }
+                    }
+                }
+            }
+
+            // Пятая кнопка "Командная строка"
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    positioning = TooltipAnchorPosition.Above
+                ),
+                tooltip = {
+                    PlainTooltip {
+                        Text("Терминал")
+                    }
+                },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) { // Небольшой отступ между кнопками
+                    Row(
+                        modifier = Modifier
+                            .clickable { /* Ваше действие поиска */ }
+                            .border(1.dp, Color.Blue) // Тот же стиль, что и у первой кнопки
+                            . background(Color.White)//Цвет кнопки
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Terminal, // Иконка лупы
+                            contentDescription = "Terminal",
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.Black
+                        )
                     }
                 }
             }
