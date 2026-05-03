@@ -9,7 +9,7 @@ import org.example.project.models.PortData // Предполагаемая мо�
 fun CustomTable(dataList: List<PortData>) {
     LazyColumn {
         item {
-            HeaderTable() // Используем компонент из соседнего файла
+           // HeaderTable() // Используем компонент из соседнего файла
         }
         items(dataList) { item ->
             // Здесь будет вызов строки таблицы (например, TableRow(item))

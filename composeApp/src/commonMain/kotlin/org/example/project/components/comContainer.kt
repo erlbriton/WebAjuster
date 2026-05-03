@@ -18,12 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import org.example.project.actionsButton.HeaderActionsButtons
 
 @Composable
 fun ComContainer() {
@@ -32,6 +34,16 @@ fun ComContainer() {
     val scrollState = rememberScrollState()
     val lineThickness = 2.dp // Толщина всех линий
     val lineColor = Color.Gray // Цвет всех линий
+
+    val scope = rememberCoroutineScope()
+    val headerActions = remember(scope) {
+        HeaderActionsButtons(
+            scope = scope,
+            onDeviceLoaded = { info ->
+                println("Загружено: ${info.location}")
+            }
+        )
+    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val maxAllowedWidth = maxWidth
@@ -65,7 +77,7 @@ fun ComContainer() {
                         .fillMaxHeight() // Тянем на всю высоту
                         .border(width = TableConfig.lineThickness, color = TableConfig.lineColor)
                 ) {
-                    HeaderTable()
+                    HeaderTable(actions = headerActions)
                     // LineTwoTable()
                     // --- Секция двух столбцов ---
                     // weight(1f) заставит этот блок занять все оставшееся место по вертикали

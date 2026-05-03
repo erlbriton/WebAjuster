@@ -29,10 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.example.project.actions.HeaderActions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeaderTable(
+    actions: HeaderActions, // 2. Добавьте этот параметр первым
     thickness: Dp = TableConfig.lineThickness,
     color: Color = TableConfig.lineColor
 ) {
@@ -356,7 +358,7 @@ fun HeaderTable(
                     }
                 }
             }
-            //10.Выбор папки/файла
+            // 10. Выбор папки/файла
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Выбор файла", fontSize = 12.sp) } },
@@ -370,13 +372,12 @@ fun HeaderTable(
                             .height(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // ЛЕВАЯ ЧАСТЬ: Основное действие (выбор файла)
+                        // ЛЕВАЯ ЧАСТЬ: Основное действие (выбор файла по клику на иконку)
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .clickable {
-                                    /* ЗДЕСЬ ДЕЙСТВИЕ ПО УМОЛЧАНИЮ */
-                                    println("Выбор файла по умолчанию")
+                                    actions.onPickFileRequest()
                                 }
                                 .padding(horizontal = 4.dp),
                             contentAlignment = Alignment.Center
@@ -415,19 +416,30 @@ fun HeaderTable(
 
                     // Выпадающее меню
                     DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
-                        selectOptions.forEach { label ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold)
-                                },
-                                modifier = Modifier.height(16.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                onClick = {
-                                    selectFile = false
-                                    /* Логика выбора из списка */
-                                }
-                            )
-                        }
+                        // Пункт выбора Файла
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = "Файл", fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                            },
+                            modifier = Modifier.height(16.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                            onClick = {
+                                selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
+                                actions.onPickFileRequest()
+                            }
+                        )
+                        // Пункт выбора Папки
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = "Папка", fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                            },
+                            modifier = Modifier.height(16.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                            onClick = {
+                                selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
+                                actions.onPickDirectoryRequest()
+                            }
+                        )
                     }
                 }
             }
