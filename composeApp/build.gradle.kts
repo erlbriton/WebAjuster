@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop") // Поддержка Desktop (JVM)
+    jvm("desktop") // Поддержка Desktop (JVM) для Kubuntu
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -23,7 +23,7 @@ kotlin {
     }
 
     sourceSets {
-        // ОБЩИЕ ЗАВИСИМОСТИ
+        // ОБЩИЕ ЗАВИСИМОСТИ (commonMain)
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -35,7 +35,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.coroutines.core)
 
-            // Подключение расширенных иконок
+            // Подключение расширенных иконок для UI
             implementation(compose.materialIconsExtended)
         }
 
@@ -51,6 +51,7 @@ kotlin {
         // ЗАВИСИМОСТИ ТОЛЬКО ДЛЯ WEB (WasmJs)
         val wasmJsMain by getting {
             dependencies {
+                // Стабильные версии JS-библиотек для работы со временем
                 implementation(npm("@js-joda/core", "3.2.0"))
                 implementation(npm("@js-joda/timezone", "2.3.0"))
                 implementation(libs.kotlinx.browser)
@@ -65,11 +66,22 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt" // Ссылается на ваш файл Main.kt
+        mainClass = "MainKt" // Точка входа в программу
+
         nativeDistributions {
-            targetFormats(TargetFormat.Deb)
-            packageName = "Adjuster"
+            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb, org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe)
+            packageName = "org.example.project"
             packageVersion = "1.0.0"
+
+            linux {
+                shortcut = true
+                menuGroup = "Development"
+            }
+
+            windows {
+                shortcut = true
+                // menuGroup = "Project" // Можно раскомментировать для Windows
+            }
         }
     }
 }

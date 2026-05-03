@@ -1,0 +1,9 @@
+package org.example.project.utils // Убедитесь, что пакет совпадает с остальными файлами
+
+data class DeviceInfo(
+    val id: String,
+    val location: String
+)
+
+expect suspend fun pickDirectory(): DeviceInfo?
+expect suspend fun pickSingleFile(): DeviceInfo?
