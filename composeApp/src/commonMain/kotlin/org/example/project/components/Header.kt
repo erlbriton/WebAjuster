@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Terminal
@@ -50,6 +51,10 @@ fun HeaderTable(
     var selectedMemory by remember { mutableStateOf("Flash") }
     val memoryOptions = listOf("Flash", "CD", "RAM")
 
+    //Состояние для выбора папки/файла
+    var selectFile by remember { mutableStateOf(false) }
+    val selectOptions = listOf("Файл", "Папка")
+
     Column(modifier = Modifier.fillMaxWidth()) {
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = thickness, color = color)
 
@@ -69,27 +74,60 @@ fun HeaderTable(
                 Box(modifier = Modifier.padding(start = 8.dp)) {
                     Row(
                         modifier = Modifier
-                            .clickable { expanded = true }
                             .border(1.dp, Color.Blue)
                             .background(Color.White)
                             .height(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(modifier = Modifier.padding(horizontal = 4.dp)) {
-                            Icon(Icons.Default.Build, null, modifier = Modifier.size(18.dp), tint = Color(0xFF04C104))
+                        // ЛЕВАЯ ЧАСТЬ: Действие по умолчанию (Обновить)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable {
+                                    /* ЗДЕСЬ ДЕЙСТВИЕ ПО УМОЛЧАНИЮ (например, первый пункт меню) */
+                                    println("Выполнено: ${menuItems[0]}")
+                                }
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Build,
+                                null,
+                                modifier = Modifier.size(18.dp),
+                                tint = Color(0xFF04C104)
+                            )
                         }
+
+                        // РАЗДЕЛИТЕЛЬ
                         Spacer(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Blue))
-                        Box(modifier = Modifier.padding(horizontal = 2.dp)) {
-                            Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.size(16.dp))
+
+                        // ПРАВАЯ ЧАСТЬ: Открытие меню
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable { expanded = true } // Только эта часть открывает меню
+                                .padding(horizontal = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                null,
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
+
+                    // Меню (появляется под всей кнопкой)
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         menuItems.forEach { label ->
                             DropdownMenuItem(
                                 text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.height(16.dp),
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                onClick = { expanded = false }
+                                onClick = {
+                                    expanded = false
+                                    /* Действие для конкретного пункта */
+                                }
                             )
                         }
                     }
@@ -137,27 +175,71 @@ fun HeaderTable(
                 Box(modifier = Modifier.padding(start = 4.dp)) {
                     Row(
                         modifier = Modifier
-                            .clickable { clue = true }
                             .border(1.dp, Color.Blue)
                             .background(Color.White)
                             .height(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(modifier = Modifier.padding(horizontal = 4.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ShowChart, null, modifier = Modifier.size(20.dp), tint = Color.Red)
+                        // ЛЕВАЯ ЧАСТЬ: Основное действие (например, открыть первый пункт списка)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable {
+                                    /* ЗДЕСЬ ДЕЙСТВИЕ ПО УМОЛЧАНИЮ */
+                                    println("Выполнено: ${oscilligraphItems[0]}")
+                                }
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ShowChart,
+                                null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.Red
+                            )
                         }
-                        Spacer(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Blue))
-                        Box(modifier = Modifier.padding(horizontal = 2.dp)) {
-                            Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.size(16.dp))
+
+                        // РАЗДЕЛИТЕЛЬ
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(1.dp)
+                                .background(Color.Blue)
+                        )
+
+                        // ПРАВАЯ ЧАСТЬ: Открытие меню со списком опций
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable { clue = true }
+                                .padding(horizontal = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                null,
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
+
+                    // Выпадающее меню под всей кнопкой
                     DropdownMenu(expanded = clue, onDismissRequest = { clue = false }) {
                         oscilligraphItems.forEach { label ->
                             DropdownMenuItem(
-                                text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
+                                text = {
+                                    Text(
+                                        text = label,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                },
                                 modifier = Modifier.height(16.dp),
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                onClick = { clue = false }
+                                onClick = {
+                                    clue = false
+                                    // Логика выбора конкретной опции
+                                }
                             )
                         }
                     }
@@ -269,6 +351,36 @@ fun HeaderTable(
                                 modifier = Modifier.height(14.dp),
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                                 onClick = { selectedMemory = option; selectorExpanded = false }
+                            )
+                        }
+                    }
+                }
+            }
+            //10.Выбор папки/файла
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+                tooltip = { PlainTooltip { Text("Выбор файла", fontSize = 12.sp) } },
+                state = rememberTooltipState()
+            ) {
+                Box(modifier = Modifier.padding(start = 4.dp)) {
+                    Row(
+                        modifier = Modifier.clickable { selectFile = true }.border(1.dp, Color.Blue).background(Color.White).padding(horizontal = 4.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        //Icon(Icons.AutoMirrored.Filled.MenuBook, null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.FolderOpen, null, modifier = Modifier.size(20.dp), tint = Color(
+                            0xFF046308
+                        )
+                        )
+                    //    Icon(Icons.Default.Build, null, modifier = Modifier.size(18.dp), tint = Color(0xFF04C104))
+                    }
+                    DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
+                        selectOptions.forEach { label ->
+                            DropdownMenuItem(
+                                text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.height(16.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                                onClick = { selectFile = false }
                             )
                         }
                     }
