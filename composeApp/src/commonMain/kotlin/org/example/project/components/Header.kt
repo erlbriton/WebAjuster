@@ -364,23 +364,68 @@ fun HeaderTable(
             ) {
                 Box(modifier = Modifier.padding(start = 4.dp)) {
                     Row(
-                        modifier = Modifier.clickable { selectFile = true }.border(1.dp, Color.Blue).background(Color.White).padding(horizontal = 4.dp, vertical = 2.dp),
+                        modifier = Modifier
+                            .border(1.dp, Color.Blue)
+                            .background(Color.White)
+                            .height(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        //Icon(Icons.AutoMirrored.Filled.MenuBook, null, modifier = Modifier.size(16.dp))
-                        Icon(Icons.Default.FolderOpen, null, modifier = Modifier.size(20.dp), tint = Color(
-                            0xFF046308
+                        // ЛЕВАЯ ЧАСТЬ: Основное действие (выбор файла)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable {
+                                    /* ЗДЕСЬ ДЕЙСТВИЕ ПО УМОЛЧАНИЮ */
+                                    println("Выбор файла по умолчанию")
+                                }
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FolderOpen,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color(0xFF046308)
+                            )
+                        }
+
+                        // РАЗДЕЛИТЕЛЬ
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(1.dp)
+                                .background(Color.Blue)
                         )
-                        )
-                    //    Icon(Icons.Default.Build, null, modifier = Modifier.size(18.dp), tint = Color(0xFF04C104))
+
+                        // ПРАВАЯ ЧАСТЬ: Стрелочка для меню
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickable { selectFile = true }
+                                .padding(horizontal = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
+
+                    // Выпадающее меню
                     DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
                         selectOptions.forEach { label ->
                             DropdownMenuItem(
-                                text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
+                                text = {
+                                    Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                },
                                 modifier = Modifier.height(16.dp),
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                onClick = { selectFile = false }
+                                onClick = {
+                                    selectFile = false
+                                    /* Логика выбора из списка */
+                                }
                             )
                         }
                     }
