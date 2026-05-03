@@ -9,7 +9,7 @@ object TableConfig {
     val lineColor = Color.Gray
     // Цвета для фона разных строк
     val headerBackground = Color(0xFFC4BEBE)
-    val TwoBackground = Color(0xFF485F87)
+    val TwoBackground = Color(0xFFB2BBBF)
     val ThirdBackground = Color(0xFFAC8B8B)
     val FourthBackground = Color(0xFF7F906D)
     val FifthBackground = Color(0xFF8D8D60)
