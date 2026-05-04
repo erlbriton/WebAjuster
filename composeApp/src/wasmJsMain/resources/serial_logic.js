@@ -96,60 +96,65 @@ window.runModbusTest = async function(dataArray, expectedBytes) {
     }
 };
 
+// Функция выбора файла (обновленная)
+// Функция выбора файла (обновленная)
 window.showFilePickerNative = async function(callback) {
     try {
         const [handle] = await window.showOpenFilePicker({
             types: [{
-                description: 'Settings (.ini)',
+                description: 'Settings & Text',
                 accept: {'text/plain': ['.ini', '.txt']}
             }],
             multiple: false
         });
 
         const file = await handle.getFile();
+        const isTxt = file.name.toLowerCase().endsWith('.txt');
 
-        // Используем FileReader для поддержки кириллицы (Windows-1251)
         const reader = new FileReader();
         reader.onload = () => {
-            // Создаем объект, который имитирует структуру для Kotlin,
-            // но уже с ПРАВИЛЬНЫМ текстом
-            const result = {
+            callback({
                 name: file.name,
-                content: reader.result // Здесь уже нормальный текст
-            };
-            callback(result);
+                content: reader.result,
+                isAlreadyTxt: isTxt
+            });
         };
 
-        // Читаем именно в Windows-1251
-        reader.readAsText(file, "windows-1251");
+        // КЛЮЧЕВОЙ МОМЕНТ ДЛЯ СОВМЕСТИМОСТИ:
+        // .ini файлы читаем в Windows-1251 (чтобы не было кракозябр из винды)
+        // .txt файлы читаем в UTF-8 (стандарт для Linux/Kubuntu и современного веба)
+        const encoding = isTxt ? "utf-8" : "windows-1251";
+
+        reader.readAsText(file, encoding);
 
     } catch (e) {
-        console.log("Выбор файла отменен или ошибка:", e);
+        console.log("Выбор файла отменен");
         callback(null);
     }
 };
-//Функция сохранения ini файла в виде txt файла
-window.saveFileAsTxt = function(originalName, content) {
-    // Заменяем .ini на .txt в имени файла
-    const newName = originalName.replace(/\.[^/.]+$/, "") + ".txt";
 
-    // Создаем Blob (данные файла) в кодировке Windows-1251, чтобы сохранить кириллицу
-    // Используем текстовый формат для сохранения структуры строк
-    const encoder = new TextEncoder("windows-1251", { NONSTANDARD_ALLOW_LEGACY_ENCODING: true });
-    // Но так как браузеры лучше работают с UTF-8 при скачивании,
-    // сохраним в UTF-8, чтобы файл открывался везде корректно.
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+// Функция сохранения (обновленная — вызывает диалог выбора папки)
+window.saveFileAsTxt = async function(originalName, content) {
+    try {
+        // Подготавливаем новое имя (заменяем .ini на .txt)
+        const newName = originalName.replace(/\.[^/.]+$/, "") + ".txt";
 
-    // Создаем временную ссылку для скачивания
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = newName;
+        // Это вызовет системное окно "Сохранить как"
+        const newHandle = await window.showSaveFilePicker({
+            suggestedName: newName,
+            types: [{
+                description: 'Text Document',
+                accept: {'text/plain': ['.txt']},
+            }],
+        });
 
-    // Эмулируем клик для открытия окна сохранения
-    document.body.appendChild(link);
-    link.click();
+        // Записываем данные в выбранный файл
+        const writable = await newHandle.createWritable();
+        await writable.write(content);
+        await writable.close();
 
-    // Удаляем временные объекты
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
+    } catch (e) {
+        // Если пользователь нажал "Отмена" в окне сохранения
+        console.log("Сохранение отменено пользователем");
+    }
 };
