@@ -3,6 +3,7 @@ package org.example.project.utils
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import org.example.project.utils.DeviceInfo
+import org.example.project.models.DeviceInfoIni
 
 /**
  * Описываем структуру объекта из JS.
@@ -18,7 +19,7 @@ external interface JsFileResult : JsAny {
 external fun showFilePickerNative(callback: (JsAny?) -> Unit)
 external fun saveFileAsTxt(originalName: String, content: String)
 
-actual suspend fun pickSingleFile(): DeviceInfo? {
+actual suspend fun pickSingleFile(): DeviceInfoIni? {
     val handle = suspendCoroutine<JsAny?> { cont ->
         showFilePickerNative { res -> cont.resume(res) }
     } ?: return null
@@ -26,36 +27,40 @@ actual suspend fun pickSingleFile(): DeviceInfo? {
     return parseIniFile(handle)
 }
 
-private fun parseIniFile(handle: JsAny?): DeviceInfo? {
+private fun parseIniFile(handle: JsAny?): DeviceInfoIni? {
     return try {
         val result = handle as JsFileResult
         val fullContent = result.content
+        val lines = fullContent.split("\n", "\r").map { it.trim() }
 
-        // 1. Извлекаем только строку Location= для отображения в левом столбце
-        val lines = fullContent.split("\n", "\r")
-        val locationValue = lines
-            .firstOrNull { it.trim().startsWith("Location=", ignoreCase = true) }
-            ?.substringAfter("=")
-            ?.trim() ?: ""
+        // Извлекаем данные (если строки нет — пишем пустую строку для бейджа)
+        val locationValue = lines.findValue("Location=")
+        val idValue = lines.findValue("ID=") ?: "No ID"
+        val descValue = lines.findValue("Description=")
+        val typeValue = lines.findValue("DeviceType=")
+        val dateValue = lines.findValue("LastDateTime=") // Или берем текущую, если в файле нет
 
-        // 2. ПРОВЕРКА: Если файл НЕ является .txt, то вызываем сохранение копии.
-        // Это предотвратит повторное сохранение, если вы уже открыли .txt файл.
         if (!result.isAlreadyTxt) {
-            println("DEBUG: Файл .ini — инициируем сохранение .txt копии")
             saveFileAsTxt(result.name, fullContent)
-        } else {
-            println("DEBUG: Файл .txt — пропущено автоматическое сохранение")
         }
 
-        // Возвращаем объект для UI
-        DeviceInfo(
-            id = result.name,
-            location = locationValue
+        DeviceInfoIni(
+            fileName = result.name, // Наш уникальный ключ-имя файла
+            id = idValue,
+            location = locationValue,
+            Description = descValue,
+            deviceType = typeValue,
+            LastDateTime = dateValue
         )
     } catch (e: Throwable) {
-        println("DEBUG: Ошибка парсинга в Kotlin: ${e.message}")
         null
     }
 }
 
-actual suspend fun pickDirectory(): DeviceInfo? = null
+// Маленький помощник для чистоты кода
+private fun List<String>.findValue(prefix: String): String {
+    return this.firstOrNull { it.startsWith(prefix, ignoreCase = true) }
+        ?.substringAfter("=")?.trim() ?: ""
+}
+
+actual suspend fun pickDirectory(): DeviceInfoIni? = null

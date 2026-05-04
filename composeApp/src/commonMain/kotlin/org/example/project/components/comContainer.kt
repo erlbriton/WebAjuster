@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +30,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.actionsButton.HeaderActionsButtons
+import org.example.project.models.DeviceInfoIni
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun ComContainer() {
@@ -42,15 +51,25 @@ fun ComContainer() {
     var showErrorDialog by remember { mutableStateOf(false) }
     var deviceLocation by remember { mutableStateOf("—") }//Путь
 
+    // Ключ - локация, Значение - список файлов
+    val devicesMap = remember { mutableStateMapOf<String, MutableList<DeviceInfoIni>>() }
+
     val scope = rememberCoroutineScope()
     val headerActions = remember(scope) {
         HeaderActionsButtons(
             scope = scope,
             onDeviceLoaded = { info ->
-                // Позже здесь будет вызов парсера, а пока для теста:
-                deviceLocation = info.location
+                // 1. Ищем и удаляем старую копию файла с таким же именем (если она есть)
+                val iterator = devicesMap.entries.iterator()
+                while (iterator.hasNext()) {
+                    val entry = iterator.next()
+                    entry.value.removeAll { it.fileName == info.fileName }
+                    if (entry.value.isEmpty()) iterator.remove() // Удаляем пустую группу
+                }
+
+                // 2. Добавляем новый файл в группу по его Location
+                devicesMap.getOrPut(info.location) { mutableStateListOf() }.add(info)
             },
-            // Передаем логику обработки ошибки
             ShowError = { message ->
                 errorMessage = message
                 showErrorDialog = true
@@ -100,14 +119,78 @@ fun ComContainer() {
                             modifier = Modifier
                                 .weight(leftColumnWeight)
                                 .fillMaxHeight()
-                        )
-                        {
-                            // ДОБАВИТЬ ЭТО ВНУТРЬ:
-                            androidx.compose.material3.Text(
-                                text = deviceLocation,
-                                fontSize = 10.sp, // Шрифт 10, как ты просил
-                                modifier = Modifier.align(Alignment.TopStart).padding(4.dp)
-                            )
+                        ) {
+                            // Храним список имен локаций, которые сейчас развернуты
+                            val expandedGroups = remember { mutableStateListOf<String>() }
+
+                            Column(
+                                modifier = Modifier.fillMaxSize().padding(4.dp)
+                            ) {
+                                devicesMap.forEach { (location, devices) ->
+                                    val isExpanded = expandedGroups.contains(location)
+                                    val groupName = if (location.isEmpty()) "Unknown" else location
+
+                                    // Строка заголовка группы
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                if (isExpanded) expandedGroups.remove(location)
+                                                else expandedGroups.add(location)
+                                            }
+                                            .padding(vertical = 4.dp),
+                                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                                    ) {
+                                        // Шеврон (стрелочка)
+                                        Text(
+                                            text = if (isExpanded) "▼ " else "▶ ",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+
+                                        // Название группы
+                                        Text(
+                                            text = groupName,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.weight(1f)
+                                        )
+
+                                        // Бейдж с количеством файлов
+                                        Surface(
+                                            shape = androidx.compose.foundation.shape.CircleShape,
+                                            color = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
+                                            modifier = Modifier.padding(horizontal = 4.dp)
+                                        ) {
+                                            Text(
+                                                text = devices.size.toString(),
+                                                fontSize = 9.sp,
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        }
+                                    }
+
+                                    // Если группа развернута — показываем список ID
+                                    if (isExpanded) {
+                                        devices.forEach { device ->
+                                            Text(
+                                                // Только значение, без префикса "ID:"
+                                                text = device.id,
+                                                fontSize = 12.sp,
+                                                lineHeight = 12.sp,
+                                                maxLines = 1, // Строго одна строка
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, // Обрезка с троеточием
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(start = 16.dp, bottom = 4.dp, end = 4.dp)
+                                                    .clickable { println("Выбран ID: ${device.id}") }
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+                            }
                         }
                         // Разделитель
                         Box(

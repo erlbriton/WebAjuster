@@ -1,9 +1,13 @@
-package org.example.project.utils // Убедитесь, что пакет совпадает с остальными файлами
+package org.example.project.utils
+
+import org.example.project.models.DeviceInfoIni
+
+// Убедитесь, что пакет совпадает с остальными файлами
 
 data class DeviceInfo(
     val id: String,
     val location: String
 )
 
-expect suspend fun pickDirectory(): DeviceInfo?
-expect suspend fun pickSingleFile(): DeviceInfo?
+expect suspend fun pickDirectory(): DeviceInfoIni?
+expect suspend fun pickSingleFile(): DeviceInfoIni?

@@ -1,5 +1,6 @@
 package org.example.project.actions // Новый путь
 
+import org.example.project.models.DeviceInfoIni
 import org.example.project.utils.DeviceInfo
 
 /**
@@ -25,5 +26,5 @@ interface HeaderActions {
     fun onPickDirectoryRequest()
 
     // Коллбэк для возврата данных обратно в UI или логику
-    fun onDeviceDataLoaded(info: DeviceInfo)
+    fun onDeviceDataLoaded(info: DeviceInfoIni)
 }
