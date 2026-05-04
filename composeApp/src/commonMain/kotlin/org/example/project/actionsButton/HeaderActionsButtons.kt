@@ -66,10 +66,14 @@ class HeaderActionsButtons(
     override fun onPickDirectoryRequest() {
         scope.launch {
             delay(100)
-            val result = pickDirectory()
-            if (result != null) {
-                onDeviceDataLoaded(result)
+            // 1. Теперь ждем список файлов вместо одного объекта
+            val results: List<DeviceInfoIni>? = pickDirectory()
+
+            // 2. Если файлы найдены, передаем их в UI через существующий колбэк
+            results?.forEach { info ->
+                onDeviceDataLoaded(info)
             }
         }
     }
+
 }

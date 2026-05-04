@@ -9,5 +9,5 @@ data class DeviceInfo(
     val location: String
 )
 
-expect suspend fun pickDirectory(): DeviceInfoIni?
+expect suspend fun pickDirectory(): List<DeviceInfoIni>?
 expect suspend fun pickSingleFile(): DeviceInfoIni?
