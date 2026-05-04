@@ -128,3 +128,28 @@ window.showFilePickerNative = async function(callback) {
         callback(null);
     }
 };
+//Функция сохранения ini файла в виде txt файла
+window.saveFileAsTxt = function(originalName, content) {
+    // Заменяем .ini на .txt в имени файла
+    const newName = originalName.replace(/\.[^/.]+$/, "") + ".txt";
+
+    // Создаем Blob (данные файла) в кодировке Windows-1251, чтобы сохранить кириллицу
+    // Используем текстовый формат для сохранения структуры строк
+    const encoder = new TextEncoder("windows-1251", { NONSTANDARD_ALLOW_LEGACY_ENCODING: true });
+    // Но так как браузеры лучше работают с UTF-8 при скачивании,
+    // сохраним в UTF-8, чтобы файл открывался везде корректно.
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+
+    // Создаем временную ссылку для скачивания
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = newName;
+
+    // Эмулируем клик для открытия окна сохранения
+    document.body.appendChild(link);
+    link.click();
+
+    // Удаляем временные объекты
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+};

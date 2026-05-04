@@ -25,28 +25,29 @@ actual suspend fun pickSingleFile(): DeviceInfo? {
 private fun parseIniFile(handle: JsAny?): DeviceInfo? {
     return try {
         val result = handle as JsFileResult
-        val fullContent = result.content // Весь текст файла
+        val fullContent = result.content // Полный текст со всеми данными
 
-        // 1. Разбиваем текст на строки
+        // Логика для левого столбца (как мы делали раньше)
         val lines = fullContent.split("\n", "\r")
-
-        // 2. Ищем строку, которая начинается с "Location=" (игнорируя регистр)
         val locationValue = lines
             .firstOrNull { it.trim().startsWith("Location=", ignoreCase = true) }
-            ?.substringAfter("=") // Берем всё, что после знака "="
-            ?.trim() ?: ""        // Если не нашли, оставляем пустым
+            ?.substringAfter("=")
+            ?.trim() ?: ""
 
-        println("DEBUG: Найдено значение Location: $locationValue")
+        // СРАЗУ СОХРАНЯЕМ КОПИЮ .txt
+        // originalName — это v1.03-RNTTE.2500...ini
+        saveFileAsTxt(result.name, fullContent)
 
-        // 3. Теперь в DeviceInfo передаем только извлеченное значение
         DeviceInfo(
             id = result.name,
-            location = locationValue // Теперь здесь только путь/значение, а не весь файл
+            location = locationValue
         )
     } catch (e: Throwable) {
-        println("DEBUG: Ошибка парсинга: ${e.message}")
+        println("DEBUG: Ошибка: ${e.message}")
         null
     }
 }
 
 actual suspend fun pickDirectory(): DeviceInfo? = null
+
+external fun saveFileAsTxt(originalName: String, content: String)
