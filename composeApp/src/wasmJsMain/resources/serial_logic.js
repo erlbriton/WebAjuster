@@ -95,3 +95,36 @@ window.runModbusTest = async function(dataArray, expectedBytes) {
         }
     }
 };
+
+window.showFilePickerNative = async function(callback) {
+    try {
+        const [handle] = await window.showOpenFilePicker({
+            types: [{
+                description: 'Settings (.ini)',
+                accept: {'text/plain': ['.ini', '.txt']}
+            }],
+            multiple: false
+        });
+
+        const file = await handle.getFile();
+
+        // Используем FileReader для поддержки кириллицы (Windows-1251)
+        const reader = new FileReader();
+        reader.onload = () => {
+            // Создаем объект, который имитирует структуру для Kotlin,
+            // но уже с ПРАВИЛЬНЫМ текстом
+            const result = {
+                name: file.name,
+                content: reader.result // Здесь уже нормальный текст
+            };
+            callback(result);
+        };
+
+        // Читаем именно в Windows-1251
+        reader.readAsText(file, "windows-1251");
+
+    } catch (e) {
+        console.log("Выбор файла отменен или ошибка:", e);
+        callback(null);
+    }
+};
