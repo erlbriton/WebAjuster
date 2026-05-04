@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.example.project.actionsButton.HeaderActionsButtons
 
 @Composable
@@ -35,16 +37,26 @@ fun ComContainer() {
     val lineThickness = 2.dp // Толщина всех линий
     val lineColor = Color.Gray // Цвет всех линий
 
+    // --- Переменные для окна ошибки ---
+    var errorMessage by remember { mutableStateOf("") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var deviceLocation by remember { mutableStateOf("—") }//Путь
+
     val scope = rememberCoroutineScope()
     val headerActions = remember(scope) {
         HeaderActionsButtons(
             scope = scope,
             onDeviceLoaded = { info ->
-                println("Загружено: ${info.location}")
+                // Позже здесь будет вызов парсера, а пока для теста:
+                deviceLocation = info.location
+            },
+            // Передаем логику обработки ошибки
+            ShowError = { message ->
+                errorMessage = message
+                showErrorDialog = true
             }
         )
     }
-
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val maxAllowedWidth = maxWidth
 
@@ -69,8 +81,6 @@ fun ComContainer() {
                         }
                 )
                 // --- Сама Таблица ---
-                // Убираем verticalScroll отсюда, если хотим, чтобы нижняя часть растягивалась
-                // Либо оставляем его, но тогда высота будет зависеть от контента.
                 Column(
                     modifier = Modifier
                         .width(tableWidth)
@@ -80,7 +90,6 @@ fun ComContainer() {
                     HeaderTable(actions = headerActions)
                     // LineTwoTable()
                     // --- Секция двух столбцов ---
-                    // weight(1f) заставит этот блок занять все оставшееся место по вертикали
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -92,6 +101,14 @@ fun ComContainer() {
                                 .weight(leftColumnWeight)
                                 .fillMaxHeight()
                         )
+                        {
+                            // ДОБАВИТЬ ЭТО ВНУТРЬ:
+                            androidx.compose.material3.Text(
+                                text = deviceLocation,
+                                fontSize = 10.sp, // Шрифт 10, как ты просил
+                                modifier = Modifier.align(Alignment.TopStart).padding(4.dp)
+                            )
+                        }
                         // Разделитель
                         Box(
                             modifier = Modifier
@@ -123,5 +140,18 @@ fun ComContainer() {
                 }
             }
         }
+    }
+    // --- Отображение окна ошибки ---
+    if (showErrorDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { androidx.compose.material3.Text("Ошибка формата") },
+            text = { androidx.compose.material3.Text(errorMessage) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showErrorDialog = false }) {
+                    androidx.compose.material3.Text("ОК")
+                }
+            }
+        )
     }
 }

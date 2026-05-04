@@ -2,6 +2,17 @@ package org.example.project.utils
 
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.browser.window
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+import org.example.project.utils.DeviceInfo // Убедись, что путь к DeviceInfo верный
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
+
+external interface JsFile : JsAny {
+    val name: String
+}
 
 // --- 1. Мостики для вызова методов и свойств ---
 
@@ -130,17 +141,19 @@ private suspend fun findIniInDirectory(dirHandle: JsAny): DeviceInfo? {
     return null
 }
 
-private suspend fun parseIniFile(fileHandle: JsAny): DeviceInfo {
-    val file = awaitPromise(callGetFile(fileHandle))
-    val text = awaitPromise(callText(file)).toString()
+// Предполагаем, что handle — это объект файла из JS (File или Blob)
+private fun parseIniFile(handle: JsAny?): DeviceInfo? {
+    if (handle == null) return null
 
-    var location = ""
-    var id = ""
+    // В Wasm приведение к external interface через 'as'
+    // работает для объектов, пришедших из JS
+    val file = handle as JsFile
+    val fileName = file.name
 
-    text.lines().forEach { line ->
-        if (line.startsWith("Location=")) location = line.substringAfter("=")
-        if (line.startsWith("ID=")) id = line.substringAfter("=")
-    }
+    println("DEBUG: Прочитано имя файла: $fileName")
 
-    return DeviceInfo(id, location)
+    return DeviceInfo(
+        id = fileName,
+        location = ""
+    )
 }

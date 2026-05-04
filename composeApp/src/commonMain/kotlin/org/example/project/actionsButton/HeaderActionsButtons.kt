@@ -10,7 +10,8 @@ import org.example.project.utils.pickSingleFile
 
 class HeaderActionsButtons(
     private val scope: CoroutineScope,
-    private val onDeviceLoaded: (DeviceInfo) -> Unit
+    private val onDeviceLoaded: (DeviceInfo) -> Unit,
+    private val ShowError: (String) -> Unit
 ) : HeaderActions {
 
     override fun onUpdate() {
@@ -42,27 +43,26 @@ class HeaderActionsButtons(
     }
 
     override fun onDeviceDataLoaded(info: DeviceInfo) {
-        // Проверяем расширение файла перед тем, как передать его дальше
-        val path = info.location.lowercase()
-        if (path.endsWith(".ini") || path.endsWith(".txt")) {
+        // В WEB проверяем и location, и id (имя файла)
+        val path = info.location.trim().lowercase()
+        val fileName = info.id.trim().lowercase()
+
+        // Если хотя бы одно из полей заканчивается на .ini или .txt
+        if (path.endsWith(".ini") || path.endsWith(".txt") ||
+            fileName.endsWith(".ini") || fileName.endsWith(".txt")) {
+
             onDeviceLoaded(info)
         } else {
-            println("Ошибка: Выбран некорректный тип файла. Разрешены только .ini и .txt")
-            // Здесь в будущем можно добавить вызов диалогового окна с ошибкой
+            // Если не подошло, показываем ошибку с именем файла
+            val displayIdentifier = if (info.id.isNotEmpty()) info.id else "Неизвестный файл"
+            ShowError("Ошибка формата!\nФайл: $displayIdentifier\nРазрешены только .ini и .txt")
         }
     }
 
     override fun onPickFileRequest() {
         scope.launch {
-            delay(100)
-
-            // Теперь pickSingleFile вызывается без жестких фильтров (или с расширенными),
-            // чтобы пользователь мог выбрать любой файл, а проверка прошла в onDeviceDataLoaded.
             val result = pickSingleFile()
-
-            if (result != null) {
-                onDeviceDataLoaded(result)
-            }
+            if (result != null) onDeviceDataLoaded(result)
         }
     }
 
