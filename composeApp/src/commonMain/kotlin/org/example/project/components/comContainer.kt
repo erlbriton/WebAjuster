@@ -34,6 +34,11 @@ import org.example.project.models.DeviceInfoIni
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.font.FontWeight
@@ -142,19 +147,24 @@ fun ComContainer() {
                                             .padding(vertical = 4.dp),
                                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                                     ) {
-                                        // Шеврон (стрелочка) - увеличили fontSize до 14.sp
-                                        Text(
-                                            text = if (isExpanded) "▼ " else "▶ ",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.width(20.dp) // Фиксированная ширина, чтобы текст не дергался
+                                        //Шеврон(стрелочка вниз или вправо)
+                                        Icon(
+                                            imageVector = if (isExpanded)
+                                                androidx.compose.material.icons.Icons.Default.KeyboardArrowDown
+                                            else
+                                                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                            contentDescription = null,
+                                            tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier
+                                                .size(20.dp) // Четкий размер иконки
+                                                .padding(end = 4.dp)
                                         )
 
                                         // Название группы (location)
                                         Text(
                                             text = groupName,
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
                                             maxLines = 1, // ЗАПРЕТ ПЕРЕНОСА
                                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, // ОБРЕЗКА ТРОЕТОЧИЕМ
                                             modifier = Modifier.weight(1f)
