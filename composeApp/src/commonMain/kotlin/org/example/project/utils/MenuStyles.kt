@@ -19,14 +19,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 
 /**
  * Единый шаблон для всех пунктов меню
@@ -153,6 +154,82 @@ fun UniversalSelector(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ManualAndAutoInputField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    windowColor: Color,
+    tooltipText: String,
+    minWidth: Dp = 20.dp,
+    width: Dp? = null, // Добавляем этот параметр, чтобы устранить ошибку компиляции
+    labelColor: Color = Color.White
+) {
+    val tooltipState = rememberTooltipState()
+
+    // Единый стиль для текста и поля ввода
+    val textStyle = TextStyle(
+        color = Color.Black,
+        fontSize = 11.sp,
+        fontFamily = FontFamily.Monospace,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = { PlainTooltip { Text(tooltipText, fontSize = 12.sp) } },
+        state = tooltipState
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.wrapContentWidth()
+        ) {
+            Text(
+                text = label,
+                color = labelColor,
+                fontSize = 10.sp,
+                modifier = Modifier.padding(end = 4.dp)
+            )
+
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier
+                    // Если width передан при вызове — используем его,
+                    // если нет — включаем автоподбор размера
+                    .then(
+                        if (width != null) Modifier.width(width)
+                        else Modifier.width(IntrinsicSize.Min).widthIn(min = minWidth)
+                    )
+                    .height(24.dp)
+                    .border(1.dp, Color.Gray)
+                    .background(windowColor),
+                textStyle = textStyle,
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
+                        // Невидимый текст, который "расталкивает" границы окна под контент
+                        Text(
+                            text = value,
+                            style = textStyle,
+                            color = Color.Transparent,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                        // Само поле ввода
+                        innerTextField()
+                    }
+                }
+            )
         }
     }
 }
