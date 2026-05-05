@@ -115,6 +115,7 @@ fun ComContainer() {
                             .weight(1f)
                     ) {
                         // Левый столбец
+                        // Левый столбец
                         Box(
                             modifier = Modifier
                                 .weight(leftColumnWeight)
@@ -141,18 +142,21 @@ fun ComContainer() {
                                             .padding(vertical = 4.dp),
                                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                                     ) {
-                                        // Шеврон (стрелочка)
+                                        // Шеврон (стрелочка) - увеличили fontSize до 14.sp
                                         Text(
                                             text = if (isExpanded) "▼ " else "▶ ",
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.width(20.dp) // Фиксированная ширина, чтобы текст не дергался
                                         )
 
-                                        // Название группы
+                                        // Название группы (location)
                                         Text(
                                             text = groupName,
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
+                                            maxLines = 1, // ЗАПРЕТ ПЕРЕНОСА
+                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, // ОБРЕЗКА ТРОЕТОЧИЕМ
                                             modifier = Modifier.weight(1f)
                                         )
 
@@ -175,15 +179,14 @@ fun ComContainer() {
                                     if (isExpanded) {
                                         devices.forEach { device ->
                                             Text(
-                                                // Только значение, без префикса "ID:"
                                                 text = device.id,
                                                 fontSize = 12.sp,
                                                 lineHeight = 12.sp,
-                                                maxLines = 1, // Строго одна строка
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, // Обрезка с троеточием
+                                                maxLines = 1,
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(start = 16.dp, bottom = 4.dp, end = 4.dp)
+                                                    .padding(start = 20.dp, bottom = 4.dp, end = 4.dp) // Увеличили отступ слева под большой шеврон
                                                     .clickable { println("Выбран ID: ${device.id}") }
                                             )
                                         }
@@ -192,7 +195,7 @@ fun ComContainer() {
                                 }
                             }
                         }
-                        // Разделитель
+// Разделитель
                         Box(
                             modifier = Modifier
                                 .width(TableConfig.lineThickness)
