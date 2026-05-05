@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.actions.HeaderActions
 import org.example.project.utils.UniversalMenuItem
+import org.example.project.utils.UniversalSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +58,7 @@ fun HeaderTable(
     //Состояние для выбора папки/файла
     var selectFile by remember { mutableStateOf(false) }
     val selectOptions = listOf("Файл", "Папка")
+
 
     Column(modifier = Modifier.fillMaxWidth()) {
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = thickness, color = color)
@@ -322,8 +324,17 @@ fun HeaderTable(
                 }
             }
 
-            // --- 9. ВЫБОР ПАМЯТИ ---
-            TooltipBox(
+            // --- 9. Выбор области памяти CPU---
+            UniversalSelector(
+                label = "", // Или другое короткое название, если нужно
+                selectedOption = selectedMemory,
+                options = memoryOptions,
+                tooltipText = "Выбор области памяти",
+                minWidth = 45.dp, // Немного больше, если названия регионов длинные
+                onOptionSelected = { selectedMemory = it }
+            )
+
+           /* TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Выбор области памяти", fontSize = 12.sp) } },
                 state = rememberTooltipState()
@@ -361,7 +372,7 @@ fun HeaderTable(
                         }
                     }
                 }
-            }
+            }*/
             // 10. Выбор папки/файла
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),

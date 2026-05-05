@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import org.example.project.utils.UniversalMenuItem
+import org.example.project.utils.UniversalSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,11 +37,11 @@ fun LineTwoTable(
     var comExpanded by remember { mutableStateOf(false) }
     var selectedCom by remember { mutableStateOf("") } // Изначально пусто
 
-    // Список опций (пустой до подключения).
-    // Когда порты найдутся, вы просто обновите этот список, например: listOf("COM3", "COM10", "COM99")
+   //  Список опций (пустой до подключения).
+   //  Когда порты найдутся, вы просто обновите этот список, например: listOf("COM3", "COM10", "COM99")
     var comOptions by remember { mutableStateOf(listOf<String>()) }
 
-    var selectorSpeed by remember { mutableStateOf(false) }
+   var selectorSpeed by remember { mutableStateOf(false) }
     var chosenSpeed by remember { mutableStateOf("115200") }
     val speedOptions =
         listOf("921600", "460800", "230400", "115200", "57600", "38400", "19200", "9600")
@@ -70,17 +71,43 @@ fun LineTwoTable(
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Группа BUS
-                    Text(
-                        text = "BUS",
-                        color = Color.White,
-                        fontSize = 10.sp
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // 1. Селектор Протокола (Всегда активен, так как список не пуст)
+                    UniversalSelector(
+                        label = "BUS",
+                        selectedOption = selectedProtocol,
+                        options = protocolOptions, // например, listOf("Modbus RTU", "Modbus TCP")
+                        tooltipText = "Протокол передачи данных",
+                        onOptionSelected = { selectedProtocol = it }
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // 2. Селектор COM-порта
+                    // Если comOptions пуст, он будет серым и некликабельным (согласно логике функции)
+                    UniversalSelector(
+                        label = "COM",
+                        selectedOption = selectedCom,
+                        options = comOptions, // список обновится после сканирования портов
+                        tooltipText = if (comOptions.isEmpty()) "Порты не найдены" else "Выберите доступный COM-порт",
+                        minWidth = 40.dp, // Гарантируем место под 4 символа (COM3, COM10...)
+                        onOptionSelected = { selectedCom = it }
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // 3. Селектор скорости (Baud Rate)
+                    UniversalSelector(
+                        label = "BPS",
+                        selectedOption = chosenSpeed,
+                        options = listOf("921600", "460800", "230400", "115200", "57600", "38400", "19200", "9600"),
+                        tooltipText = "Скорость обмена (бит/с)",
+                        minWidth = 55.dp, // Чуть шире для длинных чисел вроде 115200
+                        onOptionSelected = { chosenSpeed = it }
+                    )
+                }
 
                     // СЕЛЕКТОР ПРОТОКОЛА
-                    TooltipBox(
+                  /*  TooltipBox(
                         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
                             TooltipAnchorPosition.Above
                         ),
@@ -334,7 +361,7 @@ fun LineTwoTable(
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     // Если нужно прижать будущие кнопки в самый конец (вправо)
                     Spacer(modifier = Modifier.weight(1f))
@@ -342,4 +369,4 @@ fun LineTwoTable(
             }
         }
     }
-}
+
