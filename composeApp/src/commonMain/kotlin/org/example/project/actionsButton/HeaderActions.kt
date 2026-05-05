@@ -17,7 +17,9 @@ interface HeaderActions {
 
     // Системные операции
     fun onTerminalOpen()
-    fun onFileSave()
+    fun onFileOration()
+
+    fun onBlackBox()
     fun onHelp(topic: String)
 
     // Выбор памяти

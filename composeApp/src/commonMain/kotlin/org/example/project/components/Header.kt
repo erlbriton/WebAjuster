@@ -109,10 +109,8 @@ fun HeaderTable(
                                 tint = Color(0xFF04C104)
                             )
                         }
-
                         // РАЗДЕЛИТЕЛЬ
                         Spacer(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Blue))
-
                         // ПРАВАЯ ЧАСТЬ: Открытие меню
                         Box(
                             modifier = Modifier
@@ -128,7 +126,6 @@ fun HeaderTable(
                             )
                         }
                     }
-
                     // Меню (появляется под всей кнопкой)
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         menuItems.forEach { label ->
@@ -145,8 +142,7 @@ fun HeaderTable(
                     }
                 }
             }
-
-            // 2. Поиск
+            //-------------------------------------Поиск устройств в сети Modbus--------------------
             TableIconButton(
                 icon = Icons.Default.Search,
                 tooltipText = "Поиск устройств в сети Modbus",
@@ -154,7 +150,7 @@ fun HeaderTable(
                     actions.onSearch() // Используем ваш существующий метод
                 }
             )
-            // 3. Отчеты
+            //----------------------------------Отчеты  Exel----------------------------------------
             TableIconButton(icon =Icons.AutoMirrored.Filled.ListAlt, tooltipText ="Генератор отчетов в Exel",
                 onClick = { actions.onExel()}
             )
@@ -242,22 +238,7 @@ fun HeaderTable(
                     actions.onTerminalOpen() // Используем ваш существующий метод
                 }
             )
-
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Терминал") } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 4.dp)) {
-                    Row(
-                        modifier = Modifier.clickable {}.border(1.dp, Color.Blue).background(Color.White).padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Terminal, null, modifier = Modifier.size(16.dp))
-                    }
-                }
-            }
-            // 6. Help
+            //----------------------------Help---------------------------------------------------------------------
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Help", fontSize = 12.sp) } },
@@ -282,40 +263,23 @@ fun HeaderTable(
                     }
                 }
             }
-
-            // 7. Файлы
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Файловые операции") } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 20.dp)) {
-                    Row(
-                        modifier = Modifier.clickable {}.border(1.dp, Color.Blue).background(Color.White).padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Save, null, modifier = Modifier.size(16.dp))
-                    }
+            // -----------------------------------Файловые операции------------------------------------------------------
+            TableIconButton(
+                icon = Icons.Default.Save,
+                tooltipText = "Файловые операции",
+                onClick = {
+                    actions.onFileOration() // Используем ваш существующий метод
                 }
-            }
-
+            )
             // 8. Черный ящик
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Черный ящик") } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 4.dp)) {
-                    Row(
-                        modifier = Modifier.clickable {}.border(1.dp, Color.Blue).background(Color.White).padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.ViewInAr, null, modifier = Modifier.size(16.dp))
-                    }
+            TableIconButton(
+                icon = Icons.Default.ViewInAr,
+                tooltipText = "Черный ящик",
+                onClick = {
+                    actions.onBlackBox() // Используем существующий метод
                 }
-            }
-
-            // --- 9. Выбор области памяти CPU---
+            )
+            // -------------------------------------Выбор области памяти CPU------------------------
             UniversalSelector(
                 label = "", // Или другое короткое название, если нужно
                 selectedOption = selectedMemory,
@@ -324,47 +288,7 @@ fun HeaderTable(
                 minWidth = 45.dp, // Немного больше, если названия регионов длинные
                 onOptionSelected = { selectedMemory = it }
             )
-
-           /* TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Выбор области памяти", fontSize = 12.sp) } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 8.dp)) {
-                    Row(
-                        modifier = Modifier.border(1.dp, Color.Gray).background(Color.White).height(24.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(modifier = Modifier.padding(2.dp).background(Color(0xFF0066CC)).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
-                            Text(text = selectedMemory.uppercase(), color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-                        }
-                        Spacer(modifier = Modifier.fillMaxHeight().width(1.dp).background(Color.Gray))
-                        Box(modifier = Modifier.fillMaxHeight().width(22.dp).background(Color(0xFFE0E0E0)).clickable { selectorExpanded = true }, contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.ArrowDropDown, null, modifier = Modifier.size(18.dp))
-                        }
-                    }
-                    DropdownMenu(
-                        expanded = selectorExpanded,
-                        onDismissRequest = { selectorExpanded = false },
-                        modifier = Modifier
-                            .background(Color.White)
-                            .border(1.dp, Color.Black)
-                        // Если вдруг ширина снова "поплывет", добавьте сюда .widthIn(min = ...)
-                    ) {
-                        memoryOptions.forEach { option ->
-                            UniversalMenuItem(
-                                label = option,
-                                itemHeight = 14.dp,
-                                onClick = {
-                                    selectedMemory = option      // Сохраняем выбор
-                                    selectorExpanded = false     // Закрываем меню
-                                }
-                            )
-                        }
-                    }
-                }
-            }*/
-            // 10. Выбор папки/файла
+            //----------------------------Выбор папки/файла-----------------------------------------
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Выбор файла", fontSize = 12.sp) } },
@@ -395,7 +319,6 @@ fun HeaderTable(
                                 tint = Color(0xFF046308)
                             )
                         }
-
                         // РАЗДЕЛИТЕЛЬ
                         Spacer(
                             modifier = Modifier
@@ -403,7 +326,6 @@ fun HeaderTable(
                                 .width(1.dp)
                                 .background(Color.Blue)
                         )
-
                         // ПРАВАЯ ЧАСТЬ: Стрелочка для меню
                         Box(
                             modifier = Modifier
@@ -419,7 +341,6 @@ fun HeaderTable(
                             )
                         }
                     }
-
                     // Выпадающее меню
                     DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
                         // Пункт выбора Файла
@@ -431,7 +352,6 @@ fun HeaderTable(
                                 actions.onPickFileRequest()
                             }
                         )
-
                         // Пункт выбора Папки
                         UniversalMenuItem(
                             label = "Папка",
@@ -444,7 +364,6 @@ fun HeaderTable(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = thickness, color = color)

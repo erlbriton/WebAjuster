@@ -34,7 +34,11 @@ class HeaderActionsButtons(
         println("Запуск терминала...")
     }
 
-    override fun onFileSave() {
+    override fun onBlackBox(){
+        println("Просмотр черного ящика")
+    }
+
+    override fun onFileOration() {
         println("Сохранение данных...")
     }
 
