@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material3.*
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.iconColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import org.example.project.actionsButton.HeaderActionsButtons
 import org.example.project.utils.TableIconButton
 import org.example.project.utils.UniversalMenuItem
 import org.example.project.utils.UniversalSelector
+import org.example.project.utils.iconsMenu
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +79,7 @@ fun HeaderTable(
                 .background(TableConfig.headerBackground),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // --- 1. КНОПКА ОБНОВИТЬ ---
+            // --------------------------------КНОПКА ОБНОВИТЬ -------------------------------------
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Обновить список устройств", fontSize = 12.sp) } },
@@ -128,14 +130,17 @@ fun HeaderTable(
                     }
                     // Меню (появляется под всей кнопкой)
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        menuItems.forEach { label ->
-                            // Используем нашу обертку
-                            UniversalMenuItem(
+                        menuItems.forEachIndexed { index, label ->
+                            iconsMenu(
                                 label = label,
-                                itemHeight = 16.dp, // Задаем высоту здесь
+                                itemHeight = 24.dp,
+                                // Передаем иконку только для первого пункта
+                                icon = if (index == 0) Icons.Default.Build else null,
+                                // Просто передаем цвет (без двоеточий и типов)
+                                iconColor = Color(0xFFC7092F),
                                 onClick = {
                                     expanded = false
-                                    /* Ваше действие */
+                                    println("Выбрано: $label")
                                 }
                             )
                         }

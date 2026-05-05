@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
+
 /**
  * Единый шаблон для всех пунктов меню
  */
@@ -284,4 +285,42 @@ fun TableIconButton(
             }
         }
     }
+}
+//-------------Функция для иконок в выпадающем меню-------------------------------------------------
+@Composable
+fun iconsMenu(
+    label: String,
+    icon: ImageVector? = null,
+    itemHeight: Dp = 24.dp,
+    onClick: () -> Unit,
+    iconColor: Color = Color.Black
+) {
+    DropdownMenuItem(
+        modifier = Modifier.height(itemHeight),
+        onClick = onClick,
+        // Мы не используем leadingIcon, а рисуем всё внутри основного блока text
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .padding(end = 8.dp), // Отступ между иконкой и текстом
+                        tint = iconColor
+                    )
+                }
+                Text(
+                    text = label,
+                    fontSize = 11.sp,
+                    softWrap = false
+                )
+            }
+        },
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+    )
 }
