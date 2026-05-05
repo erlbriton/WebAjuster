@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.actions.HeaderActions
+import org.example.project.utils.UniversalMenuItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,13 +123,13 @@ fun HeaderTable(
                     // Меню (появляется под всей кнопкой)
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         menuItems.forEach { label ->
-                            DropdownMenuItem(
-                                text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
-                                modifier = Modifier.height(16.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                            // Используем нашу обертку
+                            UniversalMenuItem(
+                                label = label,
+                                itemHeight = 16.dp, // Задаем высоту здесь
                                 onClick = {
                                     expanded = false
-                                    /* Действие для конкретного пункта */
+                                    /* Ваше действие */
                                 }
                             )
                         }
@@ -226,18 +227,17 @@ fun HeaderTable(
                     }
 
                     // Выпадающее меню под всей кнопкой
-                    DropdownMenu(expanded = clue, onDismissRequest = { clue = false }) {
+                    DropdownMenu(
+                        expanded = clue,
+                        onDismissRequest = { clue = false },
+                        // Устанавливаем минимальную ширину, которой хватит для "Осциллографа",
+                        // и позволяем расти до максимума
+                        modifier = Modifier.widthIn(min = 300.dp, max = 600.dp)
+                    ) {
                         oscilligraphItems.forEach { label ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = label,
-                                        fontSize = 8.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                },
-                                modifier = Modifier.height(16.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                            UniversalMenuItem(
+                                label = label,
+                                itemHeight = 16.dp,
                                 onClick = {
                                     clue = false
                                     // Логика выбора конкретной опции
@@ -280,10 +280,9 @@ fun HeaderTable(
                     }
                     DropdownMenu(expanded = clueHelp, onDismissRequest = { clueHelp = false }) {
                         helpItems.forEach { label ->
-                            DropdownMenuItem(
-                                text = { Text(text = label, fontSize = 8.sp, fontWeight = FontWeight.Bold) },
-                                modifier = Modifier.height(16.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                            UniversalMenuItem(
+                                label = label,
+                                itemHeight = 16.dp, // Задаем высоту здесь
                                 onClick = { clueHelp = false }
                             )
                         }
@@ -345,14 +344,19 @@ fun HeaderTable(
                     DropdownMenu(
                         expanded = selectorExpanded,
                         onDismissRequest = { selectorExpanded = false },
-                        modifier = Modifier.background(Color.White).border(1.dp, Color.Black)
+                        modifier = Modifier
+                            .background(Color.White)
+                            .border(1.dp, Color.Black)
+                        // Если вдруг ширина снова "поплывет", добавьте сюда .widthIn(min = ...)
                     ) {
                         memoryOptions.forEach { option ->
-                            DropdownMenuItem(
-                                text = { Text(option, fontSize = 8.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold) },
-                                modifier = Modifier.height(14.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                onClick = { selectedMemory = option; selectorExpanded = false }
+                            UniversalMenuItem(
+                                label = option,
+                                itemHeight = 14.dp,
+                                onClick = {
+                                    selectedMemory = option      // Сохраняем выбор
+                                    selectorExpanded = false     // Закрываем меню
+                                }
                             )
                         }
                     }
@@ -417,24 +421,19 @@ fun HeaderTable(
                     // Выпадающее меню
                     DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
                         // Пункт выбора Файла
-                        DropdownMenuItem(
-                            text = {
-                                Text(text = "Файл", fontSize = 8.sp, fontWeight = FontWeight.Bold)
-                            },
-                            modifier = Modifier.height(16.dp),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        UniversalMenuItem(
+                            label = "Файл",
+                            itemHeight = 16.dp,
                             onClick = {
                                 selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
                                 actions.onPickFileRequest()
                             }
                         )
+
                         // Пункт выбора Папки
-                        DropdownMenuItem(
-                            text = {
-                                Text(text = "Папка", fontSize = 8.sp, fontWeight = FontWeight.Bold)
-                            },
-                            modifier = Modifier.height(16.dp),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        UniversalMenuItem(
+                            label = "Папка",
+                            itemHeight = 16.dp,
                             onClick = {
                                 selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
                                 actions.onPickDirectoryRequest()
