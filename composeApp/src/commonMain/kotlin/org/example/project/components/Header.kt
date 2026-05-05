@@ -1,3 +1,7 @@
+/*Header.kt
+ Файл верстки верхней строки
+ */
+
 package org.example.project.components
 
 import androidx.compose.foundation.background
@@ -30,13 +34,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.actions.HeaderActions
+import org.example.project.actionsButton.HeaderActionsButtons
+import org.example.project.utils.TableIconButton
 import org.example.project.utils.UniversalMenuItem
 import org.example.project.utils.UniversalSelector
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeaderTable(
-    actions: HeaderActions, // 2. Добавьте этот параметр первым
+    actions: HeaderActions,
     thickness: Dp = TableConfig.lineThickness,
     color: Color = TableConfig.lineColor
 ) {
@@ -140,37 +147,17 @@ fun HeaderTable(
             }
 
             // 2. Поиск
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Поиск устройств в сети Modbus") } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 4.dp)) {
-                    Row(
-                        modifier = Modifier.clickable {}.border(1.dp, Color.Blue).background(Color.White).padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Search, null, modifier = Modifier.size(16.dp))
-                    }
+            TableIconButton(
+                icon = Icons.Default.Search,
+                tooltipText = "Поиск устройств в сети Modbus",
+                onClick = {
+                    actions.onSearch() // Используем ваш существующий метод
                 }
-            }
-
+            )
             // 3. Отчеты
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                tooltip = { PlainTooltip { Text("Генератор отчетов в Exel") } },
-                state = rememberTooltipState()
-            ) {
-                Box(modifier = Modifier.padding(start = 4.dp)) {
-                    Row(
-                        modifier = Modifier.clickable {}.border(1.dp, Color.Blue).background(Color.White).padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ListAlt, null, modifier = Modifier.size(16.dp))
-                    }
-                }
-            }
-
+            TableIconButton(icon =Icons.AutoMirrored.Filled.ListAlt, tooltipText ="Генератор отчетов в Exel",
+                onClick = { actions.onExel()}
+            )
             // --- 4. ОСЦИЛЛОГРАФ ---
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
@@ -203,7 +190,6 @@ fun HeaderTable(
                                 tint = Color.Red
                             )
                         }
-
                         // РАЗДЕЛИТЕЛЬ
                         Spacer(
                             modifier = Modifier
@@ -227,7 +213,6 @@ fun HeaderTable(
                             )
                         }
                     }
-
                     // Выпадающее меню под всей кнопкой
                     DropdownMenu(
                         expanded = clue,
@@ -249,8 +234,15 @@ fun HeaderTable(
                     }
                 }
             }
-
             // 5. Терминал
+            TableIconButton(
+                icon = Icons.Default.Terminal,
+                tooltipText = "Терминал",
+                onClick = {
+                    actions.onTerminalOpen() // Используем ваш существующий метод
+                }
+            )
+
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Терминал") } },
@@ -265,7 +257,6 @@ fun HeaderTable(
                     }
                 }
             }
-
             // 6. Help
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),

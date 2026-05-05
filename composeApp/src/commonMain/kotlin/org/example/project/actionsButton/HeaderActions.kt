@@ -11,6 +11,8 @@ interface HeaderActions {
     // Операции с устройствами
     fun onUpdate()
     fun onSearch()
+
+    fun onExel()
     fun onOpenOscillograph()
 
     // Системные операции

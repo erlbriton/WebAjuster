@@ -22,7 +22,11 @@ class HeaderActionsButtons(
         println("Запуск поиска Modbus...")
     }
 
-    override fun onOpenOscillograph() {
+    override fun onExel(){
+        println("Генератор отчетов  Exel")
+    }
+
+            override fun onOpenOscillograph() {
         println("Открытие осциллографа...")
     }
 

@@ -29,11 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material3.Icon
 /**
  * Единый шаблон для всех пунктов меню
  */
-
-
 @Composable
 fun UniversalMenuItem(
     label: String,
@@ -59,7 +59,7 @@ fun UniversalMenuItem(
         onClick = onClick
     )
 }
-
+//Функция для окна с селектором
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UniversalSelector(
@@ -157,7 +157,7 @@ fun UniversalSelector(
         }
     }
 }
-
+//Функция для окна ввода значения вручную и по алгоритму
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManualAndAutoInputField(
@@ -230,6 +230,58 @@ fun ManualAndAutoInputField(
                     }
                 }
             )
+        }
+    }
+}
+
+//Универсальная функция отрисовки кнопки
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TableIconButton(
+    icon: ImageVector? = null,
+    text: String? = null,
+    tooltipText: String,
+    borderColor: Color = Color.Blue,
+    backgroundColor: Color = Color.White,
+    contentColor: Color = Color.Black,
+    onClick: () -> Unit // НОВЫЙ ПАРАМЕТР: блок кода для выполнения
+) {
+    val tooltipState = rememberTooltipState()
+
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = { PlainTooltip { Text(tooltipText, fontSize = 12.sp) } },
+        state = tooltipState
+    ) {
+        Box(modifier = Modifier.padding(start = 4.dp)) {
+            Row(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .clickable { onClick() } // ТЕПЕРЬ КНОПКА КЛИКАБЕЛЬНА
+                    .border(1.dp, borderColor)
+                    .background(backgroundColor)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (text != null) {
+                    Text(
+                        text = text,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor,
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = contentColor
+                    )
+                }
+            }
         }
     }
 }
