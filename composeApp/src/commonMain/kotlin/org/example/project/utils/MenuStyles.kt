@@ -82,9 +82,8 @@ fun UniversalSelector(
                 text = label,
                 color = Color.White,
                 fontSize = 10.sp,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 2.dp)
             )
-
             Box {
                 Row(
                     modifier = Modifier
@@ -98,7 +97,7 @@ fun UniversalSelector(
                         modifier = Modifier
                             .padding(2.dp)
                             .background(if (isEnabled) Color(0xFF0066CC) else Color.Gray)
-                            .padding(horizontal = 4.dp)
+                            .padding(horizontal = 1.dp)
                             .widthIn(min = minWidth),
                         contentAlignment = Alignment.Center
                     ) {
