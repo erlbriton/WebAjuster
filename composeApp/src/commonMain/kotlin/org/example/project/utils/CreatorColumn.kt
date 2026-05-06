@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 
 /**
  * Универсальный компонент столбца таблицы.
@@ -47,14 +48,17 @@ fun creatorColumn(
     dividerThickness: Dp = 2.dp,
     dividerColor: Color = Color.Gray,
     dividerActiveColor: Color = Color(0xFF0066CC),
+    // Параметры для настройки цветов ручки
+    handleColor: Color = Color.Gray.copy(alpha = 0.8f),
+    handleActiveColor: Color = Color(0xFF0066CC),
     onResize: (Float) -> Unit = {},
-    // НОВЫЙ ПАРАМЕТР: действие при клике на заголовок
     onHeaderClick: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isDragging by remember { mutableStateOf(false) }
 
     Row(modifier = modifier.fillMaxHeight().height(IntrinsicSize.Min)) {
+        // 1. КОНТЕНТ СТОЛБЦА
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             headerTitle?.let { title ->
                 Box(
@@ -62,7 +66,6 @@ fun creatorColumn(
                         .fillMaxWidth()
                         .height(headerHeight)
                         .background(headerBgColor)
-                        // ТЕПЕРЬ ВСЯ ШАПКА КЛИКАБЕЛЬНА
                         .clickable { onHeaderClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -70,28 +73,45 @@ fun creatorColumn(
                         text = title,
                         color = headerTextColor,
                         fontSize = headerFontSize.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        fontWeight = FontWeight.Bold
                     )
                 }
-                // Линия-разделитель под шапкой
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(dividerColor))
             }
-
             Column(modifier = Modifier.fillMaxSize()) {
                 content()
             }
         }
 
-        // Разделитель для изменения ширины (Resizable Divider)
+        // 2. РАЗДЕЛИТЕЛЬ И СИММЕТРИЧНАЯ РУЧКА
         Box(
             modifier = Modifier
                 .width(dividerThickness)
                 .fillMaxHeight()
-                .background(if (isDragging && isResizable) dividerActiveColor else dividerColor)
-                .then(
-                    if (isResizable) {
-                        Modifier.pointerInput(Unit) {
+                .zIndex(10f), // Выносим на самый верхний слой
+            contentAlignment = Alignment.TopCenter // Центрируем содержимое по горизонтали
+        ) {
+            // Рисуем основную тонкую линию
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(if (isDragging) dividerActiveColor else dividerColor)
+            )
+
+            // РУЧКА (рисуется поверх линии)
+            if (isResizable) {
+                Box(
+                    modifier = Modifier
+                        // Позволяем ручке игнорировать ширину родителя в 2dp
+                        .wrapContentWidth(unbounded = true)
+                        .requiredWidth(12.dp) // Ширина всей интерактивной зоны
+                        .height(headerHeight)
+                        .background(
+                            color = if (isDragging) handleActiveColor else handleColor,
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                        )
+                        // Вешаем жесты на саму широкую ручку
+                        .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { isDragging = true },
                                 onDragEnd = { isDragging = false },
@@ -101,8 +121,8 @@ fun creatorColumn(
                                 onResize(dragAmount.x)
                             }
                         }
-                    } else Modifier
                 )
-        )
+            }
+        }
     }
 }
