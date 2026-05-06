@@ -329,9 +329,14 @@ fun ComContainer() {
                                     // --- Состояния для весов трех правых столбцов (в начале ComContainer) ---
                                     var weightRight1 by remember { mutableStateOf(1f) }
                                     var weightRight2 by remember { mutableStateOf(1f) }
-                                    var weightRight3 by remember { mutableStateOf(1f) }
+
+
+                                    var weightSubColumn1 by remember { mutableStateOf(1f) }//Столбец "База"
+                                    var weightSubColumn2 by remember { mutableStateOf(1f) }//Столбец "База"
+
+                                    var weightSubColumn3 by remember { mutableStateOf(1f) }//Столбец "Контроллер"
+                                    var weightSubColumn4 by remember { mutableStateOf(1f) }//Столбец "Контроллер"
                                     // ПРАВЫЙ внутренний сектор с независимыми разделителями
-                                    // ПРАВЫЙ внутренний сектор с полным набором параметров
                                     Box(
                                         modifier = Modifier
                                             .weight(1f - innerColumnWeight)
@@ -340,38 +345,13 @@ fun ComContainer() {
                                         BoxWithConstraints(modifier = Modifier.fillMaxSize().background(Color.White)) {
                                             val totalWidthPx = constraints.maxWidth.toFloat()
                                             // Важно: берем сумму текущих весов для точного расчета дельты
-                                            val sumWeights = weightRight1 + weightRight2 + weightRight3
+                                            val sumWeights = weightRight1 + weightRight2
 
                                             Row(modifier = Modifier.fillMaxSize()) {
-                                                // 1. Столбец ДАТА
+                                                //Столбец База
                                                 creatorColumn(
                                                     modifier = Modifier.weight(weightRight1),
                                                     headerTitle = "База",
-                                                    headerHeight = 25.dp,
-                                                    headerBgColor = Color(0xFFA7A789), // Восстановил твой цвет
-                                                    headerTextColor = Color.Black,
-                                                    headerFontSize = 16,
-                                                    isResizable = true,
-                                                    dividerThickness = TableConfig.lineThickness,
-                                                    dividerColor = TableConfig.lineColor,
-                                                    dividerActiveColor = Color(0xFFC0FF00), // Твой Lime при перетаскивании
-                                                    onResize = { dragDelta ->
-                                                        val delta = (dragDelta / totalWidthPx) * sumWeights
-                                                        // Проверяем, чтобы сосед (weightRight2) не схлопнулся
-                                                        if (weightRight2 - delta > 0.1f) {
-                                                            weightRight1 = (weightRight1 + delta).coerceAtLeast(0.1f)
-                                                            weightRight2 = (weightRight2 - delta)
-                                                        }
-                                                    },
-                                                    content = {
-                                                        // Место для данных ДАТА
-                                                    }
-                                                )
-
-                                                // 2. Столбец ТИП
-                                                creatorColumn(
-                                                    modifier = Modifier.weight(weightRight2),
-                                                    headerTitle = "Контроллер",
                                                     headerHeight = 25.dp,
                                                     headerBgColor = Color(0xFFA7A789),
                                                     headerTextColor = Color.Black,
@@ -382,29 +362,115 @@ fun ComContainer() {
                                                     dividerActiveColor = Color(0xFFC0FF00),
                                                     onResize = { dragDelta ->
                                                         val delta = (dragDelta / totalWidthPx) * sumWeights
-                                                        // Проверяем, чтобы сосед (weightRight3) не схлопнулся
-                                                        if (weightRight3 - delta > 0.1f) {
-                                                            weightRight2 = (weightRight2 + delta).coerceAtLeast(0.1f)
-                                                            weightRight3 = (weightRight3 - delta)
+                                                        if (weightRight2 - delta > 0.1f) {
+                                                            weightRight1 = (weightRight1 + delta).coerceAtLeast(0.1f)
+                                                            weightRight2 = (weightRight2 - delta)
                                                         }
                                                     },
                                                     content = {
-                                                        // Место для данных ТИП
+                                                        // Вычисляем ширину именно этого столбца (База) в пикселях для внутренних нужд
+                                                        val currentBaseWidthPx = totalWidthPx * (weightRight1 / sumWeights)
+                                                        val subSumWeights = weightSubColumn1 + weightSubColumn2
+
+                                                        Row(modifier = Modifier.fillMaxSize()) {
+                                                            // Внутренний столбец: hex
+                                                            creatorColumn(
+                                                                modifier = Modifier.weight(weightSubColumn1),
+                                                                headerTitle = "hex",
+                                                                headerHeight = 25.dp,
+                                                                headerBgColor = Color(0xFFC9C9C5),
+                                                                headerFontSize = 12,
+                                                                isResizable = true,
+                                                                dividerThickness = 2.dp,
+                                                                dividerColor = TableConfig.lineColor,
+                                                                dividerActiveColor = Color(0xFFC0FF00),
+                                                                onResize = { dragDelta ->
+                                                                    // Используем ширину родительской колонки "База" для расчета
+                                                                    val delta = (dragDelta / currentBaseWidthPx) * subSumWeights
+                                                                    if (weightSubColumn2 - delta > 0.1f) {
+                                                                        weightSubColumn1 = (weightSubColumn1 + delta).coerceAtLeast(0.1f)
+                                                                        weightSubColumn2 = (weightSubColumn2 - delta)
+                                                                    }
+                                                                },
+                                                                content = {
+                                                                    // Место для данных "hex"
+                                                                }
+                                                            )
+                                                            // Внутренний столбец: Physical
+                                                            creatorColumn(
+                                                                modifier = Modifier.weight(weightSubColumn2),
+                                                                headerTitle = "Physical",
+                                                                headerHeight = 25.dp,
+                                                                headerBgColor = Color(0xFFC9C9C5),
+                                                                headerFontSize = 12,
+                                                                isResizable = false,
+                                                                dividerThickness = 0.dp,
+                                                                content = {
+                                                                    // Место для данных "Physical"
+                                                                }
+                                                            )
+                                                        }
                                                     }
                                                 )
-
-                                                // 3. Столбец СТАТУС
+                                                // Столбец Контроллер с полностью кликабельной строкой внутри
                                                 creatorColumn(
-                                                    modifier = Modifier.weight(weightRight3),
-                                                    headerTitle = "Обновить",
+                                                    modifier = Modifier.weight(weightRight2),
+                                                    headerTitle = "Контроллер",
                                                     headerHeight = 25.dp,
                                                     headerBgColor = Color(0xFFA7A789),
                                                     headerTextColor = Color.Black,
                                                     headerFontSize = 16,
-                                                    isResizable = false, // Крайний правый не ресайзим
-                                                    dividerThickness = 0.dp, // Линия в конце не нужна
+                                                    isResizable = false,
+                                                    dividerThickness = 0.dp,
+                                                    onResize = { /* Ресайз не требуется */ },
+                                                    // Теперь кликабельность задается здесь:
+                                                    onHeaderClick = {
+                                                        println("Нажата вся область заголовка Контроллер")
+                                                    },
                                                     content = {
-                                                        // Место для данных СТАТУС
+                                                        // Вычисляем ширину именно этого столбца (База) в пикселях для внутренних нужд
+                                                        val currentBaseWidthPx = totalWidthPx * (weightRight1 / sumWeights)
+                                                        val subSumWeights = weightSubColumn3 + weightSubColumn4
+
+                                                        Row(modifier = Modifier.fillMaxSize()) {
+                                                            // Внутренний столбец: hex
+                                                            creatorColumn(
+                                                                modifier = Modifier.weight(weightSubColumn3),
+                                                                headerTitle = "hex",
+                                                                headerHeight = 25.dp,
+                                                                headerBgColor = Color(0xFFC9C9C5),
+                                                                headerFontSize = 12,
+                                                                isResizable = true,
+                                                                dividerThickness = 2.dp,
+                                                                dividerColor = TableConfig.lineColor,
+                                                                dividerActiveColor = Color(0xFFC0FF00),
+                                                                onResize = { dragDelta ->
+                                                                    // Используем ширину родительской колонки "База" для расчета
+                                                                    val delta = (dragDelta / currentBaseWidthPx) * subSumWeights
+                                                                    if (weightSubColumn4 - delta > 0.1f) {
+                                                                        weightSubColumn3 = (weightSubColumn3 + delta).coerceAtLeast(0.1f)
+                                                                        weightSubColumn4 = (weightSubColumn4 - delta)
+                                                                    }
+                                                                },
+                                                                content = {
+                                                                    // Место для данных "hex"
+                                                                }
+                                                            )
+                                                            // Внутренний столбец: Physical
+                                                            creatorColumn(
+                                                                modifier = Modifier.weight(weightSubColumn4),
+                                                                headerTitle = "Physical",
+                                                                headerHeight = 25.dp,
+                                                                headerBgColor = Color(0xFFC9C9C5),
+                                                                headerFontSize = 12,
+                                                                isResizable = false,
+                                                                dividerThickness = 0.dp,
+                                                                content = {
+                                                                    // Место для данных "Physical"
+                                                                }
+                                                            )
+                                                        }
+
                                                     }
                                                 )
                                             }

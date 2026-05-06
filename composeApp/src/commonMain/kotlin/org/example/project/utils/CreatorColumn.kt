@@ -4,6 +4,7 @@
 package org.example.project.utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -43,25 +44,26 @@ fun creatorColumn(
     headerTextColor: Color = Color.Black,
     headerFontSize: Int = 12,
     isResizable: Boolean = true,
-    dividerThickness: Dp = 2.dp, // Теперь это реальная ширина линии
+    dividerThickness: Dp = 2.dp,
     dividerColor: Color = Color.Gray,
     dividerActiveColor: Color = Color(0xFF0066CC),
     onResize: (Float) -> Unit = {},
+    // НОВЫЙ ПАРАМЕТР: действие при клике на заголовок
+    onHeaderClick: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isDragging by remember { mutableStateOf(false) }
 
-    // Используем IntrinsicSize.Min, чтобы Row не раздувался лишним пространством
     Row(modifier = modifier.fillMaxHeight().height(IntrinsicSize.Min)) {
-
-        // Основной контент столбца
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             headerTitle?.let { title ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(headerHeight)
-                        .background(headerBgColor),
+                        .background(headerBgColor)
+                        // ТЕПЕРЬ ВСЯ ШАПКА КЛИКАБЕЛЬНА
+                        .clickable { onHeaderClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -72,7 +74,7 @@ fun creatorColumn(
                         textAlign = TextAlign.Center
                     )
                 }
-                // Горизонтальный разделитель под шапкой
+                // Линия-разделитель под шапкой
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(dividerColor))
             }
 
@@ -81,10 +83,10 @@ fun creatorColumn(
             }
         }
 
-        // --- ИСПРАВЛЕННЫЙ РАЗДЕЛИТЕЛЬ ---
+        // Разделитель для изменения ширины (Resizable Divider)
         Box(
             modifier = Modifier
-                .width(dividerThickness) // Строго заданная ширина
+                .width(dividerThickness)
                 .fillMaxHeight()
                 .background(if (isDragging && isResizable) dividerActiveColor else dividerColor)
                 .then(
