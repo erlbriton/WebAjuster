@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.actionsButton.HeaderActionsButtons
 import org.example.project.models.DeviceInfoIni
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -293,6 +292,7 @@ fun ComContainer() {
                                                                     Text(
                                                                         text = parameter.code,
                                                                         fontSize = 11.sp,
+                                                                        fontWeight = FontWeight.Medium,
                                                                         color = Color.Black // Установили черный цвет
                                                                     )
                                                                 }
@@ -321,6 +321,7 @@ fun ComContainer() {
                                                                     Text(
                                                                         text = parameter.idName,
                                                                         fontSize = 11.sp,
+                                                                        fontWeight = FontWeight.Medium,
                                                                         maxLines = 1,
                                                                         softWrap = false,
                                                                         color = Color.Black // Установили черный цвет
@@ -351,6 +352,7 @@ fun ComContainer() {
                                                                     Text(
                                                                         text = parameter.description,
                                                                         fontSize = 11.sp,
+                                                                        fontWeight = FontWeight.Medium,
                                                                         maxLines = 1,
                                                                         softWrap = false,
                                                                         color = Color.Black // Установили черный цвет
@@ -378,6 +380,7 @@ fun ComContainer() {
                                                                     Text(
                                                                         text = parameter.unit,
                                                                         fontSize = 11.sp,
+                                                                        fontWeight = FontWeight.Medium,
                                                                         color = Color.Black // Установили черный цвет
                                                                     )
                                                                 }
@@ -411,7 +414,7 @@ fun ComContainer() {
                                             val sumWeights = weightRight1 + weightRight2
 
                                             Row(modifier = Modifier.fillMaxSize()) {
-                                                // ПРАВЫЙ внутренний сектор: БАЗА (Обновленный)
+                                                // ------------- ПРАВЫЙ внутренний сектор: БАЗА -------------
                                                 creatorColumn(
                                                     modifier = Modifier.weight(weightRight1),
                                                     headerTitle = "База",
@@ -424,28 +427,20 @@ fun ComContainer() {
                                                     dividerColor = TableConfig.lineColor,
                                                     dividerActiveColor = Color(0xFFC0FF00),
                                                     onResize = { dragDelta ->
-                                                        val delta =
-                                                            (dragDelta / totalWidthPx) * sumWeights
+                                                        val delta = (dragDelta / totalWidthPx) * sumWeights
                                                         if (weightRight2 - delta > 0.1f) {
-                                                            weightRight1 =
-                                                                (weightRight1 + delta).coerceAtLeast(
-                                                                    0.1f
-                                                                )
+                                                            weightRight1 = (weightRight1 + delta).coerceAtLeast(0.1f)
                                                             weightRight2 = (weightRight2 - delta)
                                                         }
                                                     },
                                                     content = {
-                                                        val currentBaseWidthPx =
-                                                            totalWidthPx * (weightRight1 / sumWeights)
-                                                        val subSumWeights =
-                                                            weightSubColumn1 + weightSubColumn2
+                                                        val currentBaseWidthPx = totalWidthPx * (weightRight1 / sumWeights)
+                                                        val subSumWeights = weightSubColumn1 + weightSubColumn2
 
                                                         Row(modifier = Modifier.fillMaxSize()) {
                                                             // Внутренний столбец: hex (База)
                                                             creatorColumn(
-                                                                modifier = Modifier.weight(
-                                                                    weightSubColumn1
-                                                                ),
+                                                                modifier = Modifier.weight(weightSubColumn1),
                                                                 headerTitle = "hex",
                                                                 headerHeight = 25.dp,
                                                                 headerBgColor = Color(0xFFC9C9C5),
@@ -453,39 +448,35 @@ fun ComContainer() {
                                                                 isResizable = true,
                                                                 dividerThickness = 2.dp,
                                                                 dividerColor = TableConfig.lineColor,
-                                                                dividerActiveColor = Color(
-                                                                    0xFFC0FF00
-                                                                ),
+                                                                dividerActiveColor = Color(0xFFC0FF00),
                                                                 onResize = { dragDelta ->
-                                                                    val delta =
-                                                                        (dragDelta / currentBaseWidthPx) * subSumWeights
+                                                                    val delta = (dragDelta / currentBaseWidthPx) * subSumWeights
                                                                     if (weightSubColumn2 - delta > 0.1f) {
-                                                                        weightSubColumn1 =
-                                                                            (weightSubColumn1 + delta).coerceAtLeast(
-                                                                                0.1f
-                                                                            )
-                                                                        weightSubColumn2 =
-                                                                            (weightSubColumn2 - delta)
+                                                                        weightSubColumn1 = (weightSubColumn1 + delta).coerceAtLeast(0.1f)
+                                                                        weightSubColumn2 = (weightSubColumn2 - delta)
                                                                     }
                                                                 },
                                                                 content = {
-                                                                    // Используем общий скролл и черный текст
                                                                     Column(
                                                                         modifier = Modifier.fillMaxSize()
-                                                                            .verticalScroll(
-                                                                                tableScrollState
-                                                                            )
+                                                                            .verticalScroll(tableScrollState)
                                                                     ) {
                                                                         selectedDevice?.flashParameters?.forEach { parameter ->
+                                                                            // Вычисляем цвет: если HEX базы не равен HEX контроллера — красим в красный
+                                                                            val textColor = if (parameter.hexBase != parameter.hexCtrl) Color.Red else Color.Black
+
                                                                             Box(
-                                                                                modifier = Modifier.fillMaxWidth()
-                                                                                    .height(24.dp),
+                                                                                modifier = Modifier.fillMaxWidth().height(24.dp),
                                                                                 contentAlignment = Alignment.Center
                                                                             ) {
                                                                                 Text(
-                                                                                    text = parameter.hexBase, // Значение x0014
+                                                                                    text = parameter.hexBase,
+                                                                                    fontWeight = FontWeight.Medium,
                                                                                     fontSize = 11.sp,
-                                                                                    color = Color.Black
+
+                                                                                    color = textColor // Применяем вычисленный цвет
+
+
                                                                                 )
                                                                             }
                                                                         }
@@ -495,9 +486,7 @@ fun ComContainer() {
 
                                                             // Внутренний столбец: Physical (База)
                                                             creatorColumn(
-                                                                modifier = Modifier.weight(
-                                                                    weightSubColumn2
-                                                                ),
+                                                                modifier = Modifier.weight(weightSubColumn2),
                                                                 headerTitle = "Physical",
                                                                 headerHeight = 25.dp,
                                                                 headerBgColor = Color(0xFFC9C9C5),
@@ -507,20 +496,22 @@ fun ComContainer() {
                                                                 content = {
                                                                     Column(
                                                                         modifier = Modifier.fillMaxSize()
-                                                                            .verticalScroll(
-                                                                                tableScrollState
-                                                                            )
+                                                                            .verticalScroll(tableScrollState)
                                                                     ) {
                                                                         selectedDevice?.flashParameters?.forEach { parameter ->
+                                                                            // Вычисляем цвет аналогично первой колонке
+                                                                            val textColor = if (parameter.hexBase != parameter.hexCtrl) Color.Red else Color.Black
+
                                                                             Box(
-                                                                                modifier = Modifier.fillMaxWidth()
-                                                                                    .height(24.dp),
+                                                                                modifier = Modifier.fillMaxWidth().height(24.dp),
                                                                                 contentAlignment = Alignment.Center
                                                                             ) {
                                                                                 Text(
-                                                                                    text = parameter.physBase, // Десятичное значение
+                                                                                    text = parameter.physBase,
                                                                                     fontSize = 11.sp,
-                                                                                    color = Color.Black
+                                                                                    fontWeight = FontWeight.Medium,
+                                                                                    color = textColor // Применяем вычисленный цвет
+
                                                                                 )
                                                                             }
                                                                         }
@@ -530,8 +521,7 @@ fun ComContainer() {
                                                         }
                                                     }
                                                 )
-                                                // Столбец Контроллер с полностью кликабельной строкой внутри
-                                                // ------------- Столбец Контроллер с заполнением данных ----------------------
+                                                // ------------- Столбец Контроллер с заполнением данных и проверкой совпадения ----------------------
                                                 creatorColumn(
                                                     modifier = Modifier.weight(weightRight2),
                                                     headerTitle = "Контроллер",
@@ -547,17 +537,13 @@ fun ComContainer() {
                                                     },
                                                     content = {
                                                         // Вычисляем ширину именно этого столбца (Контроллер) в пикселях для внутренних нужд
-                                                        val currentBaseWidthPx =
-                                                            totalWidthPx * (weightRight2 / sumWeights)
-                                                        val subSumWeights =
-                                                            weightSubColumn3 + weightSubColumn4
+                                                        val currentBaseWidthPx = totalWidthPx * (weightRight2 / sumWeights)
+                                                        val subSumWeights = weightSubColumn3 + weightSubColumn4
 
                                                         Row(modifier = Modifier.fillMaxSize()) {
                                                             // Внутренний столбец: hex
                                                             creatorColumn(
-                                                                modifier = Modifier.weight(
-                                                                    weightSubColumn3
-                                                                ),
+                                                                modifier = Modifier.weight(weightSubColumn3),
                                                                 headerTitle = "hex",
                                                                 headerHeight = 25.dp,
                                                                 headerBgColor = Color(0xFFC9C9C5),
@@ -565,39 +551,33 @@ fun ComContainer() {
                                                                 isResizable = true,
                                                                 dividerThickness = 2.dp,
                                                                 dividerColor = TableConfig.lineColor,
-                                                                dividerActiveColor = Color(
-                                                                    0xFFC0FF00
-                                                                ),
+                                                                dividerActiveColor = Color(0xFFC0FF00),
                                                                 onResize = { dragDelta ->
-                                                                    val delta =
-                                                                        (dragDelta / currentBaseWidthPx) * subSumWeights
+                                                                    val delta = (dragDelta / currentBaseWidthPx) * subSumWeights
                                                                     if (weightSubColumn4 - delta > 0.1f) {
-                                                                        weightSubColumn3 =
-                                                                            (weightSubColumn3 + delta).coerceAtLeast(
-                                                                                0.1f
-                                                                            )
-                                                                        weightSubColumn4 =
-                                                                            (weightSubColumn4 - delta)
+                                                                        weightSubColumn3 = (weightSubColumn3 + delta).coerceAtLeast(0.1f)
+                                                                        weightSubColumn4 = (weightSubColumn4 - delta)
                                                                     }
                                                                 },
                                                                 content = {
                                                                     // НАПОЛНЕНИЕ: Список hex значений контроллера
                                                                     Column(
                                                                         modifier = Modifier.fillMaxSize()
-                                                                            .verticalScroll(
-                                                                                tableScrollState
-                                                                            )
+                                                                            .verticalScroll(tableScrollState)
                                                                     ) {
                                                                         selectedDevice?.flashParameters?.forEach { parameter ->
+                                                                            // ВЫЧИСЛЯЕМ ЦВЕТ: Красный, если данные из базы и контроллера не равны
+                                                                            val textColor = if (parameter.hexBase != parameter.hexCtrl) Color.Red else Color.Black
+
                                                                             Box(
-                                                                                modifier = Modifier.fillMaxWidth()
-                                                                                    .height(24.dp),
+                                                                                modifier = Modifier.fillMaxWidth().height(24.dp),
                                                                                 contentAlignment = Alignment.Center
                                                                             ) {
                                                                                 Text(
                                                                                     text = parameter.hexCtrl, // Отображает x0000
                                                                                     fontSize = 11.sp,
-                                                                                    color = Color.Black
+                                                                                    fontWeight = FontWeight.Medium,
+                                                                                    color = textColor // Применяем цвет
                                                                                 )
                                                                             }
                                                                         }
@@ -606,9 +586,7 @@ fun ComContainer() {
                                                             )
                                                             // Внутренний столбец: Physical
                                                             creatorColumn(
-                                                                modifier = Modifier.weight(
-                                                                    weightSubColumn4
-                                                                ),
+                                                                modifier = Modifier.weight(weightSubColumn4),
                                                                 headerTitle = "Physical",
                                                                 headerHeight = 25.dp,
                                                                 headerBgColor = Color(0xFFC9C9C5),
@@ -619,20 +597,21 @@ fun ComContainer() {
                                                                     // НАПОЛНЕНИЕ: Список Physical значений контроллера
                                                                     Column(
                                                                         modifier = Modifier.fillMaxSize()
-                                                                            .verticalScroll(
-                                                                                tableScrollState
-                                                                            )
+                                                                            .verticalScroll(tableScrollState)
                                                                     ) {
                                                                         selectedDevice?.flashParameters?.forEach { parameter ->
+                                                                            // ВЫЧИСЛЯЕМ ЦВЕТ: Красный, если данные из базы и контроллера не равны
+                                                                            val textColor = if (parameter.hexBase != parameter.hexCtrl) Color.Red else Color.Black
+
                                                                             Box(
-                                                                                modifier = Modifier.fillMaxWidth()
-                                                                                    .height(24.dp),
+                                                                                modifier = Modifier.fillMaxWidth().height(24.dp),
                                                                                 contentAlignment = Alignment.Center
                                                                             ) {
                                                                                 Text(
                                                                                     text = parameter.physCtrl, // Отображает 0
                                                                                     fontSize = 11.sp,
-                                                                                    color = Color.Black
+                                                                                    fontWeight = FontWeight.Medium,
+                                                                                    color = textColor // Применяем цвет
                                                                                 )
                                                                             }
                                                                         }
