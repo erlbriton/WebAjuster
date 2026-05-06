@@ -326,14 +326,90 @@ fun ComContainer() {
                                         }
                                     )
                                     // ПРАВЫЙ внутренний столбец
+                                    // --- Состояния для весов трех правых столбцов (в начале ComContainer) ---
+                                    var weightRight1 by remember { mutableStateOf(1f) }
+                                    var weightRight2 by remember { mutableStateOf(1f) }
+                                    var weightRight3 by remember { mutableStateOf(1f) }
+                                    // ПРАВЫЙ внутренний сектор с независимыми разделителями
+                                    // ПРАВЫЙ внутренний сектор с полным набором параметров
                                     Box(
                                         modifier = Modifier
                                             .weight(1f - innerColumnWeight)
                                             .fillMaxHeight()
-                                            .background(Color.White)
                                     ) {
-                                        Text("Правая секция данных", modifier = Modifier.padding(8.dp), fontSize = 12.sp)
-                            }
+                                        BoxWithConstraints(modifier = Modifier.fillMaxSize().background(Color.White)) {
+                                            val totalWidthPx = constraints.maxWidth.toFloat()
+                                            // Важно: берем сумму текущих весов для точного расчета дельты
+                                            val sumWeights = weightRight1 + weightRight2 + weightRight3
+
+                                            Row(modifier = Modifier.fillMaxSize()) {
+                                                // 1. Столбец ДАТА
+                                                creatorColumn(
+                                                    modifier = Modifier.weight(weightRight1),
+                                                    headerTitle = "База",
+                                                    headerHeight = 25.dp,
+                                                    headerBgColor = Color(0xFFA7A789), // Восстановил твой цвет
+                                                    headerTextColor = Color.Black,
+                                                    headerFontSize = 16,
+                                                    isResizable = true,
+                                                    dividerThickness = TableConfig.lineThickness,
+                                                    dividerColor = TableConfig.lineColor,
+                                                    dividerActiveColor = Color(0xFFC0FF00), // Твой Lime при перетаскивании
+                                                    onResize = { dragDelta ->
+                                                        val delta = (dragDelta / totalWidthPx) * sumWeights
+                                                        // Проверяем, чтобы сосед (weightRight2) не схлопнулся
+                                                        if (weightRight2 - delta > 0.1f) {
+                                                            weightRight1 = (weightRight1 + delta).coerceAtLeast(0.1f)
+                                                            weightRight2 = (weightRight2 - delta)
+                                                        }
+                                                    },
+                                                    content = {
+                                                        // Место для данных ДАТА
+                                                    }
+                                                )
+
+                                                // 2. Столбец ТИП
+                                                creatorColumn(
+                                                    modifier = Modifier.weight(weightRight2),
+                                                    headerTitle = "Контроллер",
+                                                    headerHeight = 25.dp,
+                                                    headerBgColor = Color(0xFFA7A789),
+                                                    headerTextColor = Color.Black,
+                                                    headerFontSize = 16,
+                                                    isResizable = true,
+                                                    dividerThickness = TableConfig.lineThickness,
+                                                    dividerColor = TableConfig.lineColor,
+                                                    dividerActiveColor = Color(0xFFC0FF00),
+                                                    onResize = { dragDelta ->
+                                                        val delta = (dragDelta / totalWidthPx) * sumWeights
+                                                        // Проверяем, чтобы сосед (weightRight3) не схлопнулся
+                                                        if (weightRight3 - delta > 0.1f) {
+                                                            weightRight2 = (weightRight2 + delta).coerceAtLeast(0.1f)
+                                                            weightRight3 = (weightRight3 - delta)
+                                                        }
+                                                    },
+                                                    content = {
+                                                        // Место для данных ТИП
+                                                    }
+                                                )
+
+                                                // 3. Столбец СТАТУС
+                                                creatorColumn(
+                                                    modifier = Modifier.weight(weightRight3),
+                                                    headerTitle = "Обновить",
+                                                    headerHeight = 25.dp,
+                                                    headerBgColor = Color(0xFFA7A789),
+                                                    headerTextColor = Color.Black,
+                                                    headerFontSize = 16,
+                                                    isResizable = false, // Крайний правый не ресайзим
+                                                    dividerThickness = 0.dp, // Линия в конце не нужна
+                                                    content = {
+                                                        // Место для данных СТАТУС
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
                         }
                     }
                 }
