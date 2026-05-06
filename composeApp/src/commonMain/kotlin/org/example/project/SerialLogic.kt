@@ -1,4 +1,4 @@
-package org.example.project // Проверь, чтобы совпадало с твоим namespace
+package org.example.project
 
 object SerialLogic {
 
