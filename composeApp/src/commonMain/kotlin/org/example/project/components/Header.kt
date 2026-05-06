@@ -75,7 +75,7 @@ fun HeaderTable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(20.dp)
                 .background(TableConfig.headerBackground),
             verticalAlignment = Alignment.CenterVertically
         ) {

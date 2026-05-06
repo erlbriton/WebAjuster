@@ -1,3 +1,5 @@
+//comContainer.kt
+
 package org.example.project.components
 
 import androidx.compose.foundation.background
@@ -42,6 +44,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import org.example.project.utils.creatorColumn
 
 @Composable
 fun ComContainer() {
@@ -57,6 +61,10 @@ fun ComContainer() {
     var deviceLocation by remember { mutableStateOf("—") }//Путь
 
     var isResizing by remember { mutableStateOf(false) }//Изменяем цвет разделительной линии
+
+    //Разделение правой половины по 5-ю строками
+    var innerColumnWeight by remember { mutableStateOf(0.5f) } // Разделение 50/50 внутри правой части
+    var isInnerResizing by remember { mutableStateOf(false) }  // Состояние перетаскивания для новой линии
 
     // Ключ - локация, Значение - список файлов
     val devicesMap = remember { mutableStateMapOf<String, MutableList<DeviceInfoIni>>() }
@@ -114,7 +122,6 @@ fun ComContainer() {
                         .border(width = TableConfig.lineThickness, color = TableConfig.lineColor)
                 ) {
                     HeaderTable(actions = headerActions)
-                    // LineTwoTable()
                     // --- Секция двух столбцов ---
                     Row(
                         modifier = Modifier
@@ -236,6 +243,96 @@ fun ComContainer() {
                                 LineThirdTable()//Третья строка
                                 LineForthTable()//Четвертая строка
                                 LineFifthTable()//Пятая строка
+                                // --- НИЖНЯЯ ЧАСТЬ: 2 новых столбца на всю оставшуюся высоту ---
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f) // Занимает всё свободное место снизу
+                                ) {
+                                    // ------------- ЛЕВЫЙ внутренний столбец (Обновленный) ----------------------
+                                    creatorColumn(
+                                        modifier = Modifier.weight(innerColumnWeight),
+                                        headerTitle = "ПАРАМЕТР",
+                                        headerHeight = 25.dp,
+                                        headerBgColor = Color(0xFFDFE5CA),
+                                        headerFontSize = 16,
+                                        isResizable = true,
+                                        dividerThickness = TableConfig.lineThickness, // Используем системную толщину
+                                        dividerColor = TableConfig.lineColor,
+                                        dividerActiveColor = Color(0xFFC0FF00),
+                                        onResize = { dragDelta ->
+                                            val rightPartWidth = tableWidth.value * (1f - leftColumnWeight)
+                                            val deltaWeight = dragDelta / rightPartWidth
+                                            innerColumnWeight = (innerColumnWeight + deltaWeight).coerceIn(0.1f, 0.9f)
+                                        },
+                                        content = {
+                                            // Состояния для весов 2-го и 3-го столбцов (в сумме дают 1f)
+                                            var weightCol2 by remember { mutableStateOf(0.5f) }
+                                            var weightCol3 by remember { mutableStateOf(0.5f) }
+
+                                            // Фиксированная ширина для 1 и 4 (в dp)
+                                            val fixedWidth = 60.dp
+
+                                            Row(modifier = Modifier.fillMaxSize()) {
+                                                // --- 1-й СТОЛБЕЦ (СТРОГО ФИКСИРОВАННЫЙ) ---
+                                                creatorColumn(
+                                                    modifier = Modifier.width(fixedWidth), // Используем width вместо weight
+                                                    headerTitle = "№",
+                                                    headerHeight = 25.dp,
+                                                    isResizable = false, // Запрещаем тянуть границу
+                                                    dividerThickness = 2.dp,
+                                                    content = { /* Данные */ }
+                                                )
+
+                                                // --- 2-й СТОЛБЕЦ (РЕЗИНОВЫЙ + ИЗМЕНЯЕМЫЙ) ---
+                                                creatorColumn(
+                                                    modifier = Modifier.weight(weightCol2), // Занимает часть свободного места
+                                                    headerTitle = "Имя",
+                                                    headerHeight = 25.dp,
+                                                    onResize = { dragDelta ->
+                                                        // Вычисляем дельту. Ширина берется от доступной области Row
+                                                        // Для простоты используем примерный коэффициент или вычисляем через BoxWithConstraints
+                                                        val delta = dragDelta / 200f // Коэффициент чувствительности
+                                                        weightCol2 = (weightCol2 + delta).coerceIn(0.1f, 0.9f)
+                                                        weightCol3 = (1f - weightCol2) // 3-й столбец подстраивается
+                                                    },
+                                                    content = { /* Данные */ }
+                                                )
+
+                                                // --- 3-й СТОЛБЕЦ (РЕЗИНОВЫЙ + ИЗМЕНЯЕМЫЙ) ---
+                                                creatorColumn(
+                                                    modifier = Modifier.weight(weightCol3),
+                                                    headerTitle = "Зачение",
+                                                    headerHeight = 25.dp,
+                                                    onResize = { dragDelta ->
+                                                        val delta = dragDelta / 200f
+                                                        weightCol3 = (weightCol3 + delta).coerceIn(0.1f, 0.9f)
+                                                        weightCol2 = (1f - weightCol3)
+                                                    },
+                                                    content = { /* Данные */ }
+                                                )
+
+                                                // --- 4-й СТОЛБЕЦ (СТРОГО ФИКСИРОВАННЫЙ) ---
+                                                creatorColumn(
+                                                    modifier = Modifier.width(fixedWidth), // Снова фиксированная ширина
+                                                    headerTitle = "Ед. изм.",
+                                                    headerHeight = 25.dp,
+                                                    isResizable = false,
+                                                    dividerThickness = 0.dp, // У последнего столбца убираем разделитель
+                                                    content = { /* Данные */ }
+                                                )
+                                            }
+                                           // Box(modifier = Modifier.fillMaxSize().background(Color.White))
+                                        }
+                                    )
+                                    // ПРАВЫЙ внутренний столбец
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f - innerColumnWeight)
+                                            .fillMaxHeight()
+                                            .background(Color.White)
+                                    ) {
+                                        Text("Правая секция данных", modifier = Modifier.padding(8.dp), fontSize = 12.sp)
                             }
                         }
                     }
@@ -256,4 +353,4 @@ fun ComContainer() {
             }
         )
     }
-}
+}}}

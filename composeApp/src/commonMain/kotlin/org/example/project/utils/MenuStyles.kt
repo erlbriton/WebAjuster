@@ -1,3 +1,7 @@
+//MenuStyles.kt
+
+//Файл с универсальными функциями для создания разных сущностей
+
 package org.example.project.utils
 
 import androidx.compose.foundation.layout.IntrinsicSize
