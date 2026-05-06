@@ -56,6 +56,8 @@ fun ComContainer() {
     var showErrorDialog by remember { mutableStateOf(false) }
     var deviceLocation by remember { mutableStateOf("—") }//Путь
 
+    var isResizing by remember { mutableStateOf(false) }//Изменяем цвет разделительной линии
+
     // Ключ - локация, Значение - список файлов
     val devicesMap = remember { mutableStateMapOf<String, MutableList<DeviceInfoIni>>() }
 
@@ -119,7 +121,6 @@ fun ComContainer() {
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-                        // Левый столбец
                         // Левый столбец
                         Box(
                             modifier = Modifier
@@ -205,14 +206,19 @@ fun ComContainer() {
                                 }
                             }
                         }
-// Разделитель
+                        //-------------------------------- Разделитель -----------------------------
                         Box(
                             modifier = Modifier
                                 .width(TableConfig.lineThickness)
                                 .fillMaxHeight()
-                                .background(TableConfig.lineColor)
+                                // Динамическая смена цвета: если тянем — подсвечиваем, если нет — стандартный цвет
+                                .background(if (isResizing) Color(0xFF0066CC) else TableConfig.lineColor)
                                 .pointerInput(Unit) {
-                                    detectDragGestures { change, dragAmount ->
+                                    detectDragGestures(
+                                        onDragStart = { isResizing = true }, // Фиксируем начало касания
+                                        onDragEnd = { isResizing = false },   // Возвращаем цвет после отпускания
+                                        onDragCancel = { isResizing = false }
+                                    ) { change, dragAmount ->
                                         change.consume()
                                         val delta = dragAmount.x / tableWidth.value
                                         leftColumnWeight = (leftColumnWeight + delta).coerceIn(0.1f, 0.9f)

@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.dp
 
 object TableConfig {
     // Изменяешь здесь — меняется везде, где используется TableConfig
-    val lineThickness = 2.dp
+    val lineThickness = 4.dp
     val lineColor = Color.Gray
     // Цвета для фона разных строк
     val headerBackground = Color(0xFFC4BEBE)
