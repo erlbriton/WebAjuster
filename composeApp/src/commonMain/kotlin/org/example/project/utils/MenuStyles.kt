@@ -206,8 +206,6 @@ fun ManualAndAutoInputField(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier
-                    // Если width передан при вызове — используем его,
-                    // если нет — включаем автоподбор размера
                     .then(
                         if (width != null) Modifier.width(width)
                         else Modifier.width(IntrinsicSize.Min).widthIn(min = minWidth)
@@ -217,24 +215,51 @@ fun ManualAndAutoInputField(
                     .background(windowColor),
                 textStyle = textStyle,
                 singleLine = true,
+                // УБИРАЕМ на время decorationBox, чтобы проверить чистый ввод
                 decorationBox = { innerTextField ->
                     Box(
-                        contentAlignment = Alignment.Center,
+                        contentAlignment = Alignment.CenterStart, // Выравнивание по левому краю
                         modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
-                        // Невидимый текст, который "расталкивает" границы окна под контент
-                        Text(
-                            text = value,
-                            style = textStyle,
-                            color = Color.Transparent,
-                            maxLines = 1,
-                            softWrap = false
-                        )
-                        // Само поле ввода
                         innerTextField()
                     }
                 }
             )
+
+
+//            BasicTextField(
+//                value = value,
+//                onValueChange = onValueChange,
+//                modifier = Modifier
+//                    // Если width передан при вызове — используем его,
+//                    // если нет — включаем автоподбор размера
+//                    .then(
+//                        if (width != null) Modifier.width(width)
+//                        else Modifier.width(IntrinsicSize.Min).widthIn(min = minWidth)
+//                    )
+//                    .height(24.dp)
+//                    .border(1.dp, Color.Gray)
+//                    .background(windowColor),
+//                textStyle = textStyle,
+//                singleLine = true,
+//                decorationBox = { innerTextField ->
+//                    Box(
+//                        contentAlignment = Alignment.Center,
+//                        modifier = Modifier.padding(horizontal = 4.dp)
+//                    ) {
+//                        // Невидимый текст, который "расталкивает" границы окна под контент
+//                        Text(
+//                            text = value,
+//                            style = textStyle,
+//                            color = Color.Transparent,
+//                            maxLines = 1,
+//                            softWrap = false
+//                        )
+//                        // Само поле ввода
+//                        innerTextField()
+//                    }
+//                }
+//            )
         }
     }
 }

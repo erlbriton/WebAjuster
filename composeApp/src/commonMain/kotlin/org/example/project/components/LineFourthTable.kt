@@ -15,11 +15,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.example.project.utils.ManualAndAutoInputField
 import org.example.project.utils.TableIconButton
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
-
+fun getJsDateString(): String = js("""
+    (function() {
+        var d = new Date();
+        var day = ('0' + d.getDate()).slice(-2);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var year = d.getFullYear();
+        return day + '.' + month + '.' + year;
+    })()
+""")
 @Composable
 fun LineForthTable(thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
                    color: Color = TableConfig.lineColor) {
@@ -69,16 +74,7 @@ fun LineForthTable(thickness: Dp = TableConfig.lineThickness, // Использ�
                 backgroundColor = Color(0xFFBBAFAF),
                 onClick = {
 // Получаем текущий момент времени
-                    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-
-                    // Форматируем вручную (добавляем 0 спереди, если число меньше 10)
-                    val day = now.dayOfMonth.toString().padStart(2, '0')
-                    val month = now.monthNumber.toString().padStart(2, '0')
-                    val year = now.year
-
-                    // Результат: "07.05.2026"
-                   // dateSet = "$day.$month.$year"
-                    dateSet = "01.01.2000"
+                    dateSet = getJsDateString()
                 }
             )
 

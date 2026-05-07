@@ -32,7 +32,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.coroutines.core)
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+
 
             // Подключение расширенных иконок для UI
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
