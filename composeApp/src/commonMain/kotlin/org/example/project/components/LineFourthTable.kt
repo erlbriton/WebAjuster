@@ -28,10 +28,10 @@ fun getJsDateString(): String = js("""
 @Composable
 fun LineForthTable(thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
                    color: Color = TableConfig.lineColor) {
-    // Column служит контейнером, который выстраивает элементы вертикально.
+
     var typeMechanism by remember { mutableStateOf("") }
     var dateSet by remember { mutableStateOf("29.01.1964") }
-
+// Column служит контейнером, который выстраивает элементы вертикально.
     Column(
         modifier = Modifier.fillMaxWidth(), // Растягиваем контейнер на всю ширину экрана.
         horizontalAlignment = Alignment.End // ПРИЖИМАЕМ ВСЕ элементы (Row и Divider) вправо.
