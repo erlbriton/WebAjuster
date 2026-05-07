@@ -1,6 +1,6 @@
 //comContainer.kt
 
-package org.example.project.components
+package org.example.project.components.comcontainer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,16 +35,25 @@ import org.example.project.actionsButton.HeaderActionsButtons
 import org.example.project.models.DeviceInfoIni
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import org.example.project.components.HeaderTable
+import org.example.project.components.LineFifthTable
+import org.example.project.components.LineForthTable
+import org.example.project.components.LineThirdTable
+import org.example.project.components.LineTwoTable
+import org.example.project.components.TableConfig
 import org.example.project.utils.creatorColumn
 
 @Composable
@@ -157,16 +166,16 @@ fun ComContainer() {
                                                 else expandedGroups.add(location)
                                             }
                                             .padding(vertical = 4.dp),
-                                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         //Шеврон(стрелочка вниз или вправо)
                                         Icon(
                                             imageVector = if (isExpanded)
-                                                androidx.compose.material.icons.Icons.Default.KeyboardArrowDown
+                                                Icons.Default.KeyboardArrowDown
                                             else
                                                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                             contentDescription = null,
-                                            tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                            tint = MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier
                                                 .size(20.dp) // Четкий размер иконки
                                                 .padding(end = 4.dp)
@@ -178,21 +187,21 @@ fun ComContainer() {
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             maxLines = 1, // ЗАПРЕТ ПЕРЕНОСА
-                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, // ОБРЕЗКА ТРОЕТОЧИЕМ
+                                            overflow = TextOverflow.Ellipsis, // ОБРЕЗКА ТРОЕТОЧИЕМ
                                             modifier = Modifier.weight(1f)
                                         )
 
                                         // Бейдж с количеством файлов
                                         Surface(
-                                            shape = androidx.compose.foundation.shape.CircleShape,
-                                            color = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.primaryContainer,
                                             modifier = Modifier.padding(horizontal = 4.dp)
                                         ) {
                                             Text(
                                                 text = devices.size.toString(),
                                                 fontSize = 9.sp,
                                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
-                                                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer
                                             )
                                         }
                                     }
@@ -205,7 +214,7 @@ fun ComContainer() {
                                                 fontSize = 12.sp,
                                                 lineHeight = 12.sp,
                                                 maxLines = 1,
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                                overflow = TextOverflow.Ellipsis,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(start = 20.dp, bottom = 4.dp, end = 4.dp) // Увеличили отступ слева под большой шеврон
@@ -219,7 +228,7 @@ fun ComContainer() {
                         }
                         //-------------------------------- Разделитель -----------------------------
                         Box(
-                            modifier = Modifier
+                            modifier = Modifier.Companion
                                 .width(TableConfig.lineThickness)
                                 .fillMaxHeight()
                                 // Динамическая смена цвета: если тянем — подсвечиваем, если нет — стандартный цвет
@@ -242,7 +251,19 @@ fun ComContainer() {
                                 .weight(1f - leftColumnWeight)
                                 .fillMaxHeight()
                         ) {
-                            Column(modifier = Modifier.fillMaxSize()) {
+                            DeviceDataTable(
+                                selectedDevice = selectedDevice,
+                                tableScrollState = tableScrollState,
+                                innerColumnWeight = innerColumnWeight,
+                                onInnerResize = { dragDelta ->
+                                    val rightPartWidth = tableWidth.value * (1f - leftColumnWeight)
+                                    val deltaWeight = dragDelta / rightPartWidth
+                                    innerColumnWeight = (innerColumnWeight + deltaWeight).coerceIn(0.1f, 0.9f)
+                                }
+                            )
+
+
+                       /*     Column(modifier = Modifier.fillMaxSize()) {
                                 LineTwoTable()//Вторая строка
                                 LineThirdTable()//Третья строка
                                 LineForthTable()//Четвертая строка
@@ -253,7 +274,7 @@ fun ComContainer() {
                                         .fillMaxWidth()
                                         .weight(1f) // Занимает всё свободное место снизу
                                 ) {
-// ------------- ЛЕВЫЙ внутренний столбец "ПАРАМЕТР" (Черный текст) ----------------------
+                              // ------------- ЛЕВЫЙ внутренний столбец "ПАРАМЕТР"----------------------
                                     creatorColumn(
                                         modifier = Modifier.weight(innerColumnWeight),
                                         headerTitle = "ПАРАМЕТР",
@@ -623,24 +644,35 @@ fun ComContainer() {
                                                 )
                                                 // --- Отображение окна ошибки ---
                                                 if (showErrorDialog) {
-                                                    androidx.compose.material3.AlertDialog(
+                                                    AlertDialog(
                                                         onDismissRequest = {
                                                             showErrorDialog = false
                                                         },
-                                                        title = { androidx.compose.material3.Text("Ошибка формата") },
+                                                        title = { Text("Ошибка формата") },
                                                         text = {
-                                                            androidx.compose.material3.Text(
+                                                            Text(
                                                                 errorMessage
                                                             )
                                                         },
                                                         confirmButton = {
-                                                            androidx.compose.material3.TextButton(
+                                                            TextButton(
                                                                 onClick = {
                                                                     showErrorDialog = false
                                                                 }) {
-                                                                androidx.compose.material3.Text("ОК")
+                                                                Text("ОК")
                                                             }
                                                         }
                                                     )
                                                 }
-                                            }}}}}}}}}}}}
+                                            }
+                                        }
+                                    }
+                                }
+                            }*/
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
