@@ -34,7 +34,7 @@ fun DeviceDataTable(
         Column(modifier = modifier.fillMaxSize()) {
             // Верхние информационные панели
             LineTwoTable()
-            LineThirdTable()
+            LineThirdTable(selectedDevice = selectedDevice)
             LineForthTable()
             LineFifthTable()
 

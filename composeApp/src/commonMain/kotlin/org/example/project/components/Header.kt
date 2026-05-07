@@ -240,7 +240,7 @@ fun HeaderTable(
                 icon = Icons.Default.Terminal,
                 tooltipText = "Терминал",
                 onClick = {
-                    actions.onTerminalOpen() // Используем ваш существующий метод
+                    actions.onTerminalOpen()
                 }
             )
             //----------------------------Help---------------------------------------------------------------------
@@ -369,6 +369,27 @@ fun HeaderTable(
                     }
                 }
             }
+            Spacer(modifier = Modifier.width(20.dp))//Отступ
+            //----------------------Кнопка "Подключиться"-------------------------------------------
+            TableIconButton(
+                text = "ПОДКЛЮЧИТЬСЯ",
+                tooltipText = "Получить  ID устройства, найти его в базе и загрузить уставки",
+                backgroundColor = Color(0xFFBF6D6D),
+                onClick = {
+                    actions.onFileOration()
+                }
+            )
+            Spacer(modifier = Modifier.width(20.dp))//Отступ
+            //----------------------Кнопка "ID"-----------------------------------------------------
+            TableIconButton(
+                text = "ID",
+                tooltipText = "Получить  ID устройства",
+                backgroundColor = Color(0xFFBF6D6D),
+                onClick = {
+                    actions.onFileOration()
+                }
+            )
+
             Spacer(modifier = Modifier.weight(1f))
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = thickness, color = color)

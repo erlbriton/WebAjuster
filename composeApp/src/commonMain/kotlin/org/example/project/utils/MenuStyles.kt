@@ -162,7 +162,7 @@ fun UniversalSelector(
         }
     }
 }
-//Функция для окна ввода значения вручную и по алгоритму
+//-------------------Функция для окна ввода значения вручную и по алгоритму-------------------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManualAndAutoInputField(
