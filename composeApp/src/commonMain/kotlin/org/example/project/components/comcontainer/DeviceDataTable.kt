@@ -27,8 +27,8 @@ fun DeviceDataTable(
     var weightCol2 by remember { mutableStateOf(0.4f) } // Name
     var weightCol3 by remember { mutableStateOf(0.6f) } // Description
     var comparisonWeight by remember { mutableStateOf(0.5f) }//База - Контроллер
-    var comparisonHexPhysical by remember { mutableStateOf(0.5f) }//Для Базы
-    var comparisonHexPhysicalController by remember { mutableStateOf(0.5f) }//Для Контроллера
+    var hexBase by remember { mutableStateOf(0.5f) }//Для Базы
+    var hexlController by remember { mutableStateOf(0.5f) }//Для Контроллера
 
     key(selectedDevice?.id) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -44,9 +44,9 @@ fun DeviceDataTable(
                 // 1. СЕКЦИЯ "ПАРАМЕТРЫ"
                 creatorColumn(
                     modifier = Modifier.weight(innerColumnWeight),
-                    headerTitle = "Параметры",
+                    headerTitle = "ПАРАМЕТРЫ",
                     headerHeight = 25.dp,
-                    headerBgColor = Color(0xFFDFE5CA),
+                    headerBgColor = Color(0xFFE0E0E0),
                     isResizable = true,
                     onResize = onInnerResize,
                     content = {
@@ -92,7 +92,7 @@ fun DeviceDataTable(
 
                                         // --- Столбец hex ---
                                         creatorColumn(
-                                            modifier = Modifier.weight(comparisonHexPhysicalControllerl), // Используем переменную
+                                            modifier = Modifier.weight(hexBase), // Используем переменную
                                             headerTitle = "hex",
                                             headerHeight = 25.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
@@ -101,15 +101,15 @@ fun DeviceDataTable(
                                                 // Вычисляем, насколько сдвинулся вес в зависимости от ширины экрана
                                                 // Можно подобрать делитель (например, 400f), чтобы ресайз был плавным
                                                 val change = delta / 400f
-                                                comparisonHexPhysicalControllerl =
-                                                    (comparisonHexPhysicalControllerl + change).coerceIn(0.2f, 0.8f)
+                                                hexBase =
+                                                    (hexBase + change).coerceIn(0.2f, 0.8f)
                                             },
                                             content = {
                                             }
                                         )
                                         // --- Столбец Physical ---
                                         creatorColumn(
-                                            modifier = Modifier.weight(1f - comparisonHexPhysicalControllerl), // Остаток пространства
+                                            modifier = Modifier.weight(1f - hexBase), // Остаток пространства
                                             headerTitle = "Physical",
                                             headerHeight = 25.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
@@ -131,9 +131,9 @@ fun DeviceDataTable(
                                 onResize = {},
                                 content = {
                                            Row(modifier = Modifier.fillMaxSize()) {
-                                        // --- Столбец hex ---
+                                        //-------------------Столбец hex----------------------------
                                         creatorColumn(
-                                            modifier = Modifier.weight(comparisonHexPhysicalController), // Используем переменную
+                                            modifier = Modifier.weight(hexlController), // Используем переменную
                                             headerTitle = "hex",
                                             headerHeight = 25.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
@@ -142,15 +142,15 @@ fun DeviceDataTable(
                                                 // Вычисляем, насколько сдвинулся вес в зависимости от ширины экрана
                                                 // Можно подобрать делитель (например, 400f), чтобы ресайз был плавным
                                                 val change = delta / 400f
-                                                comparisonHexPhysical =
-                                                    (comparisonHexPhysical + change).coerceIn(0.2f, 0.8f)
+                                                hexlController =
+                                                    (hexlController + change).coerceIn(0.2f, 0.8f)
                                             },
                                             content = {
                                             }
                                         )
                                         // --- Столбец Physical ---
                                         creatorColumn(
-                                            modifier = Modifier.weight(1f - comparisonHexPhysical), // Остаток пространства
+                                            modifier = Modifier.weight(1f - hexlController), // Остаток пространства
                                             headerTitle = "Physical",
                                             headerHeight = 25.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
