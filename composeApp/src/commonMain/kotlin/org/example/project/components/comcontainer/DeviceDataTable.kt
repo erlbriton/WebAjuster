@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,9 @@ fun DeviceDataTable(
     // Внутренние веса для колонок внутри секции параметров
     var weightCol2 by remember { mutableStateOf(0.4f) } // Name
     var weightCol3 by remember { mutableStateOf(0.6f) } // Description
+    var comparisonWeight by remember { mutableStateOf(0.5f) }//База - Контроллер
+    var comparisonHexPhysical by remember { mutableStateOf(0.5f) }//Для Базы
+    var comparisonHexPhysicalController by remember { mutableStateOf(0.5f) }//Для Контроллера
 
     key(selectedDevice?.id) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -37,10 +41,10 @@ fun DeviceDataTable(
             // ГЛАВНАЯ СТРОКА ТАБЛИЦЫ
             Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
-                // 1. СЕКЦИЯ "ПАРАМЕТР"
+                // 1. СЕКЦИЯ "ПАРАМЕТРЫ"
                 creatorColumn(
                     modifier = Modifier.weight(innerColumnWeight),
-                    headerTitle = "Параметр",
+                    headerTitle = "Параметры",
                     headerHeight = 25.dp,
                     headerBgColor = Color(0xFFDFE5CA),
                     isResizable = true,
@@ -57,7 +61,6 @@ fun DeviceDataTable(
                                 weightCol2 = (weightCol2 + change).coerceIn(0.1f, 0.8f)
                                 weightCol3 = (1.0f - weightCol2)
                             }
-                            // onDescResize удален, так как ручка теперь только одна
                         )
                     }
                 )
@@ -65,21 +68,99 @@ fun DeviceDataTable(
                 // 2. СЕКЦИЯ "СРАВНЕНИЕ ДАННЫХ"
                 creatorColumn(
                     modifier = Modifier.weight(1f - innerColumnWeight),
-                    headerTitle = "Сравнение данных",
-                    headerHeight = 25.dp,
-                    headerBgColor = Color(0xFFE0E0E0),
+                    headerTitle = "",
+                    headerHeight = 0.dp,
                     content = {
-                        // Здесь скоро будет ValueComparisonSection
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.White)
-                                .border(0.5.dp, Color.LightGray)
-                        ) {
-                            Text(
-                                "Область сравнения (База/Контроллер)",
-                                modifier = Modifier.padding(10.dp),
-                                color = Color.Gray
+                        Row(modifier = Modifier.fillMaxSize()) {
+
+                            // --- Столбец БАЗА ---
+                            creatorColumn(
+                                modifier = Modifier.weight(comparisonWeight), // Используем переменную
+                                headerTitle = "БАЗА",
+                                headerHeight = 25.dp,
+                                headerBgColor = Color(0xFFE0E0E0),
+                                isResizable = true,
+                                onResize = { delta ->
+                                    // Вычисляем, насколько сдвинулся вес в зависимости от ширины экрана
+                                    // Можно подобрать делитель (например, 400f), чтобы ресайз был плавным
+                                    val change = delta / 400f
+                                    comparisonWeight =
+                                        (comparisonWeight + change).coerceIn(0.2f, 0.8f)
+                                },
+                                content = {
+                                    Row(modifier = Modifier.fillMaxSize()) {
+
+                                        // --- Столбец hex ---
+                                        creatorColumn(
+                                            modifier = Modifier.weight(comparisonHexPhysicalControllerl), // Используем переменную
+                                            headerTitle = "hex",
+                                            headerHeight = 25.dp,
+                                            headerBgColor = Color(0xFFE0E0E0),
+                                            isResizable = true,
+                                            onResize = { delta ->
+                                                // Вычисляем, насколько сдвинулся вес в зависимости от ширины экрана
+                                                // Можно подобрать делитель (например, 400f), чтобы ресайз был плавным
+                                                val change = delta / 400f
+                                                comparisonHexPhysicalControllerl =
+                                                    (comparisonHexPhysicalControllerl + change).coerceIn(0.2f, 0.8f)
+                                            },
+                                            content = {
+                                            }
+                                        )
+                                        // --- Столбец Physical ---
+                                        creatorColumn(
+                                            modifier = Modifier.weight(1f - comparisonHexPhysicalControllerl), // Остаток пространства
+                                            headerTitle = "Physical",
+                                            headerHeight = 25.dp,
+                                            headerBgColor = Color(0xFFE0E0E0),
+                                            isResizable = false, // Второму столбцу ресайз не нужен, он подстроится сам
+                                            onResize = {},
+                                            content = {
+                                            }
+                                        )
+                                    }
+                                }
+                            )
+                            // --- Столбец КОНТРОЛЛЕР ---
+                            creatorColumn(
+                                modifier = Modifier.weight(1f - comparisonWeight), // Остаток пространства
+                                headerTitle = "КОНТРОЛЛЕР",
+                                headerHeight = 25.dp,
+                                headerBgColor = Color(0xFFE0E0E0),
+                                isResizable = false, // Второму столбцу ресайз не нужен, он подстроится сам
+                                onResize = {},
+                                content = {
+                                           Row(modifier = Modifier.fillMaxSize()) {
+                                        // --- Столбец hex ---
+                                        creatorColumn(
+                                            modifier = Modifier.weight(comparisonHexPhysicalController), // Используем переменную
+                                            headerTitle = "hex",
+                                            headerHeight = 25.dp,
+                                            headerBgColor = Color(0xFFE0E0E0),
+                                            isResizable = true,
+                                            onResize = { delta ->
+                                                // Вычисляем, насколько сдвинулся вес в зависимости от ширины экрана
+                                                // Можно подобрать делитель (например, 400f), чтобы ресайз был плавным
+                                                val change = delta / 400f
+                                                comparisonHexPhysical =
+                                                    (comparisonHexPhysical + change).coerceIn(0.2f, 0.8f)
+                                            },
+                                            content = {
+                                            }
+                                        )
+                                        // --- Столбец Physical ---
+                                        creatorColumn(
+                                            modifier = Modifier.weight(1f - comparisonHexPhysical), // Остаток пространства
+                                            headerTitle = "Physical",
+                                            headerHeight = 25.dp,
+                                            headerBgColor = Color(0xFFE0E0E0),
+                                            isResizable = false, // Второму столбцу ресайз не нужен, он подстроится сам
+                                            onResize = {},
+                                            content = {
+                                            }
+                                        )
+                                    }
+                                }
                             )
                         }
                     }
