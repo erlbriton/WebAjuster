@@ -81,22 +81,6 @@ class HeaderActionsButtons(
             }
         }
     }
-
-//    override fun onPickFileRequest() {
-//        scope.launch {
-//            val result = pickSingleFile()
-//            if (result != null) {
-//                // ПРОВЕРКА: Печатает ли лог данные?
-//                println("DEBUG: Загружен тип = ${result.deviceType}")
-//
-//                // Запись в VM
-//                mainViewModel.typeMechanism = result.deviceType
-//
-//                onDeviceLoaded(result)
-//            }
-//        }
-//    }
-
     override fun onPickDirectoryRequest() {
         scope.launch {
             delay(100)

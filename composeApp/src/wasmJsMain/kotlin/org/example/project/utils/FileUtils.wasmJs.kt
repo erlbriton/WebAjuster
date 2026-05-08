@@ -59,22 +59,35 @@ private suspend fun readFileContent(fileHandle: JsAny): String {
     return jsFileText(file).await<JsString>().toString()
 }
 private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
-    val lines = content.split("\n", "\r").map { it.trim() }.filter { it.isNotEmpty() }
+    // 1. Разделяем на строки (сохраняем пустые строки для структуры)
+    val lines = content.split("\n", "\r").map { it.trim() }
 
-    // Переменные для секции [DEVICE]
+    val varsMap = mutableMapOf<String, Double>()
     var idValue = ""
     var locationValue = ""
     var descriptionValue = ""
-    var deviceTypeValue = ""
     var lastDateTimeValue = ""
-
-    // Список для параметров из секции [FLASH]
     val flashParams = mutableListOf<ParameterData>()
 
     var currentSection = ""
 
+    // --- ПРОХОД 1: Собираем шкалы [vars] ---
     for (line in lines) {
-        // Определяем секцию
+        if (line.startsWith("[") && line.endsWith("]")) {
+            currentSection = line.uppercase()
+            continue
+        }
+        if (currentSection == "[VARS]" && line.contains("=")) {
+            val key = line.substringBefore("=").trim()
+            val value = line.substringAfter("=").trim().replace(",", ".").toDoubleOrNull() ?: 1.0
+            varsMap[key] = value
+        }
+    }
+
+    // --- ПРОХОД 2: Парсим всё остальное ---
+    currentSection = ""
+    for (line in lines) {
+        if (line.isEmpty()) continue
         if (line.startsWith("[") && line.endsWith("]")) {
             currentSection = line.uppercase()
             continue
@@ -86,44 +99,51 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
                     line.startsWith("ID=", true) -> idValue = line.substringAfter("=")
                     line.startsWith("Location=", true) -> locationValue = line.substringAfter("=")
                     line.startsWith("Description=", true) -> descriptionValue = line.substringAfter("=")
-                    line.startsWith("DeviceType=", true) -> deviceTypeValue = line.substringAfter("=")
                     line.startsWith("LastDateTime=", true) -> lastDateTimeValue = line.substringAfter("=")
                 }
             }
-            "[FLASH]" -> {
+            "[FLASH]", "[RAM]" -> {
                 if (line.contains("=")) {
                     val pCode = line.substringBefore("=").trim()
                     val rawData = line.substringAfter("=").trim()
 
-                    // Разбиваем строку и сразу убираем пустые элементы, если они есть
-                    val parts = rawData.split("/").map { it.trim() }.filter { it.isNotEmpty() }
+                    // ВАЖНО: Не фильтруем пустые части, чтобы индексы не съехали!
+                    val parts = rawData.split("/")
 
-                    if (parts.isNotEmpty()) {
-                        // 1. Берем САМЫЙ ПОСЛЕДНИЙ элемент (это наш hexBase, например x0014)
-                        val hexRaw = parts.last()
+                    if (parts.size >= 2) {
+                        // 1. Извлекаем HEX (значение перед последним /)
+                        val hexRaw = if (parts.last().isEmpty()) parts[parts.size - 2].trim() else parts.last().trim()
 
-                        // 2. Обработка для Physical
-                        val hexClean = hexRaw.removePrefix("x")
-                        // Пытаемся перевести из 16-ричной системы в 10-ричную
-                        val physicalValue = hexClean.toIntOrNull(16)?.toString() ?: "0"
+                        // 2. Ищем текстовое значение (для списков типа x04#115200)
+                        var physicalValue = ""
+                        val enumEntry = parts.find { it.contains(hexRaw + "#") }
 
-                        // Отладочный вывод в консоль браузера (F12 -> Console)
-                        // Поможет понять, почему были единицы
-                        println("Параметр $pCode: ID=${parts[0]}, HEX=$hexRaw, Phys=$physicalValue")
+                        if (enumEntry != null) {
+                            // Если это список, вытаскиваем текст после #
+                            physicalValue = enumEntry.substringAfter("#")
+                        } else {
+                            // Если это обычное число, применяем шкалу
+                            val scaleName = parts.getOrNull(6)?.trim() ?: ""
+                            val scaleValue = varsMap[scaleName] ?: 1.0
 
+                            val rawInt = hexRaw.removePrefix("x").toIntOrNull(16) ?: 0
+                            val calculated = rawInt * scaleValue
+                            // Красиво форматируем: 28.0 -> "28", 28.5 -> "28.5"
+                            physicalValue = if (calculated % 1.0 == 0.0) calculated.toInt().toString() else calculated.toString()
+                        }
+                        println("DEBUG_PARSER: $pCode | HEX=$hexRaw | PHYS=$physicalValue")
                         val parameter = ParameterData(
                             code = pCode,
-                            idName = parts[0],
-                            description = parts[1],
-                            dataType = parts[2],
-                            modbusReg = parts[4],
-                            unit = parts[5],
-                            hexBase = hexRaw,          // Сюда должно попасть x0014
-                            physBase = physicalValue,  // Сюда должно попасть 20
-                            hexCtrl = "x0000",         // Заглушка для контроллера
-                            physCtrl = "0"             // Заглушка для контроллера
+                            idName = parts.getOrNull(0) ?: "",
+                            description = parts.getOrNull(1) ?: "",
+                            dataType = parts.getOrNull(2) ?: "",
+                            modbusReg = parts.getOrNull(4) ?: "",
+                            unit = parts.getOrNull(5) ?: "",
+                            hexBase = hexRaw,          // Сюда попадет x04 или x0B22
+                            physBase = physicalValue,  // Сюда попадет 115200 или 28.5
+                            hexCtrl = "x0000",
+                            physCtrl = "0"
                         )
-
                         flashParams.add(parameter)
                     }
                 }
@@ -138,11 +158,9 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
         id = idValue,
         location = locationValue,
         Description = descriptionValue,
-      //  Description = deviceTypeValue,
         LastDateTime = lastDateTimeValue,
         ramParameters = emptyList(),
-        flashParameters = flashParams, // Передаем заполненный список FLASH
-        cdParameters = emptyList()
+        flashParameters = flashParams
     )
 }
 

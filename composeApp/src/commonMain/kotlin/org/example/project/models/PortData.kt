@@ -16,6 +16,7 @@ data class ParameterData(
     val dataType: String,     // Тип (TWORD) - пока не выводим
     val modbusReg: String,    //Номер регистра Modbus (например, r2000)м
     val unit: String,         // Столбец "Ед. изм." (A)
+    val vars: Double = 1.0,
 
 
     // Новые поля для данных
@@ -30,7 +31,6 @@ data class DeviceInfoIni(
     val id: String,
     val location: String,
     val Description: String,
-    //val deviceType: String,
     val LastDateTime: String,
     val ramParameters: List<ParameterData> = emptyList(),
     val flashParameters: List<ParameterData> = emptyList(),

@@ -21,3 +21,5 @@ class MainViewModel {
 val LocalMainViewModel = staticCompositionLocalOf<MainViewModel> {
     error("ViewModel не предоставлена!")
 }
+
+val varsMap = mutableStateMapOf<String, Double>()
