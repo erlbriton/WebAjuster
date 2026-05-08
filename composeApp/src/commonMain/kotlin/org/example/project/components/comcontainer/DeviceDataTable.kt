@@ -46,144 +46,157 @@ fun DeviceDataTable(
             LineForthTable()
             LineFifthTable()
 
-            Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            // Оборачиваем основную строку в Box, чтобы поверх нее (справа) нарисовать скроллбар
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
-                // 1. СЕКЦИЯ "ПАРАМЕТРЫ"
-                creatorColumn(
-                    modifier = Modifier.weight(innerColumnWeight),
-                    headerTitle = "ПАРАМЕТРЫ",
-                    headerHeight = 25.dp,
-                    headerBgColor = Color(0xFFE0E0E0),
-                    isResizable = true,
-                    onResize = onInnerResize,
-                    content = {
-                        ParameterSection(
-                            selectedDevice = selectedDevice,
-                            tableScrollState = tableScrollState,
-                            weightCol2 = weightCol2,
-                            weightCol3 = weightCol3,
-                            onNameResize = { delta ->
-                                val change = delta / 500f
-                                weightCol2 = (weightCol2 + change).coerceIn(0.1f, 0.8f)
-                                weightCol3 = (1.0f - weightCol2)
+                Row(modifier = Modifier.fillMaxSize()) {
+
+                    // 1. СЕКЦИЯ "ПАРАМЕТРЫ"
+                    creatorColumn(
+                        modifier = Modifier.weight(innerColumnWeight),
+                        headerTitle = "ПАРАМЕТРЫ",
+                        headerHeight = 25.dp,
+                        headerBgColor = Color(0xFFE0E0E0),
+                        isResizable = true,
+                        onResize = onInnerResize,
+                        content = {
+                            ParameterSection(
+                                selectedDevice = selectedDevice,
+                                tableScrollState = tableScrollState,
+                                weightCol2 = weightCol2,
+                                weightCol3 = weightCol3,
+                                onNameResize = { delta ->
+                                    val change = delta / 500f
+                                    weightCol2 = (weightCol2 + change).coerceIn(0.1f, 0.8f)
+                                    weightCol3 = (1.0f - weightCol2)
+                                }
+                            )
+                        }
+                    )
+
+                    // 2. СЕКЦИЯ "СРАВНЕНИЕ ДАННЫХ"
+                    creatorColumn(
+                        modifier = Modifier.weight(1f - innerColumnWeight),
+                        headerTitle = "",
+                        headerHeight = 0.dp,
+                        content = {
+                            val displayRows = remember(selectedDevice) {
+                                selectedDevice?.flashParameters?.map { param ->
+                                    val isDifferent = param.hexBase != param.hexCtrl || param.physBase != param.physCtrl
+                                    DisplayRow(
+                                        hexBase = param.hexBase,
+                                        physBase = param.physBase,
+                                        hexCtrl = param.hexCtrl,
+                                        physCtrl = param.physCtrl,
+                                        rowColor = if (isDifferent) Color.Red else Color.Black
+                                    )
+                                } ?: emptyList()
                             }
-                        )
-                    }
-                )
 
-                // 2. СЕКЦИЯ "СРАВНЕНИЕ ДАННЫХ"
-                creatorColumn(
-                    modifier = Modifier.weight(1f - innerColumnWeight),
-                    headerTitle = "",
-                    headerHeight = 0.dp,
-                    content = {
-                        val displayRows = remember(selectedDevice) {
-                            selectedDevice?.flashParameters?.map { param ->
-                                val isDifferent = param.hexBase != param.hexCtrl || param.physBase != param.physCtrl
-                                DisplayRow(
-                                    hexBase = param.hexBase,
-                                    physBase = param.physBase,
-                                    hexCtrl = param.hexCtrl,
-                                    physCtrl = param.physCtrl,
-                                    rowColor = if (isDifferent) Color.Red else Color.Black
+                            Row(modifier = Modifier.fillMaxSize()) {
+                                // --- СТОЛБЕЦ БАЗА ---
+                                creatorColumn(
+                                    modifier = Modifier.weight(comparisonWeight),
+                                    headerTitle = "БАЗА",
+                                    headerHeight = 25.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = true,
+                                    onResize = { delta ->
+                                        val change = delta / 400f
+                                        comparisonWeight = (comparisonWeight + change).coerceIn(0.2f, 0.8f)
+                                    },
+                                    content = {
+                                        Row(modifier = Modifier.fillMaxSize()) {
+                                            creatorColumn(
+                                                modifier = Modifier.weight(hexBase),
+                                                headerTitle = "hex",
+                                                headerHeight = 25.dp,
+                                                headerBgColor = Color(0xFFE0E0E0),
+                                                isResizable = true,
+                                                onResize = { delta ->
+                                                    val change = delta / 400f
+                                                    hexBase = (hexBase + change).coerceIn(0.2f, 0.8f)
+                                                },
+                                                content = {
+                                                    Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                        displayRows.forEach { row ->
+                                                            Text(text = row.hexBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        }
+                                                    }
+                                                }
+                                            )
+                                            Column(modifier = Modifier.weight(1f - hexBase).fillMaxHeight()) {
+                                                Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
+                                                    Text("Physical", fontSize = 12.sp)
+                                                }
+                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                    displayRows.forEach { row ->
+                                                        Text(text = row.physBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 )
-                            } ?: emptyList()
-                        }
 
-                        Row(modifier = Modifier.fillMaxSize()) {
-
-                            // --- СТОЛБЕЦ БАЗА ---
-                            creatorColumn(
-                                modifier = Modifier.weight(comparisonWeight),
-                                headerTitle = "БАЗА",
-                                headerHeight = 25.dp,
-                                headerBgColor = Color(0xFFE0E0E0),
-                                isResizable = true,
-                                onResize = { delta ->
-                                    val change = delta / 400f
-                                    comparisonWeight = (comparisonWeight + change).coerceIn(0.2f, 0.8f)
-                                },
-                                content = {
-                                    Row(modifier = Modifier.fillMaxSize()) {
-                                        // hex (БАЗА) - Оставляем creatorColumn, чтобы была ручка ресайза
-                                        creatorColumn(
-                                            modifier = Modifier.weight(hexBase),
-                                            headerTitle = "hex",
-                                            headerHeight = 25.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
-                                            isResizable = true,
-                                            onResize = { delta ->
-                                                val change = delta / 400f
-                                                hexBase = (hexBase + change).coerceIn(0.2f, 0.8f)
-                                            },
-                                            content = {
-                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEach { row ->
-                                                        Text(text = row.hexBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                // --- СТОЛБЕЦ КОНТРОЛЛЕР ---
+                                creatorColumn(
+                                    modifier = Modifier.weight(1f - comparisonWeight),
+                                    headerTitle = "КОНТРОЛЛЕР",
+                                    headerHeight = 25.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = false,
+                                    content = {
+                                        Row(modifier = Modifier.fillMaxSize()) {
+                                            creatorColumn(
+                                                modifier = Modifier.weight(hexlController),
+                                                headerTitle = "hex",
+                                                headerHeight = 25.dp,
+                                                headerBgColor = Color(0xFFE0E0E0),
+                                                isResizable = true,
+                                                onResize = { delta ->
+                                                    val change = delta / 400f
+                                                    hexlController = (hexlController + change).coerceIn(0.2f, 0.8f)
+                                                },
+                                                content = {
+                                                    Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                        displayRows.forEach { row ->
+                                                            Text(text = row.hexCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        )
-                                        // Physical (БАЗА) - Делаем ОБЫЧНОЙ колонкой без creatorColumn
-                                        Column(modifier = Modifier.weight(1f - hexBase).fillMaxHeight()) {
-                                            // Рисуем шапку вручную, чтобы не дублировать границы
-                                            Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
-                                                Text("Physical", fontSize = 12.sp)
-                                            }
-                                            Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                displayRows.forEach { row ->
-                                                    Text(text = row.physBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                            )
+                                            Column(modifier = Modifier.weight(1f - hexlController).fillMaxHeight()) {
+                                                Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
+                                                    Text("Physical", fontSize = 12.sp)
+                                                }
+                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                    displayRows.forEach { row ->
+                                                        Text(text = row.physCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            )
-
-                            // --- СТОЛБЕЦ КОНТРОЛЛЕР ---
-                            creatorColumn(
-                                modifier = Modifier.weight(1f - comparisonWeight),
-                                headerTitle = "КОНТРОЛЛЕР",
-                                headerHeight = 25.dp,
-                                headerBgColor = Color(0xFFE0E0E0),
-                                isResizable = false,
-                                content = {
-                                    Row(modifier = Modifier.fillMaxSize()) {
-                                        // hex (КОНТРОЛЛЕР) - Оставляем creatorColumn для ресайза
-                                        creatorColumn(
-                                            modifier = Modifier.weight(hexlController),
-                                            headerTitle = "hex",
-                                            headerHeight = 25.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
-                                            isResizable = true,
-                                            onResize = { delta ->
-                                                val change = delta / 400f
-                                                hexlController = (hexlController + change).coerceIn(0.2f, 0.8f)
-                                            },
-                                            content = {
-                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEach { row ->
-                                                        Text(text = row.hexCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
-                                                    }
-                                                }
-                                            }
-                                        )
-                                        // Physical (КОНТРОЛЛЕР) - Тоже обычной колонкой
-                                        Column(modifier = Modifier.weight(1f - hexlController).fillMaxHeight()) {
-                                            Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
-                                                Text("Physical", fontSize = 12.sp)
-                                            }
-                                            Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                displayRows.forEach { row ->
-                                                    Text(text = row.physCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            )
+                                )
+                            }
                         }
-                    }
+                    )
+                }
+                // ДОБАВЛЯЕМ СКРОЛЛБАР
+                VerticalScrollbar(
+                    adapter = rememberScrollbarAdapter(tableScrollState),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
+                    style = ScrollbarStyle(
+                        minimalHeight = 16.dp,
+                        thickness = 10.dp,                // Сделаем его чуть шире (было 8)
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+                        hoverDurationMillis = 300,
+                        unhoverColor = Color.Yellow.copy(alpha = 0.5f), // Цвет в покое (ярче)
+                        hoverColor = Color.Cyan                   // Цвет при наведении
+                    )
                 )
             }
         }
