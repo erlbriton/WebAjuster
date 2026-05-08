@@ -38,11 +38,11 @@ fun ParameterSection(
     Column(modifier = modifier.fillMaxSize()) {
         // 1. ШАПКА
         Row(modifier = Modifier.fillMaxWidth().height(28.dp).background(Color(0xFFE0E0E0))) {
-            HeaderSubCell("PN", Modifier.width(sideColumnWidth))
+            HeaderSubCell(" №", Modifier.width(sideColumnWidth))
 
             // Здесь ручка ЕСТЬ
             HeaderSubCell(
-                text = "Name",
+                text = "Имя",
                 modifier = Modifier.weight(weightCol2),
                 isResizable = true,
                 isDragging = isDraggingName,
@@ -52,12 +52,12 @@ fun ParameterSection(
 
             // Здесь ручку УБРАЛИ (isResizable = false)
             HeaderSubCell(
-                text = "Description",
+                text = "Описание",
                 modifier = Modifier.weight(weightCol3),
                 isResizable = false
             )
 
-            HeaderSubCell("Meas.unit", Modifier.width(sideColumnWidth))
+            HeaderSubCell("Ед. изм.", Modifier.width(sideColumnWidth))
         }
 
         // 2. ОБЛАСТЬ ДАННЫХ
