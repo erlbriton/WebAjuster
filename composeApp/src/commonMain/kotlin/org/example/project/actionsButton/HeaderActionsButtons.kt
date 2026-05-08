@@ -7,8 +7,10 @@ import org.example.project.actions.HeaderActions
 import org.example.project.models.DeviceInfoIni
 import org.example.project.utils.pickDirectory
 import org.example.project.utils.pickSingleFile
+import org.example.project.viewmodel.MainViewModel
 
 class HeaderActionsButtons(
+    private val mainViewModel: MainViewModel,
     private val scope: CoroutineScope,
     private val onDeviceLoaded: (DeviceInfoIni) -> Unit,
     private val ShowError: (String) -> Unit
@@ -67,9 +69,33 @@ class HeaderActionsButtons(
     override fun onPickFileRequest() {
         scope.launch {
             val result = pickSingleFile()
-            if (result != null) onDeviceDataLoaded(result)
+            if (result != null) {
+                // Печатаем для контроля в консоль браузера
+                println("DEBUG: Загружен тип из файла = ${result.Description}")
+
+                // 1. Обновляем тип механизма во ViewModel (это сразу отобразится в таблице)
+                mainViewModel.typeMechanism = result.Description ?: "Неизвестно"
+
+                // 2. Уведомляем систему о загрузке остальных данных (карты параметров и т.д.)
+                onDeviceLoaded(result)
+            }
         }
     }
+
+//    override fun onPickFileRequest() {
+//        scope.launch {
+//            val result = pickSingleFile()
+//            if (result != null) {
+//                // ПРОВЕРКА: Печатает ли лог данные?
+//                println("DEBUG: Загружен тип = ${result.deviceType}")
+//
+//                // Запись в VM
+//                mainViewModel.typeMechanism = result.deviceType
+//
+//                onDeviceLoaded(result)
+//            }
+//        }
+//    }
 
     override fun onPickDirectoryRequest() {
         scope.launch {

@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +71,7 @@ fun HeaderTable(
     val selectOptions = listOf("Файл", "Папка")
 
     val vm = LocalMainViewModel.current // Получаем доступ к "мозгам"
+    val scope = rememberCoroutineScope()
 
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -296,7 +298,7 @@ fun HeaderTable(
                 minWidth = 45.dp, // Немного больше, если названия регионов длинные
                 onOptionSelected = { selectedMemory = it }
             )
-            //----------------------------Выбор папки/файла-----------------------------------------
+            // ----------------------------Выбор папки/файла-----------------------------------------
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
                 tooltip = { PlainTooltip { Text("Выбор файла", fontSize = 12.sp) } },
@@ -310,11 +312,12 @@ fun HeaderTable(
                             .height(24.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // ЛЕВАЯ ЧАСТЬ: Основное действие (выбор файла по клику на иконку)
+                        // ЛЕВАЯ ЧАСТЬ: Иконка папки
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .clickable {
+                                    // Вызываем системный запрос на выбор файла
                                     actions.onPickFileRequest()
                                 }
                                 .padding(horizontal = 4.dp),
@@ -327,6 +330,7 @@ fun HeaderTable(
                                 tint = Color(0xFF046308)
                             )
                         }
+
                         // РАЗДЕЛИТЕЛЬ
                         Spacer(
                             modifier = Modifier
@@ -334,7 +338,8 @@ fun HeaderTable(
                                 .width(1.dp)
                                 .background(Color.Blue)
                         )
-                        // ПРАВАЯ ЧАСТЬ: Стрелочка для меню
+
+                        // ПРАВАЯ ЧАСТЬ: Стрелочка
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
@@ -349,23 +354,22 @@ fun HeaderTable(
                             )
                         }
                     }
+
                     // Выпадающее меню
                     DropdownMenu(expanded = selectFile, onDismissRequest = { selectFile = false }) {
-                        // Пункт выбора Файла
                         UniversalMenuItem(
                             label = "Файл",
                             itemHeight = 16.dp,
                             onClick = {
-                                selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
+                                selectFile = false
                                 actions.onPickFileRequest()
                             }
                         )
-                        // Пункт выбора Папки
                         UniversalMenuItem(
                             label = "Папка",
                             itemHeight = 16.dp,
                             onClick = {
-                                selectFile = false // ОБЯЗАТЕЛЬНО ПЕРВЫМ
+                                selectFile = false
                                 actions.onPickDirectoryRequest()
                             }
                         )

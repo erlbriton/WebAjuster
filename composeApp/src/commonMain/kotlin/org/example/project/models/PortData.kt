@@ -30,7 +30,7 @@ data class DeviceInfoIni(
     val id: String,
     val location: String,
     val Description: String,
-    val deviceType: String,
+    //val deviceType: String,
     val LastDateTime: String,
     val ramParameters: List<ParameterData> = emptyList(),
     val flashParameters: List<ParameterData> = emptyList(),

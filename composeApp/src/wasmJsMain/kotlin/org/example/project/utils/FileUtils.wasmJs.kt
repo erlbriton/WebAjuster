@@ -138,7 +138,7 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
         id = idValue,
         location = locationValue,
         Description = descriptionValue,
-        deviceType = deviceTypeValue,
+      //  Description = deviceTypeValue,
         LastDateTime = lastDateTimeValue,
         ramParameters = emptyList(),
         flashParameters = flashParams, // Передаем заполненный список FLASH
