@@ -40,6 +40,7 @@ import org.example.project.utils.TableIconButton
 import org.example.project.utils.UniversalMenuItem
 import org.example.project.utils.UniversalSelector
 import org.example.project.utils.iconsMenu
+import org.example.project.viewmodel.LocalMainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +68,8 @@ fun HeaderTable(
     //Состояние для выбора папки/файла
     var selectFile by remember { mutableStateOf(false) }
     val selectOptions = listOf("Файл", "Папка")
+
+    val vm = LocalMainViewModel.current // Получаем доступ к "мозгам"
 
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -389,7 +392,6 @@ fun HeaderTable(
                     actions.onFileOration()
                 }
             )
-
             Spacer(modifier = Modifier.weight(1f))
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = thickness, color = color)

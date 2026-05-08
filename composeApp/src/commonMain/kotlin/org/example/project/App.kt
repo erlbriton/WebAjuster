@@ -1,9 +1,18 @@
+//App.kt
+
 package org.example.project
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.*
-
+import androidx.compose.ui.text.style.LineHeightStyle
 import org.example.project.components.comcontainer.ComContainer
+import org.example.project.viewmodel.MainViewModel
+import org.example.project.viewmodel.LocalMainViewModel
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.unit.TextUnit
+
 
 /**
  * Расчет Modbus CRC16 (V6)
@@ -28,184 +37,127 @@ fun calculateModbusCrc(data: List<Int>): Int {
 
 @Composable
 fun App() {
-    MaterialTheme {
-        /*  var showContent by remember { mutableStateOf(false) }
-        var uartStatus by remember { mutableStateOf("Устройство не подключено") }
-        val scope = rememberCoroutineScope()
+    val mainViewModel = remember { MainViewModel() }
 
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.height(20.dp))
+    // Упрощенный стиль без платформенных специфичных параметров
+    val tightTextStyle = TextStyle(
+        lineHeight = TextUnit.Unspecified, // Отключаем навязанную высоту строки
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both
+        )
+    )
 
-            Button(onClick = {
-                scope.launch {
-                    try {
-                        uartStatus = "Формирование пакета..."
+    val customTypography = Typography(
+        bodyLarge = tightTextStyle,
+        bodyMedium = tightTextStyle,
+        bodySmall = tightTextStyle,
+        labelLarge = tightTextStyle,
+        labelMedium = tightTextStyle,
+        labelSmall = tightTextStyle
+    )
 
-                        // Пакет для STM32 (Read Holding Registers)
-                        val baseData = listOf(0x01, 0x03, 0x00, 0x00, 0x00, 0x7D)
-
-                        // Расчет CRC
-                        val crc = calculateModbusCrc(baseData)
-
-                        // Сборка финального массива (8 байт)
-                        val fullPackage = mutableListOf<Byte>()
-                        baseData.forEach { fullPackage.add(it.toByte()) }
-                        fullPackage.add((crc and 0xFF).toByte())         // CRC Low
-                        fullPackage.add(((crc ushr 8) and 0xFF).toByte()) // CRC High
-
-                        val dataToSend = fullPackage.toByteArray()
-
-                        // Вызов платформенной функции (wasmJsMain)
-                        findSerialPort(dataToSend)
-
-                        uartStatus = "Проверьте окно выбора порта в браузере"
-                    } catch (e: Exception) {
-                        uartStatus = "Ошибка: ${e.message}"
-                    }
-                }
-            }) {
-                Text("Найти CP2103 и отправить пакет")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = uartStatus,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(onClick = { showContent = !showContent }) {
-                Text(if (showContent) "Скрыть логотип" else "Показать логотип")
-            }
-
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose Multiplatform: $greeting")
-              }  */
-      //  DiagnosticTableContainer()
-    }
-
-   /* @Composable
-    fun DiagnosticTableContainer() {
-        // 1. Создаем состояние скролла для всей таблицы
-        val scrollState = rememberScrollState()
-
-        // 2. Общий контейнер, который прижат вправо (Alignment.End)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.33f) // Ограничиваем ширину всей таблицы 33%
-                .fillMaxHeight()     // Тянем по высоте
-                .verticalScroll(scrollState) // Добавляем скроллинг
-                // 3. Добавляем рамку только слева!
-                .border(
-                    width = 1.dp,
-                    color = Color.Black // Твоя вертикальная линия
-                )
-                .padding(start = 1.dp) // Небольшой отступ, чтобы контент не слипался с линией
-        ) {
-            DiagnosticTableContainer()
-            Column(modifier = Modifier.fillMaxSize()) {
-                HeaderTable()
-                LineTwoTable()
-            }
+    MaterialTheme(typography = customTypography) {
+        CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
+            ComContainer()
         }
-    }*/
-    ComContainer()
+    }
 }
 
-/*@Composable
-fun ComContainer() {
-    var tableWidth by remember { mutableStateOf(300.dp) }
-    var leftColumnWeight by remember { mutableStateOf(0.5f) }
-    val scrollState = rememberScrollState()
+//-----------------------Открытие com порта---------------------------------------------------------
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val maxAllowedWidth = maxWidth
+/*  var showContent by remember { mutableStateOf(false) }
+       var uartStatus by remember { mutableStateOf("Устройство не подключено") }
+       val scope = rememberCoroutineScope()
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Row(modifier = Modifier.wrapContentWidth().fillMaxHeight()) {
+       Column(
+           modifier = Modifier
+               .background(MaterialTheme.colorScheme.primaryContainer)
+               .safeContentPadding()
+               .fillMaxSize(),
+           horizontalAlignment = Alignment.CenterHorizontally,
+       ) {
+           Spacer(modifier = Modifier.height(20.dp))
 
-                // --- Ручка изменения размера ---
-                Box(
-                    modifier = Modifier
-                        .width(6.dp)
-                        .fillMaxHeight()
-                        .background(Color.Gray.copy(alpha = 0.3f))
-                        .pointerInput(Unit) {
-                            detectDragGestures { change, dragAmount ->
-                                change.consume()
-                                tableWidth -= dragAmount.x.toDp()
-                                tableWidth = tableWidth.coerceIn(150.dp, maxAllowedWidth)
-                            }
-                        }
-                )
+           Button(onClick = {
+               scope.launch {
+                   try {
+                       uartStatus = "Формирование пакета..."
 
-                // --- Сама Таблица ---
-                // Убираем verticalScroll отсюда, если хотим, чтобы нижняя часть растягивалась
-                // Либо оставляем его, но тогда высота будет зависеть от контента.
-                Column(
-                    modifier = Modifier
-                        .width(tableWidth)
-                        .fillMaxHeight() // Тянем на всю высоту
-                        .border(width = 3.dp, color = Color.Black)
-                ) {
-                    HeaderTable()
-                   // LineTwoTable()
+                       // Пакет для STM32 (Read Holding Registers)
+                       val baseData = listOf(0x01, 0x03, 0x00, 0x00, 0x00, 0x7D)
 
-                    // --- Секция двух столбцов ---
-                    // weight(1f) заставит этот блок занять все оставшееся место по вертикали
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
-                        // Левый столбец
-                        Box(
-                            modifier = Modifier
-                                .weight(leftColumnWeight)
-                                .fillMaxHeight()
-                        )
-                        // Разделитель
-                        Box(
-                            modifier = Modifier
-                                .width(3.dp)
-                                .fillMaxHeight()
-                                .background(Color.Black)
-                                .pointerInput(Unit) {
-                                    detectDragGestures { change, dragAmount ->
-                                        change.consume()
-                                        val delta = dragAmount.x / tableWidth.value
-                                        leftColumnWeight = (leftColumnWeight + delta).coerceIn(0.1f, 0.9f)
-                                    }
-                                }
-                        )
-                        // Правый столбец
-                        Box(
-                            modifier = Modifier
-                                .weight(1f - leftColumnWeight)
-                                .fillMaxHeight()
-                        ) {
-                            LineTwoTable()//Вторая строка
-                        }
-                    }
-                }
-            }
-        }
-    }
-} */
+                       // Расчет CRC
+                       val crc = calculateModbusCrc(baseData)
+
+                       // Сборка финального массива (8 байт)
+                       val fullPackage = mutableListOf<Byte>()
+                       baseData.forEach { fullPackage.add(it.toByte()) }
+                       fullPackage.add((crc and 0xFF).toByte())         // CRC Low
+                       fullPackage.add(((crc ushr 8) and 0xFF).toByte()) // CRC High
+
+                       val dataToSend = fullPackage.toByteArray()
+
+                       // Вызов платформенной функции (wasmJsMain)
+                       findSerialPort(dataToSend)
+
+                       uartStatus = "Проверьте окно выбора порта в браузере"
+                   } catch (e: Exception) {
+                       uartStatus = "Ошибка: ${e.message}"
+                   }
+               }
+           }) {
+               Text("Найти CP2103 и отправить пакет")
+           }
+
+           Spacer(modifier = Modifier.height(8.dp))
+
+           Text(
+               text = uartStatus,
+               style = MaterialTheme.typography.bodyMedium
+           )
+
+           Spacer(modifier = Modifier.height(24.dp))
+
+           Button(onClick = { showContent = !showContent }) {
+               Text(if (showContent) "Скрыть логотип" else "Показать логотип")
+           }
+
+           AnimatedVisibility(showContent) {
+               val greeting = remember { Greeting().greet() }
+               Column(
+                   modifier = Modifier.fillMaxWidth(),
+                   horizontalAlignment = Alignment.CenterHorizontally,
+               ) {
+                   Image(painterResource(Res.drawable.compose_multiplatform), null)
+                   Text("Compose Multiplatform: $greeting")
+             }  */
+//  DiagnosticTableContainer()
+//  }
+
+/* @Composable
+fun DiagnosticTableContainer() {
+// 1. Создаем состояние скролла для всей таблицы
+val scrollState = rememberScrollState()
+
+// 2. Общий контейнер, который прижат вправо (Alignment.End)
+Column(
+modifier = Modifier
+    .fillMaxWidth(0.33f) // Ограничиваем ширину всей таблицы 33%
+    .fillMaxHeight()     // Тянем по высоте
+    .verticalScroll(scrollState) // Добавляем скроллинг
+    // 3. Добавляем рамку только слева!
+    .border(
+        width = 1.dp,
+        color = Color.Black // Твоя вертикальная линия
+    )
+    .padding(start = 1.dp) // Небольшой отступ, чтобы контент не слипался с линией
+) {
+DiagnosticTableContainer()
+Column(modifier = Modifier.fillMaxSize()) {
+    HeaderTable()
+    LineTwoTable()
+}
+}
+}*/
+
