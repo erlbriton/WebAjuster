@@ -107,6 +107,7 @@ fun DeviceDataTable(
                                     },
                                     content = {
                                         Row(modifier = Modifier.fillMaxSize()) {
+                                            //-----------------hex----------------------------------
                                             creatorColumn(
                                                 modifier = Modifier.weight(hexBase),
                                                 headerTitle = "hex",
@@ -125,21 +126,26 @@ fun DeviceDataTable(
                                                     }
                                                 }
                                             )
-                                            Column(modifier = Modifier.weight(1f - hexBase).fillMaxHeight()) {
-                                                Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
-                                                    Text("Physical", fontSize = 12.sp)
-                                                }
-                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEach { row ->
-                                                        Text(text = row.physBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                              //-------------------Physical------------------------
+                                            creatorColumn(
+                                                modifier = Modifier.weight(1f - hexBase), // Важно: вес второго столбца должен дополнять первый
+                                                headerTitle = "Physical",
+                                                headerHeight = 25.dp,
+                                                headerBgColor = Color(0xFFE0E0E0),
+                                                isResizable = false,        // 1. Отключаем ручку
+                                                dividerThickness = 0.dp,    // 2. Убираем полоску разделителя совсем
+                                                content = {
+                                                    Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                        displayRows.forEach { row ->
+                                                            Text(text = row.physBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        }
                                                     }
                                                 }
-                                            }
+                                            )
                                         }
                                     }
                                 )
-
-                                // --- СТОЛБЕЦ КОНТРОЛЛЕР ---
+                                // --------------------- СТОЛБЕЦ КОНТРОЛЛЕР ------------------------
                                 creatorColumn(
                                     modifier = Modifier.weight(1f - comparisonWeight),
                                     headerTitle = "КОНТРОЛЛЕР",
@@ -148,6 +154,7 @@ fun DeviceDataTable(
                                     isResizable = false,
                                     content = {
                                         Row(modifier = Modifier.fillMaxSize()) {
+                                            //-----------------hex----------------------------------
                                             creatorColumn(
                                                 modifier = Modifier.weight(hexlController),
                                                 headerTitle = "hex",
@@ -166,16 +173,22 @@ fun DeviceDataTable(
                                                     }
                                                 }
                                             )
-                                            Column(modifier = Modifier.weight(1f - hexlController).fillMaxHeight()) {
-                                                Box(modifier = Modifier.fillMaxWidth().height(25.dp).background(Color(0xFFE0E0E0)), contentAlignment = Alignment.Center) {
-                                                    Text("Physical", fontSize = 12.sp)
-                                                }
-                                                Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEach { row ->
-                                                        Text(text = row.physCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                            //-------------------Physical---------------------------
+                                            creatorColumn(
+                                                modifier = Modifier.weight(1f - hexlController), // Важно: вес второго столбца должен дополнять первый
+                                                headerTitle = "Physical",
+                                                headerHeight = 25.dp,
+                                                headerBgColor = Color(0xFFE0E0E0),
+                                                isResizable = false,        // 1. Отключаем ручку
+                                                dividerThickness = 0.dp,    // 2. Убираем полоску разделителя совсем
+                                                content = {
+                                                    Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                                        displayRows.forEach { row ->
+                                                            Text(text = row.physCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        }
                                                     }
                                                 }
-                                            }
+                                            )
                                         }
                                     }
                                 )
