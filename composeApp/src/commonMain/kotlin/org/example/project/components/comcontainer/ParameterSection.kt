@@ -20,27 +20,31 @@ import org.example.project.models.DeviceInfoIni
 @Composable
 fun ParameterSection(
     selectedDevice: DeviceInfoIni?,
+    selectedRowIndex: Int,
+    onRowSelected: (Int) -> Unit,
     tableScrollState: ScrollState,
     weightCol2: Float,
     weightCol3: Float,
     onNameResize: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 1 и 4 столбцы строго одинаковой ширины
-    val sideColumnWidth = 55.dp
-
-    // Состояние для подсветки центральной линии
+    val sideColumnWidth = 80.dp
     var isDraggingName by remember { mutableStateOf(false) }
 
     val activeColor = Color(0xFF2196F3)
     val inactiveColor = Color.Black
 
     Column(modifier = modifier.fillMaxSize()) {
-        // 1. ШАПКА
-        Row(modifier = Modifier.fillMaxWidth().height(28.dp).background(Color(0xFFE0E0E0))) {
-            HeaderSubCell(" №", Modifier.width(sideColumnWidth))
 
-            // Здесь ручка ЕСТЬ
+        // ШАПКА
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(28.dp)
+                .background(Color(0xFFE0E0E0))
+        ) {
+            HeaderSubCell("Код", Modifier.width(sideColumnWidth))
+
             HeaderSubCell(
                 text = "Имя",
                 modifier = Modifier.weight(weightCol2),
@@ -50,7 +54,6 @@ fun ParameterSection(
                 onResize = onNameResize
             )
 
-            // Здесь ручку УБРАЛИ (isResizable = false)
             HeaderSubCell(
                 text = "Описание",
                 modifier = Modifier.weight(weightCol3),
@@ -60,30 +63,83 @@ fun ParameterSection(
             HeaderSubCell("Ед. изм.", Modifier.width(sideColumnWidth))
         }
 
-        // 2. ОБЛАСТЬ ДАННЫХ
-        Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
-            // PN
-            Column(Modifier.width(sideColumnWidth).fillMaxHeight().drawRightBorder(inactiveColor).verticalScroll(tableScrollState)) {
-                selectedDevice?.flashParameters?.forEachIndexed { i, _ ->
-                    ParameterCell((i + 1).toString(), Alignment.Center)
+        // ОБЛАСТЬ ДАННЫХ
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            // КОЛОНКА CODE
+            Column(
+                Modifier
+                    .width(sideColumnWidth)
+                    .fillMaxHeight()
+                    .drawRightBorder(inactiveColor)
+                    .verticalScroll(tableScrollState)
+            ) {
+                selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                    ParameterCell(
+                        text = p.code,
+                        alignment = Alignment.Center,
+                        isSelected = selectedRowIndex == i,
+                        onClick = { onRowSelected(i) } // Исправлено: вызываем лямбду
+                    )
                 }
             }
-            // Name (Линия подсвечивается при ресайзе)
-            Column(Modifier.weight(weightCol2).fillMaxHeight().drawRightBorder(if (isDraggingName) activeColor else inactiveColor, if (isDraggingName) 2f else 1f).verticalScroll(tableScrollState)) {
-                selectedDevice?.flashParameters?.forEach { p ->
-                    ParameterCell(p.idName, Alignment.CenterStart)
+
+            // КОЛОНКА NAME
+            Column(
+                Modifier
+                    .weight(weightCol2)
+                    .fillMaxHeight()
+                    .drawRightBorder(
+                        if (isDraggingName) activeColor else inactiveColor,
+                        if (isDraggingName) 2f else 1f
+                    )
+                    .verticalScroll(tableScrollState)
+            ) {
+                selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                    ParameterCell(
+                        text = p.idName,
+                        alignment = Alignment.CenterStart,
+                        isSelected = selectedRowIndex == i,
+                        onClick = { onRowSelected(i) } // Исправлено
+                    )
                 }
             }
-            // Description (Статичная линия)
-            Column(Modifier.weight(weightCol3).fillMaxHeight().drawRightBorder(inactiveColor).verticalScroll(tableScrollState)) {
-                selectedDevice?.flashParameters?.forEach { p ->
-                    ParameterCell(p.description, Alignment.CenterStart)
+
+            // КОЛОНКА DESCRIPTION
+            Column(
+                Modifier
+                    .weight(weightCol3)
+                    .fillMaxHeight()
+                    .drawRightBorder(inactiveColor)
+                    .verticalScroll(tableScrollState)
+            ) {
+                selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                    ParameterCell(
+                        text = p.description,
+                        alignment = Alignment.CenterStart,
+                        isSelected = selectedRowIndex == i,
+                        onClick = { onRowSelected(i) } // Исправлено
+                    )
                 }
             }
-            // Meas.unit (Без линии справа)
-            Column(Modifier.width(sideColumnWidth).fillMaxHeight().verticalScroll(tableScrollState)) {
-                selectedDevice?.flashParameters?.forEach { p ->
-                    ParameterCell(p.unit, Alignment.Center)
+
+            // КОЛОНКА UNIT
+            Column(
+                Modifier
+                    .width(sideColumnWidth)
+                    .fillMaxHeight()
+                    .verticalScroll(tableScrollState)
+            ) {
+                selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                    ParameterCell(
+                        text = p.unit,
+                        alignment = Alignment.Center,
+                        isSelected = selectedRowIndex == i,
+                        onClick = { onRowSelected(i) } // Исправлено
+                    )
                 }
             }
         }
@@ -100,10 +156,8 @@ fun HeaderSubCell(
     onDraggingStateChange: (Boolean) -> Unit = {},
     onResize: (Float) -> Unit = {}
 ) {
-    // Явно задаем цвет здесь (тот же, что и в данных)
     val mainLineColor = Color(0xFF333333)
     val activeColor = Color(0xFF2196F3)
-
     val currentLineColor = if (isDragging) activeColor else mainLineColor
     val currentLineWidth = if (isDragging) 2f else 1f
 
@@ -116,12 +170,7 @@ fun HeaderSubCell(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        Text(text = text, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
         if (isResizable) {
             Box(
@@ -158,16 +207,35 @@ fun HeaderSubCell(
 }
 
 @Composable
-fun ParameterCell(text: String, alignment: Alignment) {
+fun ParameterCell(
+    text: String,
+    alignment: Alignment,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Box(
-        modifier = Modifier.fillMaxWidth().height(24.dp).padding(horizontal = 4.dp).drawBottomBorder(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp) // Высота строки
+            .background(
+                if (isSelected) Color.Cyan.copy(alpha = 0.25f)
+                else Color.Transparent
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 4.dp)
+            .drawBottomBorder(),
         contentAlignment = alignment
     ) {
-        Text(text, fontSize = 11.sp, maxLines = 1, softWrap = false, color = Color.Black)
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            maxLines = 1,
+            softWrap = false,
+            color = Color.Black
+        )
     }
 }
 
-// РАСШИРЕНИЯ
 fun Modifier.drawRightBorder(color: Color, width: Float = 1f) = this.drawBehind {
     drawLine(
         color = color,

@@ -1,3 +1,5 @@
+// DeviceDataTable.kt
+
 package org.example.project.components.comcontainer
 
 import androidx.compose.foundation.*
@@ -38,6 +40,7 @@ fun DeviceDataTable(
     var comparisonWeight by remember { mutableStateOf(0.5f) }
     var hexBase by remember { mutableStateOf(0.5f) }
     var hexlController by remember { mutableStateOf(0.5f) }
+    var selectedRowIndex by remember { mutableStateOf(-1) }
 
     key(selectedDevice?.id) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -46,7 +49,6 @@ fun DeviceDataTable(
             LineForthTable()
             LineFifthTable()
 
-            // Оборачиваем основную строку в Box, чтобы поверх нее (справа) нарисовать скроллбар
             Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -62,6 +64,8 @@ fun DeviceDataTable(
                         content = {
                             ParameterSection(
                                 selectedDevice = selectedDevice,
+                                selectedRowIndex = selectedRowIndex,
+                                onRowSelected = { selectedRowIndex = it },
                                 tableScrollState = tableScrollState,
                                 weightCol2 = weightCol2,
                                 weightCol3 = weightCol3,
@@ -120,24 +124,46 @@ fun DeviceDataTable(
                                                 },
                                                 content = {
                                                     Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                        displayRows.forEach { row ->
-                                                            Text(text = row.hexBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        displayRows.forEachIndexed { i, row ->
+                                                            Text(
+                                                                text = row.hexBase,
+                                                                fontSize = 12.sp,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .height(24.dp) // Совпадает с ParameterSection
+                                                                    .background(if (selectedRowIndex == i) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
+                                                                    .clickable { selectedRowIndex = i }
+                                                                    .padding(vertical = 4.dp),
+                                                                color = row.rowColor
+                                                            )
                                                         }
                                                     }
                                                 }
                                             )
-                                              //-------------------Physical------------------------
+                                            //-------------------Physical------------------------
                                             creatorColumn(
-                                                modifier = Modifier.weight(1f - hexBase), // Важно: вес второго столбца должен дополнять первый
+                                                modifier = Modifier.weight(1f - hexBase),
                                                 headerTitle = "Physical",
                                                 headerHeight = 25.dp,
                                                 headerBgColor = Color(0xFFE0E0E0),
-                                                isResizable = false,        // 1. Отключаем ручку
-                                                dividerThickness = 0.dp,    // 2. Убираем полоску разделителя совсем
+                                                isResizable = false,
+                                                dividerThickness = 0.dp,
                                                 content = {
                                                     Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                        displayRows.forEach { row ->
-                                                            Text(text = row.physBase, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        displayRows.forEachIndexed { i, row ->
+                                                            Text(
+                                                                text = row.physBase,
+                                                                fontSize = 12.sp,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .height(24.dp)
+                                                                    .background(if (selectedRowIndex == i) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
+                                                                    .clickable { selectedRowIndex = i }
+                                                                    .padding(vertical = 4.dp),
+                                                                color = row.rowColor
+                                                            )
                                                         }
                                                     }
                                                 }
@@ -167,24 +193,46 @@ fun DeviceDataTable(
                                                 },
                                                 content = {
                                                     Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                        displayRows.forEach { row ->
-                                                            Text(text = row.hexCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        displayRows.forEachIndexed { i, row ->
+                                                            Text(
+                                                                text = row.hexCtrl,
+                                                                fontSize = 12.sp,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .height(24.dp)
+                                                                    .background(if (selectedRowIndex == i) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
+                                                                    .clickable { selectedRowIndex = i }
+                                                                    .padding(vertical = 4.dp),
+                                                                color = row.rowColor
+                                                            )
                                                         }
                                                     }
                                                 }
                                             )
                                             //-------------------Physical---------------------------
                                             creatorColumn(
-                                                modifier = Modifier.weight(1f - hexlController), // Важно: вес второго столбца должен дополнять первый
+                                                modifier = Modifier.weight(1f - hexlController),
                                                 headerTitle = "Physical",
                                                 headerHeight = 25.dp,
                                                 headerBgColor = Color(0xFFE0E0E0),
-                                                isResizable = false,        // 1. Отключаем ручку
-                                                dividerThickness = 0.dp,    // 2. Убираем полоску разделителя совсем
+                                                isResizable = false,
+                                                dividerThickness = 0.dp,
                                                 content = {
                                                     Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                        displayRows.forEach { row ->
-                                                            Text(text = row.physCtrl, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().height(20.dp).padding(vertical = 4.dp), color = row.rowColor)
+                                                        displayRows.forEachIndexed { i, row ->
+                                                            Text(
+                                                                text = row.physCtrl,
+                                                                fontSize = 12.sp,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .height(24.dp)
+                                                                    .background(if (selectedRowIndex == i) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
+                                                                    .clickable { selectedRowIndex = i }
+                                                                    .padding(vertical = 4.dp),
+                                                                color = row.rowColor
+                                                            )
                                                         }
                                                     }
                                                 }
@@ -196,19 +244,16 @@ fun DeviceDataTable(
                         }
                     )
                 }
-                // ДОБАВЛЯЕМ СКРОЛЛБАР
                 VerticalScrollbar(
                     adapter = rememberScrollbarAdapter(tableScrollState),
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .fillMaxHeight(),
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                     style = ScrollbarStyle(
                         minimalHeight = 16.dp,
-                        thickness = 10.dp,                // Сделаем его чуть шире (было 8)
+                        thickness = 10.dp,
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
                         hoverDurationMillis = 300,
-                        unhoverColor = Color.Yellow.copy(alpha = 0.5f), // Цвет в покое (ярче)
-                        hoverColor = Color.Cyan                   // Цвет при наведении
+                        unhoverColor = Color.Yellow.copy(alpha = 0.5f),
+                        hoverColor = Color.Cyan
                     )
                 )
             }

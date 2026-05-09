@@ -62,12 +62,15 @@ private suspend fun readFileContent(fileHandle: JsAny): String {
 private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
     val lines = content.split("\n", "\r").map { it.trim() }
 
+    val flashParams = mutableListOf<ParameterData>() //[FLASH]
+    val ramParams = mutableListOf<ParameterData>()   //[RAM]
+    val cdParams = mutableListOf<ParameterData>()// CD
+
     val varsMap = mutableMapOf<String, Double>()
     var idValue = ""
     var locationValue = ""
     var descriptionValue = ""
     var lastDateTimeValue = ""
-    val flashParams = mutableListOf<ParameterData>()
 
     var currentSection = ""
 
@@ -83,7 +86,6 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
             varsMap[key] = value
         }
     }
-
     // --- ПРОХОД 2: Парсим всё остальное ---
     currentSection = ""
     for (line in lines) {
@@ -92,7 +94,6 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
             currentSection = line.uppercase()
             continue
         }
-
         when (currentSection) {
             "[DEVICE]" -> {
                 when {
@@ -102,7 +103,7 @@ private fun parseIniContent(content: String, fileName: String): DeviceInfoIni? {
                     line.startsWith("LastDateTime=", true) -> lastDateTimeValue = line.substringAfter("=")
                 }
             }
-            "[FLASH]", "[RAM]" -> {
+            "[FLASH]" -> {
                 if (line.contains("=")) {
                     val pCode = line.substringBefore("=").trim()
                     val rawData = line.substringAfter("=").trim()
