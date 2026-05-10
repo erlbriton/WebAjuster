@@ -1,5 +1,5 @@
-//CreatorColumn.kt
-//Файл с функцией для создания столбцов с заголовком в любом месте кода
+// CreatorColumn.kt
+// Файл с функцией для создания столбцов с заголовком в любом месте кода
 
 package org.example.project.utils
 
@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,19 +23,6 @@ import androidx.compose.ui.zIndex
 
 /**
  * Универсальный компонент столбца таблицы.
- *
- * @param modifier Модификатор для настройки веса или ширины снаружи.
- * @param headerTitle Текст в верхней строке. Если null — строка не создается.
- * @param headerHeight Высота верхней строки.
- * @param headerBgColor Цвет фона верхней строки.
- * @param headerTextColor Цвет текста в верхней строке.
- * @param headerFontSize Размер шрифта в верхней строке.
- * @param isResizable Можно ли менять ширину столбца мышкой.
- * @param dividerThickness Толщина вертикальной линии разделителя.
- * @param dividerColor Стандартный цвет разделителя.
- * @param dividerActiveColor Цвет разделителя при перетаскивании.
- * @param onResize Ламбда-функция, вызываемая при движении мышки (принимает дельту изменения).
- * @param content Содержимое основной части столбца.
  */
 @Composable
 fun creatorColumn(
@@ -48,7 +36,6 @@ fun creatorColumn(
     dividerThickness: Dp = 2.dp,
     dividerColor: Color = Color.Gray,
     dividerActiveColor: Color = Color(0xFF0066CC),
-    // Параметры для настройки цветов ручки
     handleColor: Color = Color.Gray.copy(alpha = 0.8f),
     handleActiveColor: Color = Color(0xFF0066CC),
     onResize: (Float) -> Unit = {},
@@ -73,7 +60,11 @@ fun creatorColumn(
                         text = title,
                         color = headerTextColor,
                         fontSize = headerFontSize.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        // Исправление: запрет переноса текста на вторую строку
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Clip
                     )
                 }
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(dividerColor))
@@ -88,8 +79,8 @@ fun creatorColumn(
             modifier = Modifier
                 .width(dividerThickness)
                 .fillMaxHeight()
-                .zIndex(10f), // Выносим на самый верхний слой
-            contentAlignment = Alignment.TopCenter // Центрируем содержимое по горизонтали
+                .zIndex(10f),
+            contentAlignment = Alignment.TopCenter
         ) {
             // Рисуем основную тонкую линию
             Box(
@@ -102,15 +93,13 @@ fun creatorColumn(
             if (isResizable) {
                 Box(
                     modifier = Modifier
-                        // Позволяем ручке игнорировать ширину родителя в 2dp
                         .wrapContentWidth(unbounded = true)
-                        .requiredWidth(12.dp) // Ширина всей интерактивной зоны
+                        .requiredWidth(12.dp)
                         .height(headerHeight)
                         .background(
                             color = if (isDragging) handleActiveColor else handleColor,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
                         )
-                        // Вешаем жесты на саму широкую ручку
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { isDragging = true },

@@ -1,4 +1,3 @@
-// DeviceDataTable.kt
 package org.example.project.components.comcontainer
 
 import androidx.compose.foundation.*
@@ -7,10 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.example.project.components.LineFifthTable
@@ -53,7 +51,7 @@ fun DeviceDataTable(
             Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 Row(modifier = Modifier.fillMaxSize()) {
 
-                    // 1. СЕКЦИЯ ПАРАМЕТРЫ (Левая часть)
+                    // 1. ПАРАМЕТРЫ (Левая часть)
                     creatorColumn(
                         modifier = Modifier.weight(innerColumnWeight),
                         headerTitle = "ПАРАМЕТРЫ",
@@ -63,12 +61,10 @@ fun DeviceDataTable(
                         onResize = onInnerResize,
                         content = {
                             Row(modifier = Modifier.fillMaxSize()) {
-                                // Код (№) - без ресайза
                                 creatorColumn(
                                     modifier = Modifier.width(55.dp),
                                     headerTitle = "№",
                                     headerHeight = 20.dp,
-                                    headerBgColor = Color(0xFFE0E0E0),
                                     isResizable = false,
                                     content = {
                                         Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
@@ -78,12 +74,10 @@ fun DeviceDataTable(
                                         }
                                     }
                                 )
-                                // Имя - с ресайзом
                                 creatorColumn(
                                     modifier = Modifier.weight(weightCol2),
                                     headerTitle = "Имя",
                                     headerHeight = 20.dp,
-                                    headerBgColor = Color(0xFFE0E0E0),
                                     isResizable = true,
                                     onResize = { delta ->
                                         val change = delta / 500f
@@ -98,12 +92,10 @@ fun DeviceDataTable(
                                         }
                                     }
                                 )
-                                // Описание - без ресайза
                                 creatorColumn(
                                     modifier = Modifier.weight(weightCol3),
                                     headerTitle = "Описание",
                                     headerHeight = 20.dp,
-                                    headerBgColor = Color(0xFFE0E0E0),
                                     isResizable = false,
                                     content = {
                                         Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
@@ -113,12 +105,10 @@ fun DeviceDataTable(
                                         }
                                     }
                                 )
-                                // Ед.изм - без ресайза
                                 creatorColumn(
                                     modifier = Modifier.width(55.dp),
                                     headerTitle = "Ед.изм",
                                     headerHeight = 20.dp,
-                                    headerBgColor = Color(0xFFE0E0E0),
                                     isResizable = false,
                                     dividerThickness = 0.dp,
                                     content = {
@@ -133,18 +123,12 @@ fun DeviceDataTable(
                         }
                     )
 
-                    // 2. СЕКЦИЯ СРАВНЕНИЕ (Правая часть)
+                    // 2. СРАВНЕНИЕ (Правая часть)
                     Box(modifier = Modifier.weight(1f - innerColumnWeight)) {
                         val displayRows = remember(selectedDevice) {
                             selectedDevice?.flashParameters?.map { param ->
                                 val isDifferent = param.hexBase != param.hexCtrl || param.physBase != param.physCtrl
-                                DisplayRow(
-                                    hexBase = param.hexBase,
-                                    physBase = param.physBase,
-                                    hexCtrl = param.hexCtrl,
-                                    physCtrl = param.physCtrl,
-                                    rowColor = if (isDifferent) Color.Red else Color.Black
-                                )
+                                DisplayRow(param.hexBase, param.physBase, param.hexCtrl, param.physCtrl, if (isDifferent) Color.Red else Color.Black)
                             } ?: emptyList()
                         }
 
@@ -156,27 +140,18 @@ fun DeviceDataTable(
                                 headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
                                 isResizable = true,
-                                onResize = { delta ->
-                                    val change = delta / 400f
-                                    comparisonWeight = (comparisonWeight + change).coerceIn(0.2f, 0.8f)
-                                },
+                                onResize = { delta -> comparisonWeight = (comparisonWeight + delta / 400f).coerceIn(0.2f, 0.8f) },
                                 content = {
                                     Row(modifier = Modifier.fillMaxSize()) {
                                         creatorColumn(
                                             modifier = Modifier.weight(hexBase),
                                             headerTitle = "hex",
                                             headerHeight = 20.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = true,
-                                            onResize = { delta ->
-                                                val change = delta / 400f
-                                                hexBase = (hexBase + change).coerceIn(0.2f, 0.8f)
-                                            },
+                                            onResize = { delta -> hexBase = (hexBase + delta / 400f).coerceIn(0.2f, 0.8f) },
                                             content = {
                                                 Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEachIndexed { i, row ->
-                                                        ComparisonCell(row.hexBase, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i }
-                                                    }
+                                                    displayRows.forEachIndexed { i, row -> ComparisonCell(row.hexBase, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i } }
                                                 }
                                             }
                                         )
@@ -184,14 +159,11 @@ fun DeviceDataTable(
                                             modifier = Modifier.weight(1f - hexBase),
                                             headerTitle = "Physical",
                                             headerHeight = 20.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = false,
                                             dividerThickness = 0.dp,
                                             content = {
                                                 Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEachIndexed { i, row ->
-                                                        ComparisonCell(row.physBase, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i }
-                                                    }
+                                                    displayRows.forEachIndexed { i, row -> ComparisonCell(row.physBase, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i } }
                                                 }
                                             }
                                         )
@@ -204,24 +176,18 @@ fun DeviceDataTable(
                                 headerTitle = "КОНТРОЛЛЕР",
                                 headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
-                                isResizable = false, // ТУТ НЕТ РУЧКИ
+                                isResizable = false,
                                 content = {
                                     Row(modifier = Modifier.fillMaxSize()) {
                                         creatorColumn(
                                             modifier = Modifier.weight(hexlController),
                                             headerTitle = "hex",
                                             headerHeight = 20.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = true,
-                                            onResize = { delta ->
-                                                val change = delta / 400f
-                                                hexlController = (hexlController + change).coerceIn(0.2f, 0.8f)
-                                            },
+                                            onResize = { delta -> hexlController = (hexlController + delta / 400f).coerceIn(0.2f, 0.8f) },
                                             content = {
                                                 Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEachIndexed { i, row ->
-                                                        ComparisonCell(row.hexCtrl, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i }
-                                                    }
+                                                    displayRows.forEachIndexed { i, row -> ComparisonCell(row.hexCtrl, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i } }
                                                 }
                                             }
                                         )
@@ -229,14 +195,11 @@ fun DeviceDataTable(
                                             modifier = Modifier.weight(1f - hexlController),
                                             headerTitle = "Physical",
                                             headerHeight = 20.dp,
-                                            headerBgColor = Color(0xFFE0E0E0),
-                                            isResizable = false, // ТУТ НЕТ РУЧКИ
+                                            isResizable = false,
                                             dividerThickness = 0.dp,
                                             content = {
                                                 Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
-                                                    displayRows.forEachIndexed { i, row ->
-                                                        ComparisonCell(row.physCtrl, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i }
-                                                    }
+                                                    displayRows.forEachIndexed { i, row -> ComparisonCell(row.physCtrl, row.rowColor, i == selectedRowIndex) { selectedRowIndex = i } }
                                                 }
                                             }
                                         )
@@ -249,13 +212,7 @@ fun DeviceDataTable(
                 VerticalScrollbar(
                     adapter = rememberScrollbarAdapter(tableScrollState),
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                    style = ScrollbarStyle(
-                        minimalHeight = 16.dp, thickness = 10.dp,
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
-                        hoverDurationMillis = 300,
-                        unhoverColor = Color.Yellow.copy(alpha = 0.5f),
-                        hoverColor = Color.Cyan
-                    )
+                    style = ScrollbarStyle(minimalHeight = 16.dp, thickness = 10.dp, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp), hoverDurationMillis = 300, unhoverColor = Color.Yellow.copy(alpha = 0.5f), hoverColor = Color.Cyan)
                 )
             }
         }
@@ -276,7 +233,6 @@ private fun ComparisonCell(
             .height(24.dp)
             .background(if (isSelected) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
             .clickable { onClick() },
-        // УДАЛИЛИ .drawBottomBorder() отсюда
         contentAlignment = if (textAlign == TextAlign.Start) Alignment.CenterStart else Alignment.Center
     ) {
         Text(
@@ -285,16 +241,9 @@ private fun ComparisonCell(
             textAlign = textAlign,
             color = textColor,
             modifier = Modifier.padding(horizontal = 4.dp),
-            maxLines = 1
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip
         )
     }
-}
-
-fun Modifier.drawBottomBorder() = this.drawBehind {
-    drawLine(
-        color = Color.Red,
-        start = Offset(0f, size.height),
-        end = Offset(size.width, size.height),
-        strokeWidth = 1f
-    )
 }
