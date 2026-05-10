@@ -36,7 +36,7 @@ fun ParameterSection(
 
     Column(modifier = modifier.fillMaxSize()) {
 
-        // ШАПКА
+        // --- ШАПКА ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,13 +63,13 @@ fun ParameterSection(
             HeaderSubCell("Ед. изм.", Modifier.width(sideColumnWidth))
         }
 
-        // ОБЛАСТЬ ДАННЫХ
+        // --- ДАННЫЕ ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            // КОЛОНКА CODE
+            // 1. КОД
             Column(
                 Modifier
                     .width(sideColumnWidth)
@@ -82,12 +82,12 @@ fun ParameterSection(
                         text = p.code,
                         alignment = Alignment.Center,
                         isSelected = selectedRowIndex == i,
-                        onClick = { onRowSelected(i) } // Исправлено: вызываем лямбду
+                        onClick = { onRowSelected(i) }
                     )
                 }
             }
 
-            // КОЛОНКА NAME
+            // 2. ИМЯ
             Column(
                 Modifier
                     .weight(weightCol2)
@@ -103,12 +103,12 @@ fun ParameterSection(
                         text = p.idName,
                         alignment = Alignment.CenterStart,
                         isSelected = selectedRowIndex == i,
-                        onClick = { onRowSelected(i) } // Исправлено
+                        onClick = { onRowSelected(i) }
                     )
                 }
             }
 
-            // КОЛОНКА DESCRIPTION
+            // 3. ОПИСАНИЕ
             Column(
                 Modifier
                     .weight(weightCol3)
@@ -121,12 +121,12 @@ fun ParameterSection(
                         text = p.description,
                         alignment = Alignment.CenterStart,
                         isSelected = selectedRowIndex == i,
-                        onClick = { onRowSelected(i) } // Исправлено
+                        onClick = { onRowSelected(i) }
                     )
                 }
             }
 
-            // КОЛОНКА UNIT
+            // 4. ЕД. ИЗМ.
             Column(
                 Modifier
                     .width(sideColumnWidth)
@@ -138,11 +138,49 @@ fun ParameterSection(
                         text = p.unit,
                         alignment = Alignment.Center,
                         isSelected = selectedRowIndex == i,
-                        onClick = { onRowSelected(i) } // Исправлено
+                        onClick = { onRowSelected(i) }
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ParameterCell(
+    text: String,
+    alignment: Alignment,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    // Используем Box для наслоения: текст сверху, линия снизу
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp)
+            .background(if (isSelected) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
+            .clickable { onClick() },
+        contentAlignment = alignment
+    ) {
+        // Текст с отступами
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            maxLines = 1,
+            softWrap = false,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+
+        // ГАРАНТИРОВАННАЯ КРАСНАЯ ЛИНИЯ
+        // Она находится внутри Box и прижата к нижнему краю
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp) // Толщина линии
+                .background(Color.Red) // Цвет
+                .align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -206,50 +244,12 @@ fun HeaderSubCell(
     }
 }
 
-@Composable
-fun ParameterCell(
-    text: String,
-    alignment: Alignment,
-    isSelected: Boolean = false,
-    onClick: () -> Unit = {}
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(24.dp) // Высота строки
-            .background(
-                if (isSelected) Color.Cyan.copy(alpha = 0.25f)
-                else Color.Transparent
-            )
-            .clickable { onClick() }
-            .padding(horizontal = 4.dp)
-            .drawBottomBorder(),
-        contentAlignment = alignment
-    ) {
-        Text(
-            text = text,
-            fontSize = 11.sp,
-            maxLines = 1,
-            softWrap = false,
-            color = Color.Black
-        )
-    }
-}
-
+// РАСШИРЕНИЕ ДЛЯ ВЕРТИКАЛЬНОЙ ЛИНИИ
 fun Modifier.drawRightBorder(color: Color, width: Float = 1f) = this.drawBehind {
     drawLine(
         color = color,
         start = Offset(size.width, 0f),
         end = Offset(size.width, size.height),
         strokeWidth = width
-    )
-}
-
-fun Modifier.drawBottomBorder() = this.drawBehind {
-    drawLine(
-        color = Color(0xFFF0F0F0),
-        start = Offset(0f, size.height),
-        end = Offset(size.width, size.height),
-        strokeWidth = 1f
     )
 }
