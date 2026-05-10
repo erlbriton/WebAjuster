@@ -274,41 +274,51 @@ fun TableIconButton(
     borderColor: Color = Color.Blue,
     backgroundColor: Color = Color.White,
     contentColor: Color = Color.Black,
-    onClick: () -> Unit // НОВЫЙ ПАРАМЕТР: блок кода для выполнения
+    iconColor: Color = contentColor, //цвета иконки
+    onClick: () -> Unit
 ) {
     val tooltipState = rememberTooltipState()
 
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-        tooltip = { PlainTooltip { Text(tooltipText, fontSize = 12.sp) } },
+        tooltip = { PlainTooltip { Text(tooltipText, fontSize = 14.sp) } },
         state = tooltipState
     ) {
         Box(modifier = Modifier.padding(start = 4.dp)) {
             Row(
                 modifier = Modifier
                     .wrapContentWidth()
-                    .clickable { onClick() } // ТЕПЕРЬ КНОПКА КЛИКАБЕЛЬНА
-                    .border(1.dp, borderColor)
+                    .clickable { onClick() }
+                    .border(1.dp, borderColor) // Прямые углы, как в оригинале
                     .background(backgroundColor)
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                    // Увеличил horizontal с 6 до 12, чтобы кнопка была шире
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                if (text != null) {
-                    Text(
-                        text = text,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = contentColor,
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                } else if (icon != null) {
+                // Сначала рисуем иконку (если она есть)
+                if (icon != null) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = contentColor
+                        tint = iconColor // Используем новый цвет
+                    )
+                    // Если есть и текст, добавим небольшой отступ между ними
+                    if (text != null) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
+                }
+
+                // Затем рисуем текст (если он есть)
+                if (text != null) {
+                    Text(
+                        text = text,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor,
+                        softWrap = false,
+                        maxLines = 1
                     )
                 }
             }
@@ -350,6 +360,6 @@ fun iconsMenu(
                 )
             }
         },
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+       // contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
     )
 }
