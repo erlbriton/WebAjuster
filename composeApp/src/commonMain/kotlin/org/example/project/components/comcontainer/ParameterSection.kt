@@ -28,7 +28,7 @@ fun ParameterSection(
     onNameResize: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sideColumnWidth = 80.dp
+    val sideColumnWidth = 50.dp
     var isDraggingName by remember { mutableStateOf(false) }
 
     val activeColor = Color(0xFF2196F3)
@@ -40,7 +40,7 @@ fun ParameterSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(28.dp)
+                .height(20.dp)
                 .background(Color(0xFFE0E0E0))
         ) {
             HeaderSubCell("Код", Modifier.width(sideColumnWidth))

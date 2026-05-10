@@ -57,24 +57,79 @@ fun DeviceDataTable(
                     creatorColumn(
                         modifier = Modifier.weight(innerColumnWeight),
                         headerTitle = "ПАРАМЕТРЫ",
-                        headerHeight = 25.dp,
+                        headerHeight = 20.dp,
                         headerBgColor = Color(0xFFE0E0E0),
                         isResizable = true,
                         onResize = onInnerResize,
                         content = {
-                            ParameterSection(
-                                selectedDevice = selectedDevice,
-                                selectedRowIndex = selectedRowIndex,
-                                onRowSelected = { selectedRowIndex = it },
-                                tableScrollState = tableScrollState,
-                                weightCol2 = weightCol2,
-                                weightCol3 = weightCol3,
-                                onNameResize = { delta ->
-                                    val change = delta / 500f
-                                    weightCol2 = (weightCol2 + change).coerceIn(0.1f, 0.8f)
-                                    weightCol3 = (1.0f - weightCol2)
-                                }
-                            )
+                            Row(modifier = Modifier.fillMaxSize()) {
+                                // Код (№) - без ресайза
+                                creatorColumn(
+                                    modifier = Modifier.width(55.dp),
+                                    headerTitle = "№",
+                                    headerHeight = 20.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = false,
+                                    content = {
+                                        Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                            selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                                                ComparisonCell(p.code, Color.Black, i == selectedRowIndex) { selectedRowIndex = i }
+                                            }
+                                        }
+                                    }
+                                )
+                                // Имя - с ресайзом
+                                creatorColumn(
+                                    modifier = Modifier.weight(weightCol2),
+                                    headerTitle = "Имя",
+                                    headerHeight = 20.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = true,
+                                    onResize = { delta ->
+                                        val change = delta / 500f
+                                        weightCol2 = (weightCol2 + change).coerceIn(0.1f, 0.8f)
+                                        weightCol3 = (1.0f - weightCol2)
+                                    },
+                                    content = {
+                                        Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                            selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                                                ComparisonCell(p.idName, Color.Black, i == selectedRowIndex, textAlign = TextAlign.Start) { selectedRowIndex = i }
+                                            }
+                                        }
+                                    }
+                                )
+                                // Описание - без ресайза
+                                creatorColumn(
+                                    modifier = Modifier.weight(weightCol3),
+                                    headerTitle = "Описание",
+                                    headerHeight = 20.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = false,
+                                    content = {
+                                        Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                            selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                                                ComparisonCell(p.description, Color.Black, i == selectedRowIndex, textAlign = TextAlign.Start) { selectedRowIndex = i }
+                                            }
+                                        }
+                                    }
+                                )
+                                // Ед.изм - без ресайза
+                                creatorColumn(
+                                    modifier = Modifier.width(55.dp),
+                                    headerTitle = "Ед.изм",
+                                    headerHeight = 20.dp,
+                                    headerBgColor = Color(0xFFE0E0E0),
+                                    isResizable = false,
+                                    dividerThickness = 0.dp,
+                                    content = {
+                                        Column(Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
+                                            selectedDevice?.flashParameters?.forEachIndexed { i, p ->
+                                                ComparisonCell(p.unit, Color.Black, i == selectedRowIndex) { selectedRowIndex = i }
+                                            }
+                                        }
+                                    }
+                                )
+                            }
                         }
                     )
 
@@ -98,7 +153,7 @@ fun DeviceDataTable(
                             creatorColumn(
                                 modifier = Modifier.weight(comparisonWeight),
                                 headerTitle = "БАЗА",
-                                headerHeight = 25.dp,
+                                headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
                                 isResizable = true,
                                 onResize = { delta ->
@@ -107,11 +162,10 @@ fun DeviceDataTable(
                                 },
                                 content = {
                                     Row(modifier = Modifier.fillMaxSize()) {
-                                        // hex
                                         creatorColumn(
                                             modifier = Modifier.weight(hexBase),
                                             headerTitle = "hex",
-                                            headerHeight = 25.dp,
+                                            headerHeight = 20.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = true,
                                             onResize = { delta ->
@@ -126,11 +180,10 @@ fun DeviceDataTable(
                                                 }
                                             }
                                         )
-                                        // Physical
                                         creatorColumn(
                                             modifier = Modifier.weight(1f - hexBase),
                                             headerTitle = "Physical",
-                                            headerHeight = 25.dp,
+                                            headerHeight = 20.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = false,
                                             dividerThickness = 0.dp,
@@ -149,15 +202,15 @@ fun DeviceDataTable(
                             creatorColumn(
                                 modifier = Modifier.weight(1f - comparisonWeight),
                                 headerTitle = "КОНТРОЛЛЕР",
-                                headerHeight = 25.dp,
+                                headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
-                                isResizable = false,
+                                isResizable = false, // ТУТ НЕТ РУЧКИ
                                 content = {
                                     Row(modifier = Modifier.fillMaxSize()) {
                                         creatorColumn(
                                             modifier = Modifier.weight(hexlController),
                                             headerTitle = "hex",
-                                            headerHeight = 25.dp,
+                                            headerHeight = 20.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
                                             isResizable = true,
                                             onResize = { delta ->
@@ -175,9 +228,9 @@ fun DeviceDataTable(
                                         creatorColumn(
                                             modifier = Modifier.weight(1f - hexlController),
                                             headerTitle = "Physical",
-                                            headerHeight = 25.dp,
+                                            headerHeight = 20.dp,
                                             headerBgColor = Color(0xFFE0E0E0),
-                                            isResizable = false,
+                                            isResizable = false, // ТУТ НЕТ РУЧКИ
                                             dividerThickness = 0.dp,
                                             content = {
                                                 Column(modifier = Modifier.fillMaxSize().verticalScroll(tableScrollState)) {
@@ -210,24 +263,38 @@ fun DeviceDataTable(
 }
 
 @Composable
-private fun ComparisonCell(text: String, textColor: Color, isSelected: Boolean, onClick: () -> Unit) {
+private fun ComparisonCell(
+    text: String,
+    textColor: Color,
+    isSelected: Boolean,
+    textAlign: TextAlign = TextAlign.Center,
+    onClick: () -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxWidth().height(24.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp)
             .background(if (isSelected) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
             .clickable { onClick() }
             .drawBottomBorder(),
-        contentAlignment = Alignment.Center
+        contentAlignment = if (textAlign == TextAlign.Start) Alignment.CenterStart else Alignment.Center
     ) {
-        Text(text = text, fontSize = 11.sp, textAlign = TextAlign.Center, color = textColor)
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            textAlign = textAlign,
+            color = textColor,
+            modifier = Modifier.padding(horizontal = 4.dp),
+            maxLines = 1
+        )
     }
 }
 
-// Добавляем расширение сюда, чтобы не было Unresolved reference
 fun Modifier.drawBottomBorder() = this.drawBehind {
     drawLine(
-        color = Color.Red, // Оставляю КРАСНЫМ, пока не увидишь линии
-        start = Offset(0f, size.height - 1f),
-        end = Offset(size.width, size.height - 1f),
-        strokeWidth = 2f
+        color = Color.Red,
+        start = Offset(0f, size.height),
+        end = Offset(size.width, size.height),
+        strokeWidth = 1f
     )
 }
