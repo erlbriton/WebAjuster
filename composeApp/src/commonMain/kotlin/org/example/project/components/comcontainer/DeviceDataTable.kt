@@ -211,8 +211,18 @@ fun DeviceDataTable(
                 }
                 VerticalScrollbar(
                     adapter = rememberScrollbarAdapter(tableScrollState),
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                    style = ScrollbarStyle(minimalHeight = 16.dp, thickness = 10.dp, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp), hoverDurationMillis = 300, unhoverColor = Color.Yellow.copy(alpha = 0.5f), hoverColor = Color.Cyan)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .padding(top = 20.dp), // СМЕЩАЕМ ВНИЗ, чтобы он начинался под заголовками
+                    style = ScrollbarStyle(
+                        minimalHeight = 16.dp,
+                        thickness = 10.dp,
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+                        hoverDurationMillis = 300,
+                        unhoverColor = Color.Yellow.copy(alpha = 0.5f),
+                        hoverColor = Color.Cyan
+                    )
                 )
             }
         }
