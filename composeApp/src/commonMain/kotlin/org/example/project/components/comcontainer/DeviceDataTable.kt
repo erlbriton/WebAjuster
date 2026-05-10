@@ -275,8 +275,8 @@ private fun ComparisonCell(
             .fillMaxWidth()
             .height(24.dp)
             .background(if (isSelected) Color.Cyan.copy(alpha = 0.25f) else Color.Transparent)
-            .clickable { onClick() }
-            .drawBottomBorder(),
+            .clickable { onClick() },
+        // УДАЛИЛИ .drawBottomBorder() отсюда
         contentAlignment = if (textAlign == TextAlign.Start) Alignment.CenterStart else Alignment.Center
     ) {
         Text(
