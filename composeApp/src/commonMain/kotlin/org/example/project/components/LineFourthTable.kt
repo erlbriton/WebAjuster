@@ -45,7 +45,7 @@ fun LineForthTable(thickness: Dp = TableConfig.lineThickness, // Использ�
             modifier = Modifier
                 .fillMaxWidth() // Занимает ровно 33% ширины родителя (как и первая строка).
                 .height(25.dp)       // Фиксированная высота для единообразия.
-                .background(TableConfig.FourthBackground), // Цвет фона.
+                .background(TableConfig.TwoBackground), // Цвет фона.
             verticalAlignment = Alignment.CenterVertically // Выравнивание кнопок внутри строки по вертикали.
         ) {
             //Окно "Тип механизма"
