@@ -9,10 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.example.project.utils.ManualAndAutoInputField
+import org.example.project.viewmodel.LocalMainViewModel
 
 @Composable
 fun LineFifthTable(thickness: Dp = TableConfig.lineThickness, // Используем значение по умолчанию из конфига
                    color: Color = TableConfig.lineColor) {
+    val vm = LocalMainViewModel.current // Тот же самый объект!
+
     // Column служит контейнером, который выстраивает элементы вертикально.
     Column(
         modifier = Modifier.fillMaxWidth(), // Растягиваем контейнер на всю ширину экрана.
@@ -26,7 +30,20 @@ fun LineFifthTable(thickness: Dp = TableConfig.lineThickness, // Использ�
                 .background(TableConfig.headerBackground), // Цвет фона.
             verticalAlignment = Alignment.CenterVertically // Выравнивание кнопок внутри строки по вертикали.
         ) {
-            // Сюда ты добавишь контент второй строки.
+            //Окно "Место установки"
+            ManualAndAutoInputField(
+                label = "Место установки",
+                // Вместо локальной переменной используем значение из ViewModel
+                value = vm.installationLocation,
+                tooltipText = "Место установки",
+                windowColor = Color.White,
+                width = 100.dp,
+                onValueChange = { newValue ->
+                    // Обновляем значение во ViewModel.
+                    // Как только это произойдет, все компоненты, подписанные на vm.installationLocation, перерисуются.
+                    vm.installationLocation = newValue // Записываем изменения обратно в VM
+                }
+            )
         }
 
         // Разделитель (Divider) под второй строкой.

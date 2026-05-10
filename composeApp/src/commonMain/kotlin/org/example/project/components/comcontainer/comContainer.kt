@@ -111,7 +111,7 @@ fun ComContainer() {
                     modifier = Modifier
                         .width(6.dp)
                         .height(34.dp)
-                        .background(Color.Red.copy(alpha = 0.5f))
+                        .background(Color.Green.copy(alpha = 0.5f))
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 change.consume()

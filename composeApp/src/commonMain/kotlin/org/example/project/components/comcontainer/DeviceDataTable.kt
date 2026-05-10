@@ -17,6 +17,12 @@ import org.example.project.components.LineThirdTable
 import org.example.project.components.LineTwoTable
 import org.example.project.models.DeviceInfoIni
 import org.example.project.utils.creatorColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
+import org.example.project.viewmodel.LocalMainViewModel
 
 private data class DisplayRow(
     val hexBase: String,
@@ -42,6 +48,14 @@ fun DeviceDataTable(
     var selectedRowIndex by remember { mutableStateOf(-1) }
 
     key(selectedDevice?.id) {
+        val vm = LocalMainViewModel.current
+        LaunchedEffect(selectedDevice) {
+            selectedDevice?.let { device ->
+                vm.installationLocation = device.location
+                // Если в 4-й строке выводится тип, обновляем и его для страховки
+                // vm.typeMechanism = device.type
+            }
+        }
         Column(modifier = modifier.fillMaxSize()) {
             LineTwoTable()
             LineThirdTable(selectedDevice = selectedDevice)
@@ -139,6 +153,8 @@ fun DeviceDataTable(
                                 headerTitle = "БАЗА",
                                 headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
+                                headerIcon = Icons.AutoMirrored.Filled.ArrowForward,
+                                iconAfterText = true, // стрелка справа
                                 isResizable = true,
                                 onResize = { delta -> comparisonWeight = (comparisonWeight + delta / 400f).coerceIn(0.2f, 0.8f) },
                                 content = {
@@ -176,6 +192,8 @@ fun DeviceDataTable(
                                 headerTitle = "КОНТРОЛЛЕР",
                                 headerHeight = 20.dp,
                                 headerBgColor = Color(0xFFE0E0E0),
+                                headerIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                                iconAfterText = false, // стрелка слева
                                 isResizable = false,
                                 content = {
                                     Row(modifier = Modifier.fillMaxSize()) {

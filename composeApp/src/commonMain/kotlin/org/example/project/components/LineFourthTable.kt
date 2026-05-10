@@ -50,7 +50,7 @@ fun LineForthTable(thickness: Dp = TableConfig.lineThickness, // Использ�
         ) {
             //Окно "Тип механизма"
             ManualAndAutoInputField(
-                label = "Тип механизма",
+                label = "Тип механизма   ",
                 // Вместо локальной переменной используем значение из ViewModel
                 value = vm.typeMechanism,
                 tooltipText = "Тип механизма",

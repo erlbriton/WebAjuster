@@ -1,17 +1,17 @@
 // CreatorColumn.kt
-// Файл с функцией для создания столбцов с заголовком в любом месте кода
-
 package org.example.project.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 
 /**
- * Универсальный компонент столбца таблицы.
+ * Универсальный компонент столбца таблицы с поддержкой иконок в заголовке.
  */
 @Composable
 fun creatorColumn(
@@ -38,6 +38,10 @@ fun creatorColumn(
     dividerActiveColor: Color = Color(0xFF0066CC),
     handleColor: Color = Color.Gray.copy(alpha = 0.8f),
     handleActiveColor: Color = Color(0xFF0066CC),
+    // Параметры для иконок
+    headerIcon: ImageVector? = null,
+    iconAfterText: Boolean = true, // true - справа, false - слева
+    iconColor: Color = Color(0xFF2E7D32), // Темно-зеленый
     onResize: (Float) -> Unit = {},
     onHeaderClick: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
@@ -56,16 +60,52 @@ fun creatorColumn(
                         .clickable { onHeaderClick() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = title,
-                        color = headerTextColor,
-                        fontSize = headerFontSize.sp,
-                        fontWeight = FontWeight.Bold,
-                        // Исправление: запрет переноса текста на вторую строку
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Clip
-                    )
+                    // Используем Row с SpaceBetween, чтобы разнести текст и иконку по краям
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp) // Отступ иконки от края разделителя
+                    ) {
+                        // Логика иконки СЛЕВА
+                        if (headerIcon != null && !iconAfterText) {
+                            Icon(
+                                imageVector = headerIcon,
+                                contentDescription = null,
+                                tint = iconColor,
+                                modifier = Modifier.size(18.dp) // Увеличенный размер
+                            )
+                        } else if (headerIcon != null) {
+                            // Пустой блок для сохранения центровки текста
+                            Spacer(modifier = Modifier.size(18.dp))
+                        }
+
+                        Text(
+                            text = title,
+                            color = headerTextColor,
+                            fontSize = headerFontSize.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Clip,
+                            modifier = Modifier.weight(1f) // Занимает всё пространство, центрируя текст
+                        )
+
+                        // Логика иконки СПРАВА
+                        if (headerIcon != null && iconAfterText) {
+                            Icon(
+                                imageVector = headerIcon,
+                                contentDescription = null,
+                                tint = iconColor,
+                                modifier = Modifier.size(18.dp) // Увеличенный размер
+                            )
+                        } else if (headerIcon != null) {
+                            // Пустой блок для сохранения центровки текста
+                            Spacer(modifier = Modifier.size(18.dp))
+                        }
+                    }
                 }
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(dividerColor))
             }
@@ -74,7 +114,7 @@ fun creatorColumn(
             }
         }
 
-        // 2. РАЗДЕЛИТЕЛЬ И СИММЕТРИЧНАЯ РУЧКА
+        // 2. РАЗДЕЛИТЕЛЬ И РУЧКА РЕСАЙЗА
         Box(
             modifier = Modifier
                 .width(dividerThickness)
@@ -82,14 +122,12 @@ fun creatorColumn(
                 .zIndex(10f),
             contentAlignment = Alignment.TopCenter
         ) {
-            // Рисуем основную тонкую линию
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(if (isDragging) dividerActiveColor else dividerColor)
             )
 
-            // РУЧКА (рисуется поверх линии)
             if (isResizable) {
                 Box(
                     modifier = Modifier

@@ -16,6 +16,12 @@ class MainViewModel {
     fun updateDate(newValue: String) {
         dateSet = newValue
     }
+
+    var installationLocation by mutableStateOf("")
+
+    fun updateDinstallationLocation(newValue: String) {
+        installationLocation = newValue
+    }
 }
 // Ключ для доступа через CompositionLocal
 val LocalMainViewModel = staticCompositionLocalOf<MainViewModel> {
