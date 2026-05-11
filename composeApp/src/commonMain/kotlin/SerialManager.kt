@@ -6,3 +6,4 @@ package org.example.project
  */
 
 expect suspend fun findSerialPort(data: ByteArray)
+expect suspend fun readDeviceIdentification()

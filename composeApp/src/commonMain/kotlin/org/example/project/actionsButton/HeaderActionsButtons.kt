@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.example.project.actions.HeaderActions
 import org.example.project.models.DeviceInfoIni
+import org.example.project.readDeviceIdentification
 import org.example.project.utils.pickDirectory
 import org.example.project.utils.pickSingleFile
 import org.example.project.viewmodel.MainViewModel
@@ -41,7 +42,9 @@ class HeaderActionsButtons(
     }
 
     override fun onFileOration() {
-        println("Сохранение данных...")
+        scope.launch {
+            readDeviceIdentification()
+        }
     }
 
     override fun onHelp(topic: String) {
