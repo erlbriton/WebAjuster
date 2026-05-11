@@ -381,7 +381,7 @@ fun HeaderTable(
             TableIconButton(
                 text = "ПОДКЛЮЧИТЬСЯ",
                 tooltipText = "Получить  ID устройства, найти его в базе и загрузить уставки",
-                backgroundColor = Color(0xFFBF6D6D),
+                backgroundColor = Color(0xFFC2B7B7),
                 onClick = {
                     actions.onFileOration()
                 }
@@ -391,7 +391,7 @@ fun HeaderTable(
             TableIconButton(
                 text = "ID",
                 tooltipText = "Получить  ID устройства",
-                backgroundColor = Color(0xFFBF6D6D),
+                backgroundColor = Color(0xFFC2B7B7),
                 onClick = {
                     actions.onFileOration()
                 }
